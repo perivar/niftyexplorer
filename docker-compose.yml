@@ -12,9 +12,9 @@ services:
       dockerfile: Dockerfile
     restart: always
     expose:
-      - '3000'
+      - '3030'
     ports:
-      - '3000:3000'
+      - '3030:3000'
 
 # Remember to start the network before running this file:
 # $ docker network create mydockernet

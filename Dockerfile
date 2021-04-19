@@ -1,5 +1,5 @@
 # build environment
-FROM node:14.9.0-alpine as build
+FROM node:current-alpine as build
 
 WORKDIR /app
 
