@@ -83,8 +83,8 @@ export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, toke
     // add the mint baton as an input.
     transactionBuilder.addInput(tokenUtxos[0].tx_hash, tokenUtxos[0].tx_pos);
 
-    // Set the transaction fee. Manually set for ease of example.
-    const txFee = 550;
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 2 }, { P2PKH: 4 });
 
     // amount to send back to the sending address.
     // Subtract two dust transactions for minting baton and tokens.

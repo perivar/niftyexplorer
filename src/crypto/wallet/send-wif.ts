@@ -60,12 +60,8 @@ export async function sendWIF(
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout);
 
-    // get byte count to calculate fee. paying 1.2 sat/byte
-    const byteCount = CryptoUtil.getByteCount({ P2PKH: 1 }, { P2PKH: 2 });
-    console.log(`byteCount: ${byteCount}`);
-    const niftoshisPerByte = 1.0;
-    const txFee = Math.floor(niftoshisPerByte * byteCount);
-    // console.log(`txFee: ${txFee}`)
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: 2 });
 
     // amount to send back to the sending address.
     // It's the original amount - 1 sat/byte for tx size

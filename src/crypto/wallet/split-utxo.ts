@@ -1,5 +1,5 @@
 /*
-  Split the largest UTXO held by the wallet into 5 equally sized UTXOs.
+  Split the largest UTXO held by the wallet into X equally sized UTXOs.
   Useful for avoiding slow indexers and utxo-chain limits.
 */
 
@@ -7,7 +7,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { WalletInfo } from '../util';
 
-export async function splitUtxo(walletInfo: WalletInfo, NETWORK = 'mainnet') {
+export async function splitUtxo(walletInfo: WalletInfo, splitCount = 5, NETWORK = 'mainnet') {
   try {
     const sendAddress = walletInfo.legacyAddress;
     const { mnemonic } = walletInfo;
@@ -53,22 +53,18 @@ export async function splitUtxo(walletInfo: WalletInfo, NETWORK = 'mainnet') {
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout);
 
-    // get byte count to calculate fee. paying 1.2 sat/byte
-    const byteCount = CryptoUtil.getByteCount({ P2PKH: 1 }, { P2PKH: 5 });
-    console.log(`Transaction byte count: ${byteCount}`);
-    const niftoshisPerByte = 1.2;
-    const txFee = Math.floor(niftoshisPerByte * byteCount);
-    console.log(`Transaction fee: ${txFee}`);
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: splitCount });
 
     // Calculate the amount to put into each new UTXO.
-    const niftoshisToSend = Math.floor((originalAmount - txFee) / 5);
+    const niftoshisToSend = Math.floor((originalAmount - txFee) / splitCount);
 
     if (niftoshisToSend < 546) {
       throw new Error('Not enough NFY to complete transaction!');
     }
 
     // add outputs w/ address and amount to send
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < splitCount; i++) {
       transactionBuilder.addOutput(receiverAddress, niftoshisToSend);
     }
 

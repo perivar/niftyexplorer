@@ -41,13 +41,8 @@ export async function sendAll(walletInfo: WalletInfo, receiverAddress = '', NETW
       transactionBuilder.addInput(thisUtxo.tx_hash, thisUtxo.tx_pos);
     }
 
-    // get byte count to calculate fee. paying 1 sat/byte
-    const byteCount = CryptoUtil.getByteCount({ P2PKH: inputs.length }, { P2PKH: 1 });
-    console.log(`byteCount: ${byteCount}`);
-
-    const niftoshisPerByte = 1.1;
-    const txFee = Math.ceil(niftoshisPerByte * byteCount);
-    console.log(`txFee: ${txFee}`);
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: utxos.length }, { P2PKH: 1 });
 
     // Exit if the transaction costs too much to send.
     if (sendAmount - txFee < 0) {

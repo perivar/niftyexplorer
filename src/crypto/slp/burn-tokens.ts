@@ -83,17 +83,8 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
       transactionBuilder.addInput(tokenUtxos[i].tx_hash, tokenUtxos[i].tx_pos);
     }
 
-    // get byte count to calculate fee. paying 1 sat
-    // Note: This may not be totally accurate. Just guessing on the byteCount size.
-    // const byteCount = CryptoUtil.getByteCount
-    //   { P2PKH: 3 },
-    //   { P2PKH: 5 }
-    // )
-    // //console.log(`byteCount: ${byteCount}`)
-    // const niftoshisPerByte = 1.1
-    // const txFee = Math.floor(niftoshisPerByte * byteCount)
-    // console.log(`txFee: ${txFee} niftoshis\n`)
-    const txFee = 550;
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: tokenUtxos.length + 1 }, { P2PKH: 3 });
 
     // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
     const remainder = originalAmount - txFee - 546;

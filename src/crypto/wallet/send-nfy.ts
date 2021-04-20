@@ -59,12 +59,8 @@ export async function sendNFY(
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout);
 
-    // get byte count to calculate fee. paying 1.2 sat/byte
-    const byteCount = CryptoUtil.getByteCount({ P2PKH: 1 }, { P2PKH: 2 });
-    console.log(`Transaction byte count: ${byteCount}`);
-    const niftoshisPerByte = 1.2;
-    const txFee = Math.floor(niftoshisPerByte * byteCount);
-    console.log(`Transaction fee: ${txFee}`);
+    // estimate fee. paying X niftoshis/byte
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: 2 });
 
     // amount to send back to the sending address.
     // It's the original amount - 1 sat/byte for tx size

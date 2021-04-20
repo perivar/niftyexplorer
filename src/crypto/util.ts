@@ -149,10 +149,15 @@ function toPrivateKeyFromWIF(privateKeyWIF: string, network: any): string {
   return privateKey ? privateKey : '';
 }
 
-const getByteCount = (inputs: any, outputs: any): number => {
-  // from https://github.com/bitcoinjs/bitcoinjs-lib/issues/921#issuecomment-354394004
+// Usage:
+// getByteCount({'MULTISIG-P2SH:2-4':45},{'P2PKH':1}) Means "45 inputs of P2SH Multisig and 1 output of P2PKH"
+// getByteCount({'P2PKH':1,'MULTISIG-P2SH:2-3':2},{'P2PKH':2}) means "1 P2PKH input and 2 Multisig P2SH (2 of 3) inputs along with 2 P2PKH outputs"
+function getByteCount(inputs: any, outputs: any): number {
   let totalWeight = 0;
   let hasWitness = false;
+  let inputCount = 0;
+  let outputCount = 0;
+
   // assumes compressed pubkeys in all cases.
   const types: any = {
     inputs: {
@@ -171,7 +176,17 @@ const getByteCount = (inputs: any, outputs: any): number => {
     }
   };
 
+  function checkUInt53(n: number) {
+    if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0) throw new RangeError('value out of range');
+  }
+
+  function varIntLength(number: number) {
+    checkUInt53(number);
+    return number < 0xfd ? 1 : number <= 0xffff ? 3 : number <= 0xffffffff ? 5 : 9;
+  }
+
   Object.keys(inputs).forEach(function (key) {
+    checkUInt53(inputs[key]);
     if (key.slice(0, 8) === 'MULTISIG') {
       // ex. "MULTISIG-P2SH:2-3" would mean 2 of 3 P2SH MULTISIG
       const keyParts = key.split(':');
@@ -183,23 +198,40 @@ const getByteCount = (inputs: any, outputs: any): number => {
 
       totalWeight += types.inputs[newKey] * inputs[key];
       const multiplyer = newKey === 'MULTISIG-P2SH' ? 4 : 1;
-      totalWeight += (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer;
+      totalWeight += (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * inputs[key];
     } else {
       totalWeight += types.inputs[key] * inputs[key];
     }
+    inputCount += inputs[key];
     if (key.indexOf('W') >= 0) hasWitness = true;
   });
 
   Object.keys(outputs).forEach(function (key) {
+    checkUInt53(outputs[key]);
     totalWeight += types.outputs[key] * outputs[key];
+    outputCount += outputs[key];
   });
 
   if (hasWitness) totalWeight += 2;
 
-  totalWeight += 10 * 4;
+  totalWeight += 8 * 4;
+  totalWeight += varIntLength(inputCount) * 4;
+  totalWeight += varIntLength(outputCount) * 4;
 
   return Math.ceil(totalWeight / 4);
-};
+}
+
+function estimateFee(inputs: any, outputs: any): number {
+  // read from environment, default to 1.2 nifthishis per byte
+  const niftoshisPerByte = Number(process.env.REACT_APP_NIFTOSHIS_PER_BYTE_FEE) || 1.2;
+
+  // estimate byte count to calculate fee. paying X sat/byte
+  const byteCount = getByteCount(inputs, outputs);
+  console.log(`Transaction byte count: ${byteCount}`);
+  const txFee = Math.floor(niftoshisPerByte * byteCount);
+  console.log(`Transaction fee: ${txFee}`);
+  return txFee;
+}
 
 // Generate a change address from a Mnemonic of a private key.
 async function changeAddrFromMnemonic(mnemonic: string, network: Network) {
@@ -267,7 +299,7 @@ function validateNetwork(addr: string) {
     // const addrIsMain = this.bchjs.Address.isMainnetAddress(cashAddr);
     // if (network === 'mainnet' && addrIsMain) return true;
 
-    // disabled for now
+    // disabled for now, TODO: PIN - fix
     return true;
     // return false;
   } catch (err) {
@@ -352,8 +384,12 @@ function getExplorer(NETWORK = 'mainnet') {
   const network = getNetwork(NETWORK);
 
   // REST API servers.
-  const NFY_MAINNET = 'https://explorer.niftycoin.org/';
-  const NFY_TESTNET = 'https://testexplorer.niftycoin.org/';
+  const NFY_MAINNET = process.env.REACT_APP_EXPLORER_MAINNET;
+  const NFY_TESTNET = process.env.REACT_APP_EXPLORER_TESTNET;
+
+  if (!NFY_MAINNET || !NFY_TESTNET) {
+    throw new Error('Missing API Server config: REACT_APP_EXPLORER_MAINNET or REACT_APP_EXPLORER_TESNET');
+  }
 
   // Instantiate explorer based on the network.
   let explorer: NiftyCoinExplorer;
@@ -367,8 +403,12 @@ function getElectrumX(NETWORK = 'mainnet') {
   const network = getNetwork(NETWORK);
 
   // REST API servers.
-  const NFY_MAINNET = 'http://116.203.83.168:50005/';
-  const NFY_TESTNET = 'http://116.203.83.168:50006/';
+  const NFY_MAINNET = process.env.REACT_APP_ELECTRUMX_MAINNET;
+  const NFY_TESTNET = process.env.REACT_APP_ELECTRUMX_TESTNET;
+
+  if (!NFY_MAINNET || !NFY_TESTNET) {
+    throw new Error('Missing API Server config: REACT_APP_ELECTRUMX_MAINNET or REACT_APP_ELECTRUMX_TESTNET');
+  }
 
   let electrumx: NiftyCoinElectrumX;
   if (NETWORK === 'mainnet') electrumx = new NiftyCoinElectrumX({ restURL: NFY_MAINNET, network });
@@ -379,8 +419,12 @@ function getElectrumX(NETWORK = 'mainnet') {
 
 function getSLP(NETWORK = 'mainnet') {
   // REST API servers.
-  const NFY_MAINNET = 'https://explorer.niftycoin.org/';
-  const NFY_TESTNET = 'https://testexplorer.niftycoin.org/';
+  const NFY_MAINNET = process.env.REACT_APP_EXPLORER_MAINNET;
+  const NFY_TESTNET = process.env.REACT_APP_EXPLORER_TESTNET;
+
+  if (!NFY_MAINNET || !NFY_TESTNET) {
+    throw new Error('Missing API Server config: REACT_APP_EXPLORER_MAINNET or REACT_APP_EXPLORER_TESNET');
+  }
 
   const explorer = getExplorer(NETWORK);
   const electrumx = getElectrumX(NETWORK);
@@ -400,6 +444,7 @@ const CryptoUtil = {
   toSegWitAddress,
   toLegacyAddress,
   getByteCount,
+  estimateFee,
   changeAddrFromMnemonic,
   findBiggestUtxo,
   toPublicKey,
