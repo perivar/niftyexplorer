@@ -99,6 +99,7 @@ module.exports = {
     'react/no-array-index-key': 'warn',
     'react/static-property-placement': ['warn', 'static public field'],
     'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],
+		'react/display-name': 'off',
 
     // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/require-default-props.md
     // default props not required for optional values
@@ -121,7 +122,7 @@ module.exports = {
     'no-shadow': 'off',
     'lines-between-class-members': 'off',
     'prefer-const': 'warn',
-    'prefer-destructuring': 'warn',
+    'prefer-destructuring': ['warn', { object: true, array: false }],
     'no-dupe-class-members': 'warn',
     'no-else-return': 'warn',
     'no-unneeded-ternary': 'warn',

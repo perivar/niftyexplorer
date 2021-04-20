@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import App from './components/App';
 import reportWebVitals from './reportWebVitals';
+import { WalletProvider } from './utils/context';
+import { HashRouter as Router } from 'react-router-dom';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <WalletProvider>
+    <Router>
+      <App />
+    </Router>
+  </WalletProvider>,
   document.getElementById('root')
 );
 
