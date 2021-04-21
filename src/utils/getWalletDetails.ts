@@ -6,25 +6,30 @@ const getWalletDetails = async (wallet: any) => {
   const NETWORK = process.env.REACT_APP_NETWORK;
   const { mnemonic } = wallet;
 
+  if (!mnemonic || mnemonic === '') {
+    console.log('Error mnemonic is missing!');
+    return undefined;
+  }
+
   // network
   const network = CryptoUtil.getNetwork(NETWORK);
 
-  // creates root seed buffer
-  bip39.mnemonicToSeed(mnemonic).then((rootSeed) => {
-    // master HDNode
-    const masterHDNode = bip32.fromSeed(rootSeed, network);
+  // root seed buffer
+  const rootSeed = await bip39.mnemonicToSeed(mnemonic); // creates seed buffer
 
-    const segwitAddress = CryptoUtil.toSegWitAddress(masterHDNode, network);
-    const legacyAddress = CryptoUtil.toLegacyAddress(masterHDNode, network);
-    const privateKeyWIF = masterHDNode.toWIF();
+  // master HDNode
+  const masterHDNode = bip32.fromSeed(rootSeed, network);
 
-    return {
-      mnemonic,
-      segwitAddress,
-      legacyAddress,
-      privateKeyWIF
-    };
-  });
+  const segwitAddress = CryptoUtil.toSegWitAddress(masterHDNode, network);
+  const legacyAddress = CryptoUtil.toLegacyAddress(masterHDNode, network);
+  const privateKeyWIF = masterHDNode.toWIF();
+
+  return {
+    mnemonic,
+    segwitAddress,
+    legacyAddress,
+    privateKeyWIF
+  };
 };
 
 export default getWalletDetails;

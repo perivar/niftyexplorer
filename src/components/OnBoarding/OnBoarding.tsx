@@ -4,8 +4,6 @@ import { Input, Button, Row, Col, Card, Form, Collapse } from 'antd';
 import Icon from '@ant-design/icons';
 import { Img } from 'react-image';
 import StyledOnboarding from '../Common/StyledOnBoarding';
-import bitcoinWalletLogo from '../../assets/bitcoin-com-wallet-icon.png';
-import badgerWalletLogo from '../../assets/badger-icon.png';
 import pixelSquareLogo from '../../assets/pixel-square-icon.png';
 
 export const OnBoarding = ({ history }: any) => {
@@ -58,7 +56,7 @@ export const OnBoarding = ({ history }: any) => {
             style={{ height: '100%' }}
             bordered={false}>
             <div style={{}}>
-              <Button className="bitcoincom-mint-create-wallet" onClick={() => createWallet()}>
+              <Button className="niftycoinorg-mint-create-wallet" onClick={() => createWallet()}>
                 Create
               </Button>
             </div>
@@ -100,7 +98,7 @@ export const OnBoarding = ({ history }: any) => {
               </Collapse>
 
               <div style={{ paddingTop: '12px' }}>
-                <Button className="bitcoincom-mint-import-wallet" onClick={() => submit()}>
+                <Button className="niftycoinorg-mint-import-wallet" onClick={() => submit()}>
                   Import
                 </Button>
               </div>

@@ -24,7 +24,7 @@ const broadcastTransaction = async (wallet: any, { ...args }) => {
     const { Path245, Path145 } = wallet;
 
     const config = args;
-    config.bchChangeReceiverAddress = Path145.cashAddress;
+    config.bchChangeReceiverAddress = Path145.legacyAddress;
     config.fundingWif = [Path245.fundingWif, Path145.fundingWif];
     config.fundingAddress = [Path245.fundingAddress, Path145.fundingAddress];
 
@@ -57,9 +57,9 @@ const broadcastTransaction = async (wallet: any, { ...args }) => {
 
     let link;
     if (NETWORK === `mainnet`) {
-      // link = `https://explorer.niftycoin.org/NFY/tx/${broadcastedTransaction}`;
+      // link = `https://explorer.bitcoin.com/NFY/tx/${broadcastedTransaction}`;
     } else {
-      // link = `https://explorer.niftycoin.org/tbch/tx/${broadcastedTransaction}`;
+      // link = `https://explorer.bitcoin.com/tbch/tx/${broadcastedTransaction}`;
     }
 
     return link;

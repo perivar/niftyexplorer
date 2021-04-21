@@ -34,6 +34,7 @@ import getRoundImg from '../../utils/roundImage';
 import getResizedImage from '../../utils/resizeImage';
 
 import * as CryptoJS from 'crypto-js';
+import { RcFile } from 'antd/lib/upload/interface';
 
 const { Dragger } = Upload;
 
@@ -210,7 +211,7 @@ const Create = () => {
 
   const getFileSize = (size: number) => size / (1024 * 1024);
 
-  const beforeUpload = (file: any) => {
+  const beforeUpload = (file: RcFile, fileList: RcFile[]): any => {
     try {
       if (getFileSize(file.size) > 25) {
         throw new Error('File must be smaller than 25MB!');
@@ -313,7 +314,7 @@ const Create = () => {
     });
   };
 
-  const beforeTokenIconUpload = (file: any) => {
+  const beforeTokenIconUpload = (file: RcFile, fileList: RcFile[]): any => {
     try {
       if (file.type.split('/')[0] !== 'image') {
         throw new Error('You can only upload image files!');
@@ -672,7 +673,7 @@ const Create = () => {
                         <Dragger
                           multiple={false}
                           // transformFile={transformTokenIconFile}
-                          // beforeUpload={beforeTokenIconUpload}
+                          beforeUpload={beforeTokenIconUpload}
                           onChange={handleChangeTokenIconUpload}
                           onRemove={() => false}
                           fileList={tokenIconFileList}
@@ -846,7 +847,7 @@ const Create = () => {
                                 <Dragger
                                   multiple={false}
                                   // transformFile={transformFile}
-                                  // beforeUpload={beforeUpload}
+                                  beforeUpload={beforeUpload}
                                   onChange={handleChangeUpload}
                                   onRemove={() => false}
                                   fileList={fileList}

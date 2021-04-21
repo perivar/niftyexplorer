@@ -1,11 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import './App.less';
-// import 'antd/dist/antd.less';
-// import '../index.scss';
 import styled from 'styled-components';
 import { useSwipeable } from 'react-swipeable';
-import { Layout, Menu, Radio, Tabs } from 'antd';
+import { Layout, Menu, Radio, Tabs, Typography } from 'antd';
 import Icon from '@ant-design/icons';
 import Portfolio from './Portfolio/Portfolio';
 import Icons from './Icons/Icons';
@@ -18,6 +16,7 @@ import { Route, Redirect, Link, Switch, useLocation, useHistory } from 'react-ro
 import { QRCode } from './Common/QRCode';
 import { Explorer } from './Explorer/Explorer';
 
+const { Title } = Typography;
 const { Header, Content, Sider, Footer } = Layout;
 const { TabPane } = Tabs;
 
@@ -103,7 +102,7 @@ const App = () => {
   };
 
   const handleChangeAddress = (e: any) => {
-    setAddress(address === 'cashAddress' ? 'slpAddress' : 'cashAddress');
+    setAddress(address === 'legacyAddress' ? 'slpAddress' : 'legacyAddress');
   };
 
   const handleResize = () => {
@@ -257,7 +256,7 @@ const App = () => {
                           height: '40px',
                           width: '103px'
                         }}
-                        value="cashAddress"
+                        value="legacyAddress"
                         onClick={(e) => handleChangeAddress(e)}>
                         NiftyCoins
                       </Radio.Button>
