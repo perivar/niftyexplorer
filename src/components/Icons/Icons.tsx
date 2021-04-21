@@ -305,8 +305,8 @@ const Icons = () => {
           case 'Document hash must be provided as a 64 character hex string':
             message = e.message;
             break;
-          case 'Transaction input BCH amount is too low.  Add more BCH inputs to fund this transaction.':
-            message = 'Not enough BCH. Deposit some funds to use this feature.';
+          case 'Transaction input NFY amount is too low.  Add more NFY inputs to fund this transaction.':
+            message = 'Not enough NFY. Deposit some funds to use this feature.';
             break;
           default:
             message = 'Icon upload failed. Try again later';
@@ -357,27 +357,27 @@ const Icons = () => {
                   <>
                     {wallet && (
                       <Paragraph>
-                        <QRCode id="borderedQRCode" address={wallet && wallet.Path145.cashAddress} />
+                        <QRCode id="borderedQRCode" address={wallet && wallet.legacyAddress} />
                       </Paragraph>
                     )}
-                    <Paragraph>You currently have 0 BCH.</Paragraph>
+                    <Paragraph>You currently have 0 NFY.</Paragraph>
 
                     {wallet ? (
-                      <Paragraph>Deposit some BCH to your Mint wallet to enable SLP Icon Creation.</Paragraph>
+                      <Paragraph>Deposit some NFY to your Mint wallet to enable SLP Icon Creation.</Paragraph>
                     ) : (
                       <Paragraph>
-                        Go to the Portfolio page and Create a Wallet. Then deposit some BCH to use the SLP Icons tool.
+                        Go to the Portfolio page and Create a Wallet. Then deposit some NFY to use the SLP Icons tool.
                       </Paragraph>
                     )}
-                    <Paragraph>
-                      Get free BCH from the{' '}
+                    {/* <Paragraph>
+                      Get free NFY from the{' '}
                       <strong>
-                        <a target="_blank" rel="noopener noreferrer" href="https://free.bitcoin.com/">
-                          Bitcoin.com Faucet
+                        <a target="_blank" rel="noopener noreferrer" href="https://free.niftycoin.org/">
+                          niftycoin.org Faucet
                         </a>
                       </strong>
                       !
-                    </Paragraph>
+                    </Paragraph> */}
                   </>
                 ) : (
                   <Form>

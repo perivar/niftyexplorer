@@ -22,7 +22,7 @@ const Mint = ({ token, onClose }: any) => {
   const [formData, setFormData] = useState({
     dirty: true,
     quantity: 0,
-    baton: wallet.Path245.slpAddress
+    baton: wallet.segwitAddress
   });
   const [loading, setLoading] = useState(false);
 
@@ -64,10 +64,10 @@ const Mint = ({ token, onClose }: any) => {
 
       if (/don't have the minting baton/.test(e.message)) {
         message = e.message;
-      } else if (/Invalid BCH address/.test(e.message)) {
-        message = 'Invalid BCH address';
-      } else if (/Transaction input BCH amount is too low/.test(e.message)) {
-        message = 'Not enough BCH. Deposit some funds to use this feature.';
+      } else if (/Invalid NFY address/.test(e.message)) {
+        message = 'Invalid NFY address';
+      } else if (/Transaction input NFY amount is too low/.test(e.message)) {
+        message = 'Not enough NFY. Deposit some funds to use this feature.';
       } else if (/NFT token types are not yet supported/.test(e.message)) {
         message = e.message;
       } else if (/is not supported/.test(e.message)) {
@@ -114,9 +114,9 @@ const Mint = ({ token, onClose }: any) => {
                   <br />
                   <StyledButtonWrapper>
                     <>
-                      <Paragraph>You currently have 0 BCH. Deposit some funds to use this feature.</Paragraph>
+                      <Paragraph>You currently have 0 NFY. Deposit some funds to use this feature.</Paragraph>
                       <Paragraph>
-                        <QRCode id="borderedQRCode" address={wallet.Path145.cashAddress} />
+                        <QRCode id="borderedQRCode" address={wallet.legacyAddress} />
                       </Paragraph>
                     </>
                   </StyledButtonWrapper>

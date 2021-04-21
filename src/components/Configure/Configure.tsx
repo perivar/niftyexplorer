@@ -33,7 +33,7 @@ export default () => {
     dirty: true,
     restAPI: window.localStorage.getItem('restAPI')
   });
-  const defaultRestUrl = 'https://rest.bitcoin.com/v2/';
+  const defaultRestUrl = 'https://rest.niftycoin.org/v2/';
 
   const newRestApiUrl = (protocol: any, restAPI: any) => protocol.concat(restAPI);
   const handleChangeProcotol = (protocol: any) => setProtocol(protocol);
@@ -105,7 +105,7 @@ export default () => {
                 }
                 help={
                   !data.dirty && option === 'custom' && !isValidCustomRest(option, protocol, data.restAPI)
-                    ? 'Should be something like https://rest.bitcoin.com/v2'
+                    ? 'Should be something like https://rest.niftycoin.org/v2'
                     : ''
                 }>
                 <Select defaultValue={getRestUrl()} onChange={(value) => setOption(value)}>
@@ -120,7 +120,7 @@ export default () => {
                   <Input
                     spellCheck="false"
                     style={{ marginTop: '10px' }}
-                    placeholder={'rest.bitcoin.com/v2/'}
+                    placeholder={'rest.niftycoin.org/v2/'}
                     name="restAPI"
                     onChange={(e) => handleChange(e)}
                     required

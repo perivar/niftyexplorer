@@ -17,8 +17,8 @@ import { PlaneIcon, HammerIcon, FireIcon } from '../Common/CustomIcons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { OnBoarding } from '../OnBoarding/OnBoarding';
 
-export const SLP_TOKEN_ICONS_URL = 'https://tokens.bch.sx/64';
-export const BITCOIN_DOT_COM_ICONS_URL = 'https://tokens.bitcoin.com/64';
+export const SLP_TOKEN_ICONS_URL = 'https://tokens.NFY.sx/64';
+export const BITCOIN_DOT_COM_ICONS_URL = 'https://tokens.niftycoin.org/64';
 
 export const StyledCollapse = styled(Collapse)`
   background: #fbfcfd !important;
@@ -205,7 +205,7 @@ export default () => {
                   style={{
                     float: 'right'
                   }}>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(62, 63, 66)' }}>BCH</div>
+                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(62, 63, 66)' }}>NFY</div>
                   <div
                     style={{
                       color: 'rgb(158, 160, 165)',
@@ -213,7 +213,7 @@ export default () => {
                       // fontWeight: '500',
                       whiteSpace: 'nowrap'
                     }}>
-                    Bitcoin Cash
+                    NiftyCoins
                   </div>
                 </div>
               }
@@ -362,7 +362,7 @@ export default () => {
                               }}>
                               {el.detail.transactionType !== 'BURN_ALL' ? (
                                 <a
-                                  href={`https://explorer.bitcoin.com/bch/tx/${el.txid}`}
+                                  href={`https://explorer.niftycoin.org/NFY/tx/${el.txid}`}
                                   target="_blank"
                                   rel="noopener noreferrer">
                                   <p>
@@ -410,7 +410,7 @@ export default () => {
                             </div>
                           ))}
                           <a
-                            href={`https://explorer.bitcoin.com/bch/address/${wallet.Path245.slpAddress}`}
+                            href={`https://explorer.niftycoin.org/NFY/address/${wallet.segwitAddress}`}
                             target="_blank"
                             rel="noopener noreferrer">
                             <p>Full History</p>

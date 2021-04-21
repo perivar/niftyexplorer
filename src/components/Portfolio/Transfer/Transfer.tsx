@@ -66,11 +66,11 @@ const Transfer = ({ token, onClose }: any) => {
         message = e.message;
       } else if (/has no matching Script/.test(e.message)) {
         message = 'Invalid address';
-      } else if (/Transaction input BCH amount is too low/.test(e.message)) {
-        message = 'Not enough BCH. Deposit some funds to use this feature.';
+      } else if (/Transaction input NFY amount is too low/.test(e.message)) {
+        message = 'Not enough NFY. Deposit some funds to use this feature.';
       } else if (/Token Receiver Address must be simpleledger format/.test(e.message)) {
         message = 'Token Receiver Address must be simpleledger format.';
-      } else if (/Invalid BCH address. Double check your address is valid/.test(e.message)) {
+      } else if (/Invalid NFY address. Double check your address is valid/.test(e.message)) {
         message = 'Invalid SLP address. Double check your address is valid.';
       } else if (/NFT token types are not yet supported/.test(e.message)) {
         message = e.message;
@@ -122,9 +122,9 @@ const Transfer = ({ token, onClose }: any) => {
                   <br />
                   <StyledButtonWrapper>
                     <>
-                      <Paragraph>You currently have 0 BCH. Deposit some funds to use this feature.</Paragraph>
+                      <Paragraph>You currently have 0 NFY. Deposit some funds to use this feature.</Paragraph>
                       <Paragraph>
-                        <QRCode id="borderedQRCode" address={wallet.Path145.cashAddress} />
+                        <QRCode id="borderedQRCode" address={wallet.legacyAddress} />
                       </Paragraph>
                     </>
                   </StyledButtonWrapper>

@@ -160,8 +160,8 @@ const Burn = ({ token, avatar, onClose }: any) => {
 
       if (/Could not communicate with full node or other external service/.test(e.error)) {
         message = 'Could not communicate with API. Please try again.';
-      } else if (/Transaction input BCH amount is too low/.test(e.message)) {
-        message = 'Not enough BCH. Deposit some funds to use this feature.';
+      } else if (/Transaction input NFY amount is too low/.test(e.message)) {
+        message = 'Not enough NFY. Deposit some funds to use this feature.';
       } else if (/NFT token types are not yet supported/.test(e.message)) {
         message = e.message;
       } else if (/is not supported/.test(e.message)) {

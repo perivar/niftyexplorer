@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import RawQRCode from 'qrcode.react';
-// import slpLogo from '../../assets/slp-logo-2.png';
-// import bchLogo from '../../assets/bch-icon-qrcode.png';
+import slpLogo from '../../assets/slp-logo-2.png';
+import bchLogo from '../../assets/bch-icon-qrcode.png';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Input, Button } from 'antd';
+import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
 
 export const StyledRawQRCode = styled(RawQRCode)`
   cursor: pointer;
@@ -38,7 +39,7 @@ const StyledInput = styled.div`
   border-radius: 5px;
   margin-top: 12px;
   color: black;
-  height: 50px;
+  height: 42px;
   .ant-input:hover {
     border-color: rgba(127, 127, 127, 0.1);
     border-right-width: 1px !important;
@@ -53,6 +54,9 @@ const StyledInput = styled.div`
   }
   .ant-input {
     font-size: 10px;
+  }
+  input {
+    height: 24px;
   }
 `;
 
@@ -77,50 +81,49 @@ export const QRCode = ({ address, size = 210, onClick = (evt: any) => null, ...o
   };
 
   return (
-    <CopyToClipboard text={address} onCopy={handleOnCopy}>
-      <div style={{ overflow: 'auto', position: 'relative' }} onClick={handleOnClick}>
-        <AddrHolder
-          // style={{
-          //   position: 'absolute',
-          //   zIndex: '2',
-          //   display: visible ? null : 'none'
-          // }}
-          rows={1}
-          readOnly
-          value="Copied"
-        />
-        <StyledRawQRCode
-          id="borderedQRCode"
-          value={address || ''}
-          size={size}
-          renderAs={'svg'}
-          includeMargin
-          // imageSettings={{
-          //   src: address && address.includes('bitcoin') ? bchLogo : slpLogo,
-          //   x: null,
-          //   y: null,
-          //   height: 42,
-          //   width: 42,
-          //   excavate: false
-          // }}
-        />
-
-        <StyledInput>
-          <Input
-            ref={txtRef}
-            // prefix={
-            //   <img src={address && address.includes('bitcoin') ? bchLogo : slpLogo} alt="" width={16} height={16} />
-            // }
-            value={visible ? address : null}
-            placeholder={address}
-            disabled={!visible}
-            autoComplete="off"
-            type="text"
-            spellCheck="false"
-            addonAfter={<Button ghost type="link" icon={visible ? 'check' : 'copy'} />}
+    <div style={{ overflow: 'auto', display: 'inline-block' }}>
+      <CopyToClipboard text={address} onCopy={handleOnCopy}>
+        <div style={{ overflow: 'auto', position: 'relative' }} onClick={handleOnClick}>
+          <AddrHolder
+            style={{
+              position: 'absolute',
+              zIndex: 2,
+              display: visible ? '' : 'none'
+            }}
+            rows={1}
+            readOnly
+            value="Copied"
           />
-        </StyledInput>
-      </div>
-    </CopyToClipboard>
+          <StyledRawQRCode
+            id="borderedQRCode"
+            value={address || ''}
+            size={size}
+            renderAs={'svg'}
+            includeMargin
+            imageSettings={{
+              src: address && address.includes('bitcoin') ? bchLogo : slpLogo,
+              height: 42,
+              width: 42,
+              excavate: false
+            }}
+          />
+          <StyledInput>
+            <Input
+              ref={txtRef}
+              prefix={
+                <img src={address && address.includes('bitcoin') ? bchLogo : slpLogo} alt="" width={16} height={16} />
+              }
+              value={visible ? address : null}
+              placeholder={address}
+              disabled={!visible}
+              autoComplete="off"
+              type="text"
+              spellCheck="false"
+              addonAfter={<Button ghost type="link" icon={visible ? <CheckOutlined /> : <CopyOutlined />} />}
+            />
+          </StyledInput>
+        </div>
+      </CopyToClipboard>
+    </div>
   );
 };

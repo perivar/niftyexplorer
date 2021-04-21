@@ -38,7 +38,7 @@ export async function sendNFY(
     console.log(`Receiver Legacy Address: ${receiverAddress}`);
 
     // Get UTXOs held by the address.
-    // https://developer.bitcoin.com/mastering-bitcoin-cash/4-transactions/
+    // https://developer.niftycoin.org/mastering-bitcoin-cash/4-transactions/
     const utxos = await electrumx.getUtxos(sendAddress);
     // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`);
 

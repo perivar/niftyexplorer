@@ -16,7 +16,7 @@ should be changed to:
 `const NETWORK = 'testnet'`
 
 If you wish to fund your newly created **testnet** wallet,
-you can go to the [testnet faucet](https://developer.bitcoin.com/faucets/nfy)
+you can go to the [testnet faucet](https://developer.niftycoin.org/faucets/nfy)
 and enter your NFY testnet (tNFY) wallet address (please use the address located
 in your "wallet.json" file, explained further on). You will receive a small amount
 of tNFY to use for any testing purposes that you wish.
@@ -145,9 +145,9 @@ then there will be an error message of "insufficient funds".
 
 Simple script to log to the console the transaction ID on the NFY or tNFY blockchain
 either
-[NFY](https://explorer.bitcoin.com/nfy/tx/)
+[NFY](https://explorer.niftycoin.org/nfy/tx/)
 or
-[tNFY](https://explorer.bitcoin.com/tnfy/tx)
+[tNFY](https://explorer.niftycoin.org/tnfy/tx)
 depending on if in the .js files above has
 NETWORK = 'mainnet'
 or

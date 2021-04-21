@@ -164,9 +164,9 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                 <Col>
                   <StyledButtonWrapper>
                     <>
-                      <Paragraph>You currently have 0 BCH. Deposit some funds to use this feature.</Paragraph>
+                      <Paragraph>You currently have 0 NFY. Deposit some funds to use this feature.</Paragraph>
                       <Paragraph>
-                        <QRCode id="borderedQRCode" address={wallet.Path145.cashAddress} />
+                        <QRCode id="borderedQRCode" address={wallet.legacyAddress} />
                       </Paragraph>
                     </>
                   </StyledButtonWrapper>
@@ -184,7 +184,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                         inputProps={{
                           name: 'value',
                           placeholder: 'Amount',
-                          suffix: 'BCH',
+                          suffix: 'NFY',
                           onChange: (e: any) => handleChange(e),
                           required: true,
                           value: formData.value
@@ -217,7 +217,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                         width: '97%'
                       }}>
                       <a
-                        href={`https://explorer.bitcoin.com/bch/tx/${el.txid}`}
+                        href={`https://explorer.niftycoin.org/NFY/tx/${el.txid}`}
                         target="_blank"
                         rel="noopener noreferrer">
                         <p>{el.transactionBalance.type}</p>
@@ -227,7 +227,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                             {' '}
                             <p>{`${el.transactionBalance.balance > 0 ? '+' : ''}${
                               el.transactionBalance.balance
-                            } BCH`}</p>
+                            } NFY`}</p>
                             <p>{`${el.transactionBalance.balance > 0 ? '+$' : '-$'}${
                               (Math.abs(el.transactionBalance.balance) * bchToDollar).toFixed(2).toString() === '0.00'
                                 ? 0.01
@@ -251,7 +251,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                                     </Paragraph>
                                     <p style={{ marginTop: '-20px' }}>{`amount: ${output.amount > 0 ? '+' : ''}${
                                       output.amount
-                                    } BCH`}</p>
+                                    } NFY`}</p>
                                   </>
                                 ))}
 
@@ -281,7 +281,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                     </div>
                   ))}
                   <a
-                    href={`https://explorer.bitcoin.com/bch/address/${wallet.Path145.cashAddress}`}
+                    href={`https://explorer.niftycoin.org/NFY/address/${wallet.legacyAddress}`}
                     target="_blank"
                     rel="noopener noreferrer">
                     <p>Full History</p>

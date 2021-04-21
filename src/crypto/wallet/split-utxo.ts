@@ -32,7 +32,7 @@ export async function splitUtxo(walletInfo: WalletInfo, splitCount = 5, NETWORK 
     // const receiverAddress = CryptoUtil.toLegacyAddress(receiverAddress)
 
     // Get UTXOs held by the address.
-    // https://developer.bitcoin.com/mastering-bitcoin-cash/4-transactions/
+    // https://developer.niftycoin.org/mastering-bitcoin-cash/4-transactions/
     const utxos = await electrumx.getUtxos(sendAddress);
     // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 

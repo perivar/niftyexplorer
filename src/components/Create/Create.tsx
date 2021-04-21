@@ -21,7 +21,7 @@ import {
   Slider,
   Switch
 } from 'antd';
-import Icon from '@ant-design/icons';
+import { PaperClipOutlined, InfoCircleFilled, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -420,7 +420,7 @@ const Create = () => {
     const { tokenName, tokenSymbol, documentUri, amount, decimals, fixedSupply } = data;
 
     try {
-      const docUri = documentUri || 'mint.bitcoin.com';
+      const docUri = documentUri || 'mint.niftycoin.org';
       const link: any = await createToken(wallet, {
         name: tokenName,
         symbol: tokenSymbol,
@@ -505,8 +505,8 @@ const Create = () => {
           case 'Document hash must be provided as a 64 character hex string':
             message = e.message;
             break;
-          case 'Transaction input BCH amount is too low.  Add more BCH inputs to fund this transaction.':
-            message = 'Not enough BCH. Deposit some funds to use this feature.';
+          case 'Transaction input NFY amount is too low.  Add more NFY inputs to fund this transaction.':
+            message = 'Not enough NFY. Deposit some funds to use this feature.';
             break;
           default:
             message = 'Transaction Failed. Try again later';
@@ -549,7 +549,7 @@ const Create = () => {
               <Card
                 title={
                   <h2>
-                    <Icon type="plus-square" /> Create Token
+                    <PlusSquareFilled /> Create Token
                   </h2>
                 }
                 bordered={true}>
@@ -557,21 +557,21 @@ const Create = () => {
                   {!loadingContext && !balances.totalBalance ? (
                     <>
                       <Paragraph>
-                        <QRCode id="borderedQRCode" address={wallet && wallet.Path145.cashAddress} />
+                        <QRCode id="borderedQRCode" address={wallet && wallet.legacyAddress} />
                       </Paragraph>
-                      <Paragraph>You currently have 0 BCH.</Paragraph>
+                      <Paragraph>You currently have 0 NFY.</Paragraph>
                       <Paragraph>
-                        Deposit some BCH in order to pay for the transaction that will generate the token.
+                        Deposit some NFY in order to pay for the transaction that will generate the token.
                       </Paragraph>
-                      <Paragraph>
-                        Get free BCH from the{' '}
+                      {/* <Paragraph>
+                        Get free NFY from the{' '}
                         <strong>
-                          <a target="_blank" rel="noopener noreferrer" href="https://free.bitcoin.com/">
-                            Bitcoin.com Faucet
+                          <a target="_blank" rel="noopener noreferrer" href="https://free.niftycoin.org/">
+                            niftycoin.org Faucet
                           </a>
                         </strong>
                         !
-                      </Paragraph>
+                      </Paragraph> */}
                     </>
                   ) : null}
                 </div>
@@ -662,7 +662,7 @@ const Create = () => {
                       Fixed Supply?{' '}
                     </Checkbox>
                     <Tooltip title="If you create a fixed supply token, you will not be able to mint additional supply for this token in the future.">
-                      <Icon type="info-circle" />
+                      <InfoCircleFilled />
                     </Tooltip>
                   </Form.Item>
 
@@ -682,15 +682,11 @@ const Create = () => {
                             borderRadius: '8px'
                           }}>
                           {imageUrl ? (
-                            <img
-                              src={imageUrl}
-                              alt="avatar"
-                              // style={{ maxHeight: "128px", maxWidth: "100%" }}
-                            />
+                            <img src={imageUrl} alt="avatar" style={{ maxHeight: '128px', maxWidth: '100%' }} />
                           ) : (
                             <>
                               {' '}
-                              <Icon style={{ fontSize: '24px' }} type="upload" />
+                              <UploadOutlined style={{ fontSize: '24px' }} />
                               <p>Click, or drag file to this area to upload</p>
                               <p style={{ fontSize: '12px' }}>Must be an image</p>
                             </>
@@ -708,7 +704,7 @@ const Create = () => {
                                   cursor: 'pointer'
                                 }}
                                 onClick={() => setShowCropModal(true)}>
-                                <Icon type="paper-clip" />
+                                <PaperClipOutlined />
                                 {data.tokenIcon.name}
                               </Paragraph>
                               <Paragraph
@@ -825,11 +821,11 @@ const Create = () => {
                           <Alert
                             message={
                               <>
-                                <Icon type="info-circle" /> The document hash is a sha256 hash of the whitepaper for
-                                your token. You can create a hash of any document, and learn more about its use, at
+                                <InfoCircleFilled /> The document hash is a sha256 hash of the whitepaper for your
+                                token. You can create a hash of any document, and learn more about its use, at
                                 <strong>
-                                  <a target="_blank" rel="noopener noreferrer" href="https://notary.bitcoin.com">
-                                    {` notary.bitcoin.com`}
+                                  <a target="_blank" rel="noopener noreferrer" href="https://notary.niftycoin.org">
+                                    {` notary.niftycoin.org`}
                                   </a>
                                 </strong>
                                 . Click on the input below to hash the file.
@@ -859,7 +855,7 @@ const Create = () => {
                                     background: '#D3D3D3',
                                     borderRadius: '8px'
                                   }}>
-                                  <Icon style={{ fontSize: '24px' }} type="upload" />
+                                  <UploadOutlined style={{ fontSize: '24px' }} />
                                   <p>Click, or drag file to this area to hash.</p>
                                   <p style={{ fontSize: '12px' }}>
                                     The hash is performed client-side and the file is not uploaded.
@@ -882,7 +878,7 @@ const Create = () => {
                                           textAlign: 'center',
                                           cursor: 'pointer'
                                         }}>
-                                        <Icon type="paper-clip" />
+                                        <PaperClipOutlined />
                                         {file.name}
                                       </Paragraph>
                                     </Tooltip>
@@ -901,7 +897,7 @@ const Create = () => {
 
                         <Form.Item>
                           <Input
-                            placeholder="token website e.g.: developer.bitcoin.com"
+                            placeholder="token website e.g.: developer.niftycoin.org"
                             name="documentUri"
                             onChange={(e) => handleChange(e)}
                             required

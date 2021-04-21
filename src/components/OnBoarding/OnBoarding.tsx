@@ -78,7 +78,7 @@ export const OnBoarding = ({ history }: any) => {
                   header={
                     <>
                       <Img style={{ marginBottom: '3px' }} src={pixelSquareLogo} width="16" height="16" />{' '}
-                      mint.bitcoin.com wallet
+                      mint.niftycoin.org wallet
                     </>
                   }
                   key="1"
@@ -120,18 +120,18 @@ export const OnBoarding = ({ history }: any) => {
             bordered={false}>
             <div style={{}}>
               <p>
-                Bitcoin.com Mint is an{' '}
+                niftycoin.org Mint is an{' '}
                 <a href="https://github.com/Bitcoin-com/mint/" target="_blank" rel="noopener noreferrer">
                   open source,
                 </a>{' '}
-                non-custodial web wallet supporting SLP and BCH.{' '}
+                non-custodial web wallet supporting SLP and NFY.{' '}
               </p>
               <p>
                 {' '}
                 Web wallets offer user convenience, but storing large amounts of money on a web wallet is not
                 recommended.
               </p>
-              <p>Creating your own SLP tokens only costs a few cents worth of BCH.</p>
+              <p>Creating your own SLP tokens only costs a few cents worth of NFY.</p>
             </div>
           </Card>
         </Col>

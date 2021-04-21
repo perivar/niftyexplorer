@@ -275,8 +275,8 @@ function findBiggestUtxo(utxos: UTXOInfo[]): UTXOInfo {
 // Returns true if user-provided cash address matches the correct network,
 // mainnet or testnet. If NETWORK env var is not defined, it returns false.
 // This prevent a common user-error issue that is easy to make: passing a
-// testnet address into rest.bitcoin.com or passing a mainnet address into
-// trest.bitcoin.com.
+// testnet address into rest.niftycoin.org or passing a mainnet address into
+// trest.niftycoin.org.
 function validateNetwork(addr: string) {
   try {
     // const network = process.env.NETWORK;
