@@ -63,9 +63,17 @@ export default () => {
       window.location.reload();
     }, 3000);
   };
+
   const handleChange = (e: any) => {
     const { value, name } = e.target;
     setData((p) => ({ ...p, [name]: value }));
+  };
+
+  const handleRemoveWallet = () => {
+    window.localStorage.setItem('wallet', '');
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   };
 
   return (
@@ -150,6 +158,9 @@ export default () => {
                 </Panel>
               </StyledCollapse>
             )}
+            <div style={{ paddingTop: '12px', marginBottom: '10px' }}>
+              <Button onClick={handleRemoveWallet}>Remove Wallet</Button>
+            </div>
           </Card>
         </Col>
       </Row>

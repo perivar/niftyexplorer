@@ -13,12 +13,16 @@ const update = async ({ wallet, setWalletState }: any) => {
     if (!wallet) {
       return;
     }
+    // const slpBalancesAndUtxos = await getSlpBanlancesAndUtxos(wallet.cashAddresses);
+    // const { tokens } = slpBalancesAndUtxos;
     const newState = {
       balances: {},
       tokens: [],
       slpBalancesAndUtxos: []
     };
 
+    // newState.slpBalancesAndUtxos = normalizeSlpBalancesAndUtxos(SLP, slpBalancesAndUtxos, wallet);
+    // newState.balances = normalizeBalance(SLP, slpBalancesAndUtxos);
     // newState.tokens = tokens;
 
     setWalletState(newState);
@@ -28,7 +32,7 @@ const update = async ({ wallet, setWalletState }: any) => {
 };
 
 export const useWallet = () => {
-  const [wallet, setWallet] = useState(getWallet());
+  const [wallet, setWallet] = useState();
   const [walletState, setWalletState] = useState<any>({
     balances: {},
     tokens: [],
@@ -56,8 +60,9 @@ export const useWallet = () => {
     });
   }
 
-  useAsyncTimeout(() => {
-    const wallet = getWallet();
+  useAsyncTimeout(async () => {
+    const wallet = await getWallet();
+    setWallet(wallet); // PIN added this
     update({
       wallet,
       setWalletState
@@ -72,16 +77,16 @@ export const useWallet = () => {
     balances,
     tokens,
     loading,
-    update: () =>
+    update: async () =>
       update({
-        wallet: getWallet(),
+        wallet: await getWallet(),
 
         setLoading,
         setWalletState
       }),
-    createWallet: (importMnemonic: string) => {
+    createWallet: async (importMnemonic: string) => {
       setLoading(true);
-      const newWallet = createWallet(importMnemonic);
+      const newWallet = await createWallet(importMnemonic);
       setWallet(newWallet);
       update({
         wallet: newWallet,

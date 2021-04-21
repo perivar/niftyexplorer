@@ -8,8 +8,7 @@ export const getWallet = async () => {
     return wallet;
   }
   try {
-    const walletJSON = window.localStorage.getItem('wallet') || undefined;
-    if (!walletJSON) return undefined;
+    const walletJSON = window.localStorage.getItem('wallet') || '{}';
     const walletInfo = JSON.parse(walletJSON);
     if (!walletInfo.mnemonic) {
       // error and clear locale storage
@@ -17,8 +16,10 @@ export const getWallet = async () => {
       return undefined;
     }
     wallet = await getWalletDetails(walletInfo);
-    window.localStorage.setItem('wallet', JSON.stringify(wallet));
-    return wallet;
+    if (wallet) {
+      window.localStorage.setItem('wallet', JSON.stringify(wallet));
+      return wallet;
+    }
   } catch (error) {
     console.log(error);
     return undefined;
@@ -30,9 +31,11 @@ export const createWallet = async (importMnemonic: string) => {
     // create 128 bit BIP39 mnemonic
     const Bip39128BitMnemonic = importMnemonic ? importMnemonic : bip39.generateMnemonic();
 
-    const wallet = await getWalletDetails({ mnemonic: Bip39128BitMnemonic.toString() });
-    window.localStorage.setItem('wallet', JSON.stringify(wallet));
-    return wallet;
+    wallet = await getWalletDetails({ mnemonic: Bip39128BitMnemonic.toString() });
+    if (wallet) {
+      window.localStorage.setItem('wallet', JSON.stringify(wallet));
+      return wallet;
+    }
   } catch (error) {
     console.log(error);
   }

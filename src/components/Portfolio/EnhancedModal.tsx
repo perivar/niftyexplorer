@@ -95,7 +95,6 @@ const StyledEnhancedCard = styled(Card)`
   .ant-input-group-addon {
     padding: 0;
     width: 48px;
-    line-height: 40px;
   }
 
   .anticon {
