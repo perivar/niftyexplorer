@@ -134,7 +134,7 @@ export class Utils {
     return tokenData;
   };
 
-  async tokenUtxoDetails(utxos: UTXOInfo[], usrObj = null): Promise<TokenUTXOInfo[]> {
+  async tokenUtxoDetails(utxos: UTXOInfo[], usrObj = null, disableValidation = true): Promise<TokenUTXOInfo[]> {
     try {
       // Throw error if input is not an array.
       if (!Array.isArray(utxos)) throw new Error('Input must be an array.');
@@ -181,17 +181,21 @@ export class Utils {
           // property. i.e. it has been successfully hydrated with SLP
           // information.
 
-          // validate using slp-validate
-          const { txid } = utxo;
-          const validator = new slpValidator.ValidatorType1({
-            getRawTransaction: async (txid) => await _this.electrumx.getTransaction(txid, false)
-          });
-          // console.log('Validating:', txid);
-          // console.log('This may take a several seconds...');
-          const isValid = await validator.isValidSlpTxid({ txid });
-          // console.log('Final Result:', isValid);
+          if (disableValidation) {
+            utxo.isValid = true;
+          } else {
+            // validate using slp-validate
+            const { txid } = utxo;
+            const validator = new slpValidator.ValidatorType1({
+              getRawTransaction: async (txid) => await _this.electrumx.getTransaction(txid, false)
+            });
+            // console.log('Validating:', txid);
+            // console.log('This may take a several seconds...');
+            const isValid = await validator.isValidSlpTxid({ txid });
+            // console.log('Final Result:', isValid);
 
-          utxo.isValid = isValid;
+            utxo.isValid = isValid;
+          }
         }
       }
 

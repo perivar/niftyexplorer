@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import RawQRCode from 'qrcode.react';
-import slpLogo from '../../assets/slp-logo-2.png';
-import bchLogo from '../../assets/bch-icon-qrcode.png';
+import nfyLogo from '../../assets/nfy-logo.png';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Input, Button } from 'antd';
 import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
@@ -101,7 +100,7 @@ export const QRCode = ({ address, size = 210, onClick = (evt: any) => null, ...o
             renderAs={'svg'}
             includeMargin
             imageSettings={{
-              src: address && address.includes('bitcoin') ? bchLogo : slpLogo,
+              src: nfyLogo,
               height: 42,
               width: 42,
               excavate: false
@@ -110,9 +109,7 @@ export const QRCode = ({ address, size = 210, onClick = (evt: any) => null, ...o
           <StyledInput>
             <Input
               ref={txtRef}
-              prefix={
-                <img src={address && address.includes('bitcoin') ? bchLogo : slpLogo} alt="" width={16} height={16} />
-              }
+              prefix={<img src={nfyLogo} alt="" width={16} height={16} />}
               value={visible ? address : null}
               placeholder={address}
               disabled={!visible}

@@ -8,7 +8,7 @@ import * as bip32 from 'bip32';
 
 import CryptoUtil, { WalletInfo } from '../util';
 
-export const createWallet = async (NETWORK: string): Promise<WalletInfo | undefined> => {
+export const createWallet = async (NETWORK: string, importMnemonic?: string): Promise<WalletInfo | undefined> => {
   try {
     const lang = 'english'; // Set the language of the wallet.
 
@@ -20,7 +20,8 @@ export const createWallet = async (NETWORK: string): Promise<WalletInfo | undefi
     const outObj: WalletInfo = {} as WalletInfo;
 
     // create 256 bit BIP39 mnemonic
-    const mnemonic = bip39.generateMnemonic();
+    // const mnemonic = bip39.generateMnemonic();
+    const mnemonic = importMnemonic ? importMnemonic : bip39.generateMnemonic();
     console.log('BIP44 NFY Wallet');
     // outStr += 'BIP44 NFY Wallet\n';
     console.log(`128 bit ${lang} BIP39 Mnemonic: `, mnemonic);

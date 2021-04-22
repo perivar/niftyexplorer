@@ -7,8 +7,9 @@ import Big from 'big.js';
 import { getWallet, createWallet } from './createWallet';
 import useAsyncTimeout from './useAsyncTimeout';
 import usePrevious from './usePrevious';
+import getSlpBalancesAndUtxos from './getSlpBalancesAndUtxos';
 
-// const normalizeSlpBalancesAndUtxos = (SLP, slpBalancesAndUtxos, wallet) => {
+// const normalizeSlpBalancesAndUtxos = (slpBalancesAndUtxos, wallet) => {
 //   slpBalancesAndUtxos.nonSlpUtxos.forEach(utxo => {
 //     const derivatedAccount = wallet.Accounts.find(account => account.cashAddress === utxo.address);
 //     utxo.wif = derivatedAccount.fundingWif;
@@ -17,33 +18,34 @@ import usePrevious from './usePrevious';
 //   return slpBalancesAndUtxos;
 // };
 
-// const normalizeBalance = (SLP, slpBalancesAndUtxos) => {
-//   const totalBalanceInSatohis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
-//     (previousBalance, utxo) => previousBalance + utxo.satoshis,
-//     0
-//   );
-//   return {
-//     totalBalanceInSatohis,
-//     totalBalance: SLP.BitcoinCash.toBitcoinCash(totalBalanceInSatohis)
-//   };
-// };
+const normalizeBalance = (slpBalancesAndUtxos: any) => {
+  const totalBalanceInNiftoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
+    (previousBalance: any, utxo: any) => previousBalance + utxo.value,
+    0
+  );
+  return {
+    totalBalanceInNiftoshis,
+    totalBalance: totalBalanceInNiftoshis / 100000000
+  };
+};
 
 const update = async ({ wallet, setWalletState }: any) => {
   try {
     if (!wallet) {
       return;
     }
-    // const slpBalancesAndUtxos = await getSlpBanlancesAndUtxos(wallet.cashAddresses);
-    // const { tokens } = slpBalancesAndUtxos;
+    const slpBalancesAndUtxos: any = await getSlpBalancesAndUtxos(wallet.legacyAddress);
+    const { tokens } = slpBalancesAndUtxos;
     const newState = {
       balances: {},
       tokens: [],
       slpBalancesAndUtxos: []
     };
 
-    // newState.slpBalancesAndUtxos = normalizeSlpBalancesAndUtxos(SLP, slpBalancesAndUtxos, wallet);
-    // newState.balances = normalizeBalance(SLP, slpBalancesAndUtxos);
-    // newState.tokens = tokens;
+    // newState.slpBalancesAndUtxos = normalizeSlpBalancesAndUtxos(slpBalancesAndUtxos, wallet);
+    newState.slpBalancesAndUtxos = slpBalancesAndUtxos;
+    newState.balances = normalizeBalance(slpBalancesAndUtxos);
+    newState.tokens = tokens;
 
     setWalletState(newState);
   } catch (error) {
@@ -82,7 +84,7 @@ export const useWallet = () => {
 
   useAsyncTimeout(async () => {
     const wallet = await getWallet();
-    setWallet(wallet); // PIN added this
+    setWallet(wallet); // PIN - could not use getWallet() in the init function since it is async
     update({
       wallet,
       setWalletState

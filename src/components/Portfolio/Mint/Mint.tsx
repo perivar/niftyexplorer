@@ -23,7 +23,7 @@ const Mint = ({ token, onClose }: any) => {
   const [formData, setFormData] = useState({
     dirty: true,
     quantity: 0,
-    baton: wallet.segwitAddress
+    baton: wallet.legacyAddress
   });
   const [loading, setLoading] = useState(false);
 

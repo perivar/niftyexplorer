@@ -17,6 +17,7 @@ import SendNFY from './SendNFY/SendNFY';
 import { PlaneIcon, HammerIcon, FireIcon } from '../Common/CustomIcons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { OnBoarding } from '../OnBoarding/OnBoarding';
+import getTokenTransactionHistory from '../../utils/getTokenTransactionHistory';
 
 export const SLP_TOKEN_ICONS_URL = 'https://tokens.NFY.sx/64';
 export const BITCOIN_DOT_COM_ICONS_URL = 'https://tokens.niftycoin.org/64';
@@ -76,7 +77,11 @@ export default () => {
   const getTokenHistory = async (tokenInfo: any) => {
     setLoadingTokenHistory(true);
     try {
-      const resp = null;
+      const resp = await getTokenTransactionHistory(
+        [wallet.legacyAddress],
+        tokenInfo,
+        slpBalancesAndUtxos.slpUtxos.filter((utxo: any) => utxo.tokenId === tokenInfo.tokenId)
+      );
       setHistory(resp);
     } catch (err) {
       const message = err.message || err.error || JSON.stringify(err);
@@ -120,14 +125,14 @@ export default () => {
     const { hasBaton, balance } = token;
     const hasBalance = balance && balance.gt(0);
     const actions = [
-      <span
-        onClick={() => {
-          setAction('dividends');
-          setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
-        }}>
-        <DollarCircleFilled style={{ fontSize: '18px' }} />
-        {hasBaton && hasBalance ? 'Dividends' : 'Pay Dividends'}
-      </span>
+      // <span
+      //   onClick={() => {
+      //     setAction('dividends');
+      //     setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
+      //   }}>
+      //   <DollarCircleFilled style={{ fontSize: '18px' }} />
+      //   {hasBaton && hasBalance ? 'Dividends' : 'Pay Dividends'}
+      // </span>
     ];
 
     if (hasBaton) {
@@ -190,7 +195,7 @@ export default () => {
                 Send
               </span>
             ]}
-            onClick={(evt: any) => {
+            onClick={() => {
               setAction('sendNFY');
               setSelectedToken(null);
               setOuterAction(!outerAction);
@@ -363,7 +368,7 @@ export default () => {
                               }}>
                               {el.detail.transactionType !== 'BURN_ALL' ? (
                                 <a
-                                  href={`https://explorer.niftycoin.org/NFY/tx/${el.txid}`}
+                                  href={`https://explorer.niftycoin.org/tx/${el.txid}`}
                                   target="_blank"
                                   rel="noopener noreferrer">
                                   <p>
@@ -411,7 +416,7 @@ export default () => {
                             </div>
                           ))}
                           <a
-                            href={`https://explorer.niftycoin.org/NFY/address/${wallet.segwitAddress}`}
+                            href={`https://explorer.niftycoin.org/ext/getaddress/${wallet.legacyAddress}`}
                             target="_blank"
                             rel="noopener noreferrer">
                             <p>Full History</p>

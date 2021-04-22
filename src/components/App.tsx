@@ -81,7 +81,7 @@ const StyledTabsMenu = styled.div`
 const App = () => {
   const [collapsed, setCollapsed] = React.useState(window.innerWidth < 768);
   const [mobile, setMobile] = React.useState(false);
-  const [address, setAddress] = React.useState<string>('slpAddress');
+  const [address, setAddress] = React.useState<string>('legacyAddress');
   const [pixelRatio, setPixelRatio] = React.useState(1);
 
   const ContextValue = React.useContext(WalletContext);
@@ -189,7 +189,7 @@ const App = () => {
             <div className="logo">
               <img src={logo} alt="niftycoin.org Mint" />
             </div>
-            <div
+            {/* <div
               style={{
                 background: 'rgba(0, 0, 0, 0.5)',
                 width: '100%',
@@ -197,7 +197,7 @@ const App = () => {
                 marginBottom: '26px',
                 marginTop: '19px'
               }}
-            />
+            /> */}
             <Menu
               theme="dark"
               onClick={(e) => handleChange(e)}
@@ -239,7 +239,7 @@ const App = () => {
                       />
                     </div>
 
-                    <Radio.Group defaultValue="slpAddress" value={address} size="small" buttonStyle="solid" ref={radio}>
+                    {/* <Radio.Group defaultValue="slpAddress" value={address} size="small" buttonStyle="solid" ref={radio}>
                       <Radio.Button
                         style={{
                           borderRadius: '19.5px',
@@ -260,7 +260,7 @@ const App = () => {
                         onClick={(e) => handleChangeAddress(e)}>
                         NiftyCoins
                       </Radio.Button>
-                    </Radio.Group>
+                    </Radio.Group> */}
                   </div>
                 </Menu.ItemGroup>
               ) : null}

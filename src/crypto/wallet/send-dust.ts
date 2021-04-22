@@ -63,9 +63,9 @@ export async function sendDust(walletInfo: WalletInfo, numOutputs: number, recei
     const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: numOutputs + 1 });
 
     // Calculate the amount to put into each new UTXO.
-    const changeBch = originalAmount - txFee - numOutputs * 546;
+    const changeNfy = originalAmount - txFee - numOutputs * 546;
 
-    if (changeBch < 546) {
+    if (changeNfy < 546) {
       throw new Error('Not enough NFY to complete transaction!');
     }
 
@@ -75,7 +75,7 @@ export async function sendDust(walletInfo: WalletInfo, numOutputs: number, recei
     }
 
     // Add change
-    transactionBuilder.addOutput(sendAddress, changeBch);
+    transactionBuilder.addOutput(sendAddress, changeNfy);
 
     // Generate a change address from a Mnemonic of a private key.
     const changeKeyPair = await CryptoUtil.changeAddrFromMnemonic(mnemonic, network);

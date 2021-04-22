@@ -30,7 +30,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState('send');
   const [history, setHistory] = useState<any>(null);
-  const [bchToDollar, setBchToDollar] = useState<any>(null);
+  const [bchToDollar, setNfyToDollar] = useState<any>(null);
 
   useEffect(() => setAction('send'), [outerAction]);
 
@@ -112,7 +112,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
   const handleChangeAction = () => {
     if (action === 'send') {
       setAction('history');
-      // getBchHistory();
+      // getNfyHistory();
     } else {
       setAction('send');
     }
@@ -218,7 +218,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                         width: '97%'
                       }}>
                       <a
-                        href={`https://explorer.niftycoin.org/NFY/tx/${el.txid}`}
+                        href={`https://explorer.niftycoin.org/tx/${el.txid}`}
                         target="_blank"
                         rel="noopener noreferrer">
                         <p>{el.transactionBalance.type}</p>
@@ -282,7 +282,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                     </div>
                   ))}
                   <a
-                    href={`https://explorer.niftycoin.org/NFY/address/${wallet.legacyAddress}`}
+                    href={`https://explorer.niftycoin.org/ext/getaddress/${wallet.legacyAddress}`}
                     target="_blank"
                     rel="noopener noreferrer">
                     <p>Full History</p>
