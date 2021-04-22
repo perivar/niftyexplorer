@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Row, Col, Avatar, Empty, Alert, notification, Radio, Spin, Collapse, Switch } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { DollarCircleFilled, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 import { EnhancedCard } from './EnhancedCard';
 import { WalletContext } from '../../utils/context';
 import { Meta } from 'antd/lib/list/Item';
@@ -124,7 +125,7 @@ export default () => {
           setAction('dividends');
           setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
         }}>
-        <Icon style={{ fontSize: '18px' }} type="dollar-circle" />
+        <DollarCircleFilled style={{ fontSize: '18px' }} />
         {hasBaton && hasBalance ? 'Dividends' : 'Pay Dividends'}
       </span>
     ];
@@ -287,7 +288,7 @@ export default () => {
                           }}
                           value="details"
                           onClick={(e) => handleChangeAction(e, selectedToken.tokenId)}>
-                          <Icon style={{ color: '#fff' }} type="info-circle" /> Details
+                          <InfoCircleOutlined style={{ color: '#fff' }} /> Details
                         </Radio.Button>
                         <Radio.Button
                           style={{
@@ -298,7 +299,7 @@ export default () => {
                           }}
                           value="history"
                           onClick={(e) => handleChangeAction(e, selectedToken.tokenId)}>
-                          <Icon style={{ color: '#fff' }} type="history" /> History
+                          <HistoryOutlined style={{ color: '#fff' }} /> History
                         </Radio.Button>
                       </Radio.Group>
                       {!loadingTokenHistory &&
@@ -310,7 +311,7 @@ export default () => {
                             message={
                               <div>
                                 <Paragraph>
-                                  <Icon type="info-circle" /> &nbsp; Token properties
+                                  <InfoCircleOutlined /> &nbsp; Token properties
                                 </Paragraph>
                                 {Object.entries(token.info || {}).map((entry: any) => (
                                   <Paragraph

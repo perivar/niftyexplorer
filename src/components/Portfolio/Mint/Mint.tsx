@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { WalletContext } from '../../../utils/context';
 import mintToken from '../../../utils/broadcastTransaction';
 import { Card, Form, Input, Button, Spin, notification } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { BlockOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { HammerIcon } from '../../Common/CustomIcons';
@@ -130,7 +131,7 @@ const Mint = ({ token, onClose }: any) => {
                       validateStatus={!formData.dirty && Number(formData.quantity) <= 0 ? 'error' : ''}
                       help={!formData.dirty && Number(formData.quantity) <= 0 ? 'Should be greater than 0' : ''}>
                       <Input
-                        prefix={<Icon type="block" />}
+                        prefix={<BlockOutlined />}
                         placeholder="Amount"
                         name="quantity"
                         onChange={(e) => handleChange(e)}

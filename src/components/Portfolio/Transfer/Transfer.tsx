@@ -3,7 +3,8 @@ import { WalletContext } from '../../../utils/context';
 import styled from 'styled-components';
 import { Card, Form, Button, Spin, notification } from 'antd';
 import { Row, Col } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { BlockOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import sendToken from '../../../utils/broadcastTransaction';
 import { PlaneIcon } from '../../Common/CustomIcons';
@@ -139,7 +140,7 @@ const Transfer = ({ token, onClose }: any) => {
                       help={formData.dirty && Number(formData.quantity) <= 0 ? 'Should be greater than 0' : ''}
                       onMax={onMax}
                       inputProps={{
-                        prefix: <Icon type="block" />,
+                        prefix: <BlockOutlined />,
                         placeholder: 'Amount',
                         name: 'quantity',
                         onChange: (e: any) => handleChange(e),

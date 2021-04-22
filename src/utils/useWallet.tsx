@@ -8,6 +8,26 @@ import { getWallet, createWallet } from './createWallet';
 import useAsyncTimeout from './useAsyncTimeout';
 import usePrevious from './usePrevious';
 
+// const normalizeSlpBalancesAndUtxos = (SLP, slpBalancesAndUtxos, wallet) => {
+//   slpBalancesAndUtxos.nonSlpUtxos.forEach(utxo => {
+//     const derivatedAccount = wallet.Accounts.find(account => account.cashAddress === utxo.address);
+//     utxo.wif = derivatedAccount.fundingWif;
+//   });
+
+//   return slpBalancesAndUtxos;
+// };
+
+// const normalizeBalance = (SLP, slpBalancesAndUtxos) => {
+//   const totalBalanceInSatohis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
+//     (previousBalance, utxo) => previousBalance + utxo.satoshis,
+//     0
+//   );
+//   return {
+//     totalBalanceInSatohis,
+//     totalBalance: SLP.BitcoinCash.toBitcoinCash(totalBalanceInSatohis)
+//   };
+// };
+
 const update = async ({ wallet, setWalletState }: any) => {
   try {
     if (!wallet) {

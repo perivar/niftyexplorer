@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Alert, Typography, Form, Input, Button, Collapse, Select } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { ToolFilled, WarningOutlined, EditFilled } from '@ant-design/icons';
 import StyledConfigure from '../Common/StyledPage';
 import { WalletContext } from '../../utils/context';
 import { StyledCollapse } from '../Common/StyledCollapse';
@@ -15,7 +16,7 @@ const selectBefore = (protocol: any, handleChangeProcotol: any) => (
   </Select>
 );
 
-// TODO
+// TODO: PIN
 const getRestUrl = () => {
   return '';
 };
@@ -83,7 +84,7 @@ export default () => {
           <Card
             title={
               <h2>
-                <Icon type="tool" /> Configure
+                <ToolFilled /> Configure
               </h2>
             }
             bordered={true}>
@@ -93,10 +94,13 @@ export default () => {
                 message={
                   <span>
                     <Paragraph>
-                      <Icon type="warning" /> Be careful.
+                      <WarningOutlined /> Be careful.
                     </Paragraph>
                     <Paragraph>Backup your wallet first.</Paragraph>
-                    <Paragraph>Updating the configuration will restart the app.</Paragraph>
+                    <Paragraph>
+                      Removing the wallet restart the app, and the money will be gone if you didn't make a backup of the
+                      mnemonic.
+                    </Paragraph>
                   </span>
                 }
                 type="warning"
@@ -104,7 +108,7 @@ export default () => {
                 afterClose={handleClose}
               />
             ) : null}
-            <Form>
+            {/* <Form>
               <Form.Item
                 validateStatus={
                   !data.dirty && option === 'custom' && !isValidCustomRest(option, protocol, data.restAPI)
@@ -120,7 +124,7 @@ export default () => {
                   <Option value={defaultRestUrl}>{defaultRestUrl}</Option>
                   {getRestUrl() !== defaultRestUrl && <Option value={getRestUrl()}>{getRestUrl()}</Option>}
                   <Option value="custom">
-                    <Icon type="edit" /> Choose custom...
+                    <EditFilled /> Choose custom...
                   </Option>
                 </Select>
 
@@ -150,7 +154,7 @@ export default () => {
                   </Paragraph>
                 )}
               </div>
-            </Form>
+            </Form> */}
             {wallet && wallet.mnemonic && (
               <StyledCollapse>
                 <Panel header="Seed Phrase (Mnemonic)" key="1" disabled={!(wallet || {}).mnemonic}>

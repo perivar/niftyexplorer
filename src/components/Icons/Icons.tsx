@@ -4,7 +4,8 @@ import { withRouter, useHistory } from 'react-router-dom';
 import { QRCode } from '../Common/QRCode';
 import { WalletContext } from '../../utils/context';
 import { Input, Button, notification, Spin, Row, Col, Card, Form, Upload, Tooltip, Slider, Switch } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { PaperClipOutlined, PlusSquareFilled, UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -349,7 +350,7 @@ const Icons = () => {
               <Card
                 title={
                   <h2>
-                    <Icon type="plus-square" /> Upload your token icon
+                    <PlusSquareFilled /> Upload your token icon
                   </h2>
                 }
                 bordered={true}>
@@ -451,7 +452,7 @@ const Icons = () => {
                           />
                         ) : (
                           <>
-                            <Icon style={{ fontSize: '24px' }} type="upload" />
+                            <UploadOutlined style={{ fontSize: '24px' }} />
                             <p>Click, or drag file to this area to upload</p>
                             <p style={{ fontSize: '12px' }}>Must be an image</p>
                           </>
@@ -469,7 +470,7 @@ const Icons = () => {
                                 cursor: 'pointer'
                               }}
                               onClick={() => setShowCropModal(true)}>
-                              <Icon type="paper-clip" />
+                              <PaperClipOutlined />
                               {data.tokenIcon.name}
                             </Paragraph>
                             <Paragraph

@@ -3,8 +3,9 @@ import React from 'react';
 import './App.less';
 import styled from 'styled-components';
 import { useSwipeable } from 'react-swipeable';
-import { Layout, Menu, Radio, Tabs, Typography } from 'antd';
-import Icon from '@ant-design/icons';
+import { Layout, Menu, Radio, Tabs } from 'antd';
+// import Icon from '@ant-design/icons';
+import { FolderOpenFilled, PlusSquareFilled } from '@ant-design/icons';
 import Portfolio from './Portfolio/Portfolio';
 import Icons from './Icons/Icons';
 import Create from './Create/Create';
@@ -16,7 +17,6 @@ import { Route, Redirect, Link, Switch, useLocation, useHistory } from 'react-ro
 import { QRCode } from './Common/QRCode';
 import { Explorer } from './Explorer/Explorer';
 
-const { Title } = Typography;
 const { Header, Content, Sider, Footer } = Layout;
 const { TabPane } = Tabs;
 
@@ -320,7 +320,7 @@ const App = () => {
                   <TabPane
                     tab={
                       <span onClick={() => history.push('/portfolio')}>
-                        <Icon type="folder-open" />
+                        <FolderOpenFilled />
                         Portfolio
                       </span>
                     }
@@ -329,7 +329,7 @@ const App = () => {
                   <TabPane
                     tab={
                       <span onClick={() => history.push('/create')}>
-                        <Icon type="plus-square" />
+                        <PlusSquareFilled />
                         Create
                       </span>
                     }

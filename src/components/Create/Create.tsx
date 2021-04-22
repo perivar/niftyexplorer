@@ -21,7 +21,7 @@ import {
   Slider,
   Switch
 } from 'antd';
-import { PaperClipOutlined, InfoCircleFilled, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
+import { PaperClipOutlined, InfoCircleOutlined, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -663,7 +663,7 @@ const Create = () => {
                       Fixed Supply?{' '}
                     </Checkbox>
                     <Tooltip title="If you create a fixed supply token, you will not be able to mint additional supply for this token in the future.">
-                      <InfoCircleFilled />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </Form.Item>
 
@@ -822,7 +822,7 @@ const Create = () => {
                           <Alert
                             message={
                               <>
-                                <InfoCircleFilled /> The document hash is a sha256 hash of the whitepaper for your
+                                <InfoCircleOutlined /> The document hash is a sha256 hash of the whitepaper for your
                                 token. You can create a hash of any document, and learn more about its use, at
                                 <strong>
                                   <a target="_blank" rel="noopener noreferrer" href="https://notary.niftycoin.org">

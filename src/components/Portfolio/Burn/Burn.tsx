@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { WalletContext } from '../../../utils/context';
 import broadcastTransaction from '../../../utils/broadcastTransaction';
 import { Alert, Card, Form, Input, Button, Spin, notification, Switch } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { ExclamationCircleTwoTone, BlockOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { FireIcon } from '../../Common/CustomIcons';
@@ -207,10 +208,10 @@ const Burn = ({ token, avatar, onClose }: any) => {
                       fontSize: '32px',
                       textAlign: 'center',
                       marginBottom: '-21px',
-                      // zIndex: '2',
+                      // zIndex: {2},
                       position: 'relative'
                     }}>
-                    <Icon color="#F34745" type="exclamation-circle" />
+                    <ExclamationCircleTwoTone twoToneColor="#F34745" />
                   </div>
                   <Alert
                     message={
@@ -330,7 +331,7 @@ const Burn = ({ token, avatar, onClose }: any) => {
                       }
                       required>
                       <Input
-                        prefix={<Icon type="block" />}
+                        prefix={<BlockOutlined />}
                         placeholder=""
                         name="textToDelete"
                         onChange={(e) => handleChange(e)}

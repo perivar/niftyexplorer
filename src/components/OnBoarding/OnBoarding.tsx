@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { WalletContext } from '../../utils/context';
 import { Input, Button, Row, Col, Card, Form, Collapse } from 'antd';
-import Icon from '@ant-design/icons';
+// import Icon from '@ant-design/icons';
+import { PlusSquareFilled, WarningOutlined, ImportOutlined, LockFilled } from '@ant-design/icons';
 import { Img } from 'react-image';
 import StyledOnboarding from '../Common/StyledOnBoarding';
 import pixelSquareLogo from '../../assets/pixel-square-icon.png';
@@ -50,7 +51,7 @@ export const OnBoarding = ({ history }: any) => {
           <Card
             title={
               <h2>
-                <Icon type="plus-square" /> New Wallet
+                <PlusSquareFilled /> New Wallet
               </h2>
             }
             style={{ height: '100%' }}
@@ -66,7 +67,7 @@ export const OnBoarding = ({ history }: any) => {
           <Card
             title={
               <h2>
-                <Icon type="import" /> Import Wallet
+                <ImportOutlined /> Import Wallet
               </h2>
             }
             bordered={false}>
@@ -86,7 +87,7 @@ export const OnBoarding = ({ history }: any) => {
                       validateStatus={!formData.dirty && !formData.mnemonic ? 'error' : ''}
                       help={!formData.dirty && !formData.mnemonic ? 'Should not be empty' : ''}>
                       <Input
-                        prefix={<Icon type="lock" />}
+                        prefix={<LockFilled />}
                         placeholder="mnemonic (seed phrase)"
                         name="mnemonic"
                         onChange={(e) => handleChange(e)}
@@ -111,7 +112,7 @@ export const OnBoarding = ({ history }: any) => {
           <Card
             title={
               <h2>
-                <Icon type="warning" /> Web Wallets
+                <WarningOutlined /> Web Wallets
               </h2>
             }
             style={{ height: '100%' }}
@@ -119,7 +120,7 @@ export const OnBoarding = ({ history }: any) => {
             <div style={{}}>
               <p>
                 niftycoin.org Mint is an{' '}
-                <a href="https://github.com/Bitcoin-com/mint/" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/niftycoin-project/mint/" target="_blank" rel="noopener noreferrer">
                   open source,
                 </a>{' '}
                 non-custodial web wallet supporting SLP and NFY.{' '}
