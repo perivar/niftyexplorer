@@ -4,7 +4,7 @@ import './App.less';
 import styled from 'styled-components';
 import { useSwipeable } from 'react-swipeable';
 import { Layout, Menu, Radio, Tabs } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { FolderOpenFilled, PlusSquareFilled } from '@ant-design/icons';
 import Portfolio from './Portfolio/Portfolio';
 import Icons from './Icons/Icons';

@@ -9,15 +9,6 @@ import useAsyncTimeout from './useAsyncTimeout';
 import usePrevious from './usePrevious';
 import getSlpBalancesAndUtxos from './getSlpBalancesAndUtxos';
 
-// const normalizeSlpBalancesAndUtxos = (slpBalancesAndUtxos, wallet) => {
-//   slpBalancesAndUtxos.nonSlpUtxos.forEach(utxo => {
-//     const derivatedAccount = wallet.Accounts.find(account => account.cashAddress === utxo.address);
-//     utxo.wif = derivatedAccount.fundingWif;
-//   });
-
-//   return slpBalancesAndUtxos;
-// };
-
 const normalizeBalance = (slpBalancesAndUtxos: any) => {
   const totalBalanceInNiftoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
     (previousBalance: any, utxo: any) => previousBalance + utxo.value,
@@ -42,7 +33,6 @@ const update = async ({ wallet, setWalletState }: any) => {
       slpBalancesAndUtxos: []
     };
 
-    // newState.slpBalancesAndUtxos = normalizeSlpBalancesAndUtxos(slpBalancesAndUtxos, wallet);
     newState.slpBalancesAndUtxos = slpBalancesAndUtxos;
     newState.balances = normalizeBalance(slpBalancesAndUtxos);
     newState.tokens = tokens;

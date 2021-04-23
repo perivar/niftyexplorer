@@ -5,7 +5,7 @@ export const sendNFY = async (
   { addresses, values, encodedOpReturn }: any,
   callbackTxId: any
 ): Promise<string> => {
-  return 'not implented';
+  return 'not implemented';
 };
 
 export const calcFee = (utxos: any) => {

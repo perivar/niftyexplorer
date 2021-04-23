@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Alert, Typography, Form, Input, Button, Collapse, Select } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { ToolFilled, WarningOutlined, EditFilled } from '@ant-design/icons';
 import StyledConfigure from '../Common/StyledPage';
 import { WalletContext } from '../../utils/context';

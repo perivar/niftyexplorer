@@ -39,6 +39,35 @@ export class Utils {
     this.whitelist = [];
   }
 
+  // hydrate tx with not validation,
+  // like decodeOpReturn, except that the tx is hydrated with the slp data
+  async hydrateTxNoValidation(txid: string): Promise<any> {
+    let txDetails: any;
+    try {
+      // Validate the txid input.
+      if (!txid || txid === '' || typeof txid !== 'string') {
+        throw new Error('txid string must be included.');
+      }
+
+      txDetails = await _this.electrumx.getTransaction(txid);
+      // console.log(`txDetails: ${JSON.stringify(txDetails, null, 2)}`)
+
+      const tokenData = _this.decodeTxData(txDetails);
+      return {
+        ...txDetails,
+        balance: tokenData.qty ? tokenData.qty : 0,
+        detail: {
+          ...tokenData,
+          transactionType: tokenData.txType,
+          symbol: tokenData.ticker ? tokenData.ticker : ''
+        }
+      };
+    } catch (error) {
+      console.log(error);
+      return txDetails;
+    }
+  }
+
   // Reimplementation of decodeOpReturn() using slp-parser.
   async decodeOpReturn(txid: string, cache: any = null): Promise<SlpTokenData> {
     // The cache object is an in-memory cache (JS Object) that can be passed

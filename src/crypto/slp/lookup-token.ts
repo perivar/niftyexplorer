@@ -6,8 +6,6 @@ import CryptoUtil from '../util';
 
 export async function lookupToken(tokenId: string, NETWORK = 'mainnet') {
   try {
-    
-
     // network
     const slp = CryptoUtil.getSLP(NETWORK);
 

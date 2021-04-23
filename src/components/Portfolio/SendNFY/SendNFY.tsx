@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { WalletContext } from '../../../utils/context';
 import { Card, Radio, Form, Button, Spin, notification, message } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { HistoryOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -11,7 +11,7 @@ import { PlaneIcon } from '../../Common/CustomIcons';
 import { QRCode } from '../../Common/QRCode';
 import { sendNFY, calcFee } from '../../../utils/sendNFY';
 import { FormItemWithMaxAddon } from '../EnhancedInputs';
-// import getTransactionHistory from '../../../utils/getTransactionHistory';
+import getTransactionHistory from '../../../utils/getTransactionHistory';
 
 export const StyledButtonWrapper = styled.div`
   display: flex;
@@ -109,10 +109,44 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
     }
   };
 
+  const getNfyHistory = async () => {
+    setLoading(true);
+    try {
+      // const details = await SLP.Address.details(wallet.cashAddresses);
+      // const resp = await getTransactionHistory(
+      //   wallet.legacyAddress,
+      //   details.map(detail => detail.transactions),
+      //   tokens
+      // );
+      // await fetch("https://markets.api.bitcoin.com/live/bitcoin")
+      //   .then(response => {
+      //     console.log("response :", response);
+      //     return response.json();
+      //   })
+      //   .then(myJson => {
+      //     console.log("myJson.data.BCH :", myJson.data.BCH);
+      //     setBchToDollar(myJson.data.BCH);
+      //   });
+      // setHistory(resp);
+    } catch (err) {
+      const message = err.message || err.error || JSON.stringify(err);
+
+      notification.error({
+        message: 'Error',
+        description: message,
+        duration: 2
+      });
+
+      console.error(err);
+    }
+
+    setLoading(false);
+  };
+
   const handleChangeAction = () => {
     if (action === 'send') {
       setAction('history');
-      // getNfyHistory();
+      getNfyHistory();
     } else {
       setAction('send');
     }
@@ -201,7 +235,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
               (!loading && action === 'history' && (history || {}) && (
                 <>
                   <p>Transaction History (max 30)</p>
-                  {history.bchTransactions.map((el: any) => (
+                  {history.nfyTransactions.map((el: any) => (
                     <div
                       style={{
                         background:

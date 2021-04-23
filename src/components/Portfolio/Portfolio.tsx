@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Row, Col, Avatar, Empty, Alert, notification, Radio, Spin, Collapse, Switch } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { DollarCircleFilled, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 import { EnhancedCard } from './EnhancedCard';
 import { WalletContext } from '../../utils/context';
@@ -78,7 +78,7 @@ export default () => {
     setLoadingTokenHistory(true);
     try {
       const resp = await getTokenTransactionHistory(
-        [wallet.legacyAddress],
+        wallet.legacyAddress,
         tokenInfo,
         slpBalancesAndUtxos.slpUtxos.filter((utxo: any) => utxo.tokenId === tokenInfo.tokenId)
       );

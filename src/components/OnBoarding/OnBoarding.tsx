@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { WalletContext } from '../../utils/context';
 import { Input, Button, Row, Col, Card, Form, Collapse } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { PlusSquareFilled, WarningOutlined, ImportOutlined, LockFilled } from '@ant-design/icons';
 import { Img } from 'react-image';
 import StyledOnboarding from '../Common/StyledOnBoarding';

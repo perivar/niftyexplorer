@@ -4,7 +4,7 @@ import { withRouter, useHistory } from 'react-router-dom';
 import { QRCode } from '../Common/QRCode';
 import { WalletContext } from '../../utils/context';
 import { Input, Button, notification, Spin, Row, Col, Card, Form, Upload, Tooltip, Slider, Switch } from 'antd';
-// import Icon from '@ant-design/icons';
+
 import { PaperClipOutlined, PlusSquareFilled, UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
