@@ -205,7 +205,7 @@ export default () => {
             }
             onClose={onClose}>
             <Meta
-              // avatar={<Img src={bchFlagLogo} width="96" height="54" />}
+              // avatar={<Img src={nfyFlagLogo} width="96" height="54" />}
               title={
                 <div
                   style={{
@@ -416,7 +416,7 @@ export default () => {
                             </div>
                           ))}
                           <a
-                            href={`https://explorer.niftycoin.org/ext/getaddress/${wallet.legacyAddress}`}
+                            href={`https://explorer.niftycoin.org/address/${wallet.legacyAddress}`}
                             target="_blank"
                             rel="noopener noreferrer">
                             <p>Full History</p>

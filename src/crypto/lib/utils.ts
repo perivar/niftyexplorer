@@ -56,6 +56,7 @@ export class Utils {
       return {
         ...txDetails,
         balance: tokenData.qty ? tokenData.qty : 0,
+        hasBaton: !!tokenData.mintBatonVout,
         detail: {
           ...tokenData,
           transactionType: tokenData.txType,

@@ -30,7 +30,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState('send');
   const [history, setHistory] = useState<any>(null);
-  const [bchToDollar, setNfyToDollar] = useState<any>(null);
+  const [nfyToDollar, setNfyToDollar] = useState<any>(null);
 
   useEffect(() => setAction('send'), [outerAction]);
 
@@ -112,12 +112,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
   const getNfyHistory = async () => {
     setLoading(true);
     try {
-      // const details = await SLP.Address.details(wallet.cashAddresses);
-      // const resp = await getTransactionHistory(
-      //   wallet.legacyAddress,
-      //   details.map(detail => detail.transactions),
-      //   tokens
-      // );
+      const resp = await getTransactionHistory(wallet.legacyAddress, tokens);
       // await fetch("https://markets.api.bitcoin.com/live/bitcoin")
       //   .then(response => {
       //     console.log("response :", response);
@@ -127,7 +122,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
       //     console.log("myJson.data.BCH :", myJson.data.BCH);
       //     setBchToDollar(myJson.data.BCH);
       //   });
-      // setHistory(resp);
+      setHistory(resp);
     } catch (err) {
       const message = err.message || err.error || JSON.stringify(err);
 
@@ -263,11 +258,11 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                             <p>{`${el.transactionBalance.balance > 0 ? '+' : ''}${
                               el.transactionBalance.balance
                             } NFY`}</p>
-                            <p>{`${el.transactionBalance.balance > 0 ? '+$' : '-$'}${
-                              (Math.abs(el.transactionBalance.balance) * bchToDollar).toFixed(2).toString() === '0.00'
+                            {/* <p>{`${el.transactionBalance.balance > 0 ? '+$' : '-$'}${
+                              (Math.abs(el.transactionBalance.balance) * nfyToDollar).toFixed(2).toString() === '0.00'
                                 ? 0.01
-                                : (Math.abs(el.transactionBalance.balance) * bchToDollar).toFixed(2)
-                            } USD`}</p>
+                                : (Math.abs(el.transactionBalance.balance) * nfyToDollar).toFixed(2)
+                            } USD`}</p> */}
                             {el.transactionBalance.type.includes('MintDividend') && (
                               <>
                                 <h4>Outputs:</h4>
@@ -305,6 +300,23 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                                 }`}</p>
                               </>
                             )}
+                            {el.transactionBalance.type.includes('SLP') && (
+                              <>
+                                <Paragraph
+                                  onClick={(e: any) => e.preventDefault()}
+                                  ellipsis
+                                  copyable={{ text: el.transactionBalance.metaData.tokenId }}
+                                  style={{ whiteSpace: 'nowrap', color: 'black', maxWidth: '90%' }}>
+                                  {`tokenId: ${el.transactionBalance.metaData.tokenId}`}
+                                </Paragraph>
+
+                                <p>{`Message: ${
+                                  el.transactionBalance.metaData.message
+                                    ? el.transactionBalance.metaData.message
+                                    : 'none'
+                                }`}</p>
+                              </>
+                            )}
                           </>
                         )}
 
@@ -316,7 +328,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                     </div>
                   ))}
                   <a
-                    href={`https://explorer.niftycoin.org/ext/getaddress/${wallet.legacyAddress}`}
+                    href={`https://explorer.niftycoin.org/address/${wallet.legacyAddress}`}
                     target="_blank"
                     rel="noopener noreferrer">
                     <p>Full History</p>

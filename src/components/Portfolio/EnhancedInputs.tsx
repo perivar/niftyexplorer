@@ -19,7 +19,7 @@ export const FormItemWithMaxAddon = ({ onMax, inputProps, ...otherProps }: any) 
   return (
     <Form.Item {...otherProps}>
       <Input
-        // prefix={<img src={bchLogo} alt="" width={16} height={16} />}
+        // prefix={<img src={nfyLogo} alt="" width={16} height={16} />}
         addonAfter={<InputAddonText onClick={!(inputProps || {}).disabled && onMax}>max</InputAddonText>}
         {...inputProps}
       />

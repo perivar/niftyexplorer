@@ -1,11 +1,11 @@
 import { BigNumber } from 'bignumber.js';
 import CryptoUtil, { TokenUTXOInfo } from '../crypto/util';
 
-const NETWORK = process.env.REACT_APP_NETWORK;
-const electrumx = CryptoUtil.getElectrumX(NETWORK);
-const slp = CryptoUtil.getSLP(NETWORK);
+export const getAllTransactionsHydrated = async (legacyAddress: string) => {
+  const NETWORK = process.env.REACT_APP_NETWORK;
+  const electrumx = CryptoUtil.getElectrumX(NETWORK);
+  const slp = CryptoUtil.getSLP(NETWORK);
 
-export const getSlpTxsByTokenId = async (legacyAddress: string, tokenId: string) => {
   const unconfirmedTransactions = await electrumx.getMempool(legacyAddress);
   const confirmedTransactions = await electrumx.getTransactions(legacyAddress);
 
@@ -27,11 +27,17 @@ export const getSlpTxsByTokenId = async (legacyAddress: string, tokenId: string)
     })
   );
 
+  return hydratedTransactions;
+};
+
+export const getSlpTxsByTokenId = async (legacyAddress: string, tokenId: string) => {
+  const hydratedTransactions = await getAllTransactionsHydrated(legacyAddress);
+
   const transactions = hydratedTransactions.filter((tx: any) => {
     if (
-      tx && // UTXO is associated with a token.
+      tx &&
       tx.detail &&
-      tx.detail.tokenId === tokenId // UTXO matches the token ID.
+      tx.detail.tokenId === tokenId // tx matches the token ID.
     ) {
       return true;
     }

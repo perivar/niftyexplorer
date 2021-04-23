@@ -10,6 +10,7 @@ import usePrevious from './usePrevious';
 import getSlpBalancesAndUtxos from './getSlpBalancesAndUtxos';
 
 const normalizeBalance = (slpBalancesAndUtxos: any) => {
+  // only use the non SLP utxos - the SLP utxos should not be spent in a normal transaction
   const totalBalanceInNiftoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
     (previousBalance: any, utxo: any) => previousBalance + utxo.value,
     0
