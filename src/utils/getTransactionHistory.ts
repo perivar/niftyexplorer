@@ -17,7 +17,16 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
     return {
       type: 'SLP',
       balance: isSLP.qty,
-      metaData: { tokenId: isSLP.tokenId, message: `${isSLP.name} : ${isSLP.documentUri}` }
+      metaData: {
+        tokenId: isSLP.tokenId,
+        tokenType:
+          isSLP.tokenType === 129
+            ? 'NFT Group'
+            : isSLP.tokenType === 65
+            ? 'NFT Child'
+            : `Unknown type: ${isSLP.tokenType}`,
+        message: [isSLP.txType ?? '', isSLP.ticker ?? '', isSLP.name ?? '', isSLP.documentUri ?? ''].join(',')
+      }
     };
   } else if (!hasOpReturn(vout)) {
     if (
@@ -96,7 +105,7 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
     };
   }
 
-  const metaData = slp.Utils.decodeTxData(tx);
+  const metaData = decodeOpReturn(vout);
 
   return {
     balance: metaData ? { metaData } : null,
@@ -121,6 +130,18 @@ const decodeSLPMetaData = (tx: any): SlpTokenData => {
 const hasOpReturn = (vout: any): boolean => {
   const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
   return scriptASMArray[0] === 'OP_RETURN';
+};
+
+const decodeOpReturn = (vout: any): any => {
+  const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
+  const metaData =
+    scriptASMArray.length > 1
+      ? scriptASMArray.map((asm: any) => {
+          return Buffer.from(asm, 'hex').toString('ascii');
+        })
+      : null;
+
+  return scriptASMArray[0] === 'OP_RETURN' && metaData;
 };
 
 const getTransactionHistory = async (legacyAddress: string, tokens: any) => {

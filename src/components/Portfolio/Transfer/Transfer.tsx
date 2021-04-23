@@ -8,7 +8,7 @@ import { BlockOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import sendToken from '../../../utils/broadcastTransaction';
 import { PlaneIcon } from '../../Common/CustomIcons';
-import { FormItemWithMaxAddon } from '../EnhancedInputs';
+import { FormItemWithMaxAddon, FormItemWithQRCodeAddon } from '../EnhancedInputs';
 import { QRCode } from '../../Common/QRCode';
 
 export const StyledButtonWrapper = styled.div`
@@ -77,7 +77,7 @@ const Transfer = ({ token, onClose }: any) => {
         message = e.message;
       } else if (/is not supported/.test(e.message)) {
         message = e.message;
-      } else if (!e.error) {
+      } else if (!e) {
         message = `Transaction failed: no response from server.`;
       } else if (/Could not communicate with full node or other external service/.test(e.error)) {
         message = 'Could not communicate with API. Please try again.';
@@ -135,6 +135,18 @@ const Transfer = ({ token, onClose }: any) => {
               <Row>
                 <Col span={24}>
                   <Form style={{ width: 'auto' }}>
+                    <FormItemWithQRCodeAddon
+                      validateStatus={formData.dirty && !formData.address ? 'error' : ''}
+                      help={formData.dirty && !formData.address ? 'Should be a valid nfy address' : ''}
+                      onScan={(result: any) => setFormData({ ...formData, address: result })}
+                      inputProps={{
+                        placeholder: 'NiftyCoin Address',
+                        name: 'address',
+                        onChange: (e: any) => handleChange(e),
+                        required: true,
+                        value: formData.address
+                      }}
+                    />
                     <FormItemWithMaxAddon
                       validateStatus={formData.dirty && Number(formData.quantity) <= 0 ? 'error' : ''}
                       help={formData.dirty && Number(formData.quantity) <= 0 ? 'Should be greater than 0' : ''}

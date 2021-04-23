@@ -9,6 +9,7 @@ import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { HammerIcon } from '../../Common/CustomIcons';
 import { QRCode } from '../../Common/QRCode';
+import { FormItemWithQRCodeAddon } from '../EnhancedInputs';
 
 const StyledButtonWrapper = styled.div`
   display: flex;
@@ -23,7 +24,8 @@ const Mint = ({ token, onClose }: any) => {
   const [formData, setFormData] = useState({
     dirty: true,
     quantity: 0,
-    baton: wallet.legacyAddress
+    baton: wallet.legacyAddress,
+    address: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -73,7 +75,7 @@ const Mint = ({ token, onClose }: any) => {
         message = e.message;
       } else if (/is not supported/.test(e.message)) {
         message = e.message;
-      } else if (!e.error) {
+      } else if (!e) {
         message = `Transaction failed: no response from server.`;
       } else if (/Could not communicate with full node or other external service/.test(e.error)) {
         message = 'Could not communicate with API. Please try again.';
@@ -94,7 +96,7 @@ const Mint = ({ token, onClose }: any) => {
   const handleChange = (e: any) => {
     const { value, name } = e.target;
 
-    setFormData((p) => ({ ...p, [name]: value }));
+    setFormData((p: any) => ({ ...p, [name]: value }));
   };
 
   return (
@@ -127,6 +129,18 @@ const Mint = ({ token, onClose }: any) => {
               <Row>
                 <Col span={24}>
                   <Form style={{ width: 'auto' }}>
+                    <FormItemWithQRCodeAddon
+                      validateStatus={!formData.dirty && !formData.baton ? 'error' : ''}
+                      help={!formData.dirty && !formData.baton ? 'Should be a valid nfy address' : ''}
+                      onScan={(result: any) => setFormData({ ...formData, address: result })}
+                      inputProps={{
+                        placeholder: 'Baton (nfy address)',
+                        name: 'baton',
+                        onChange: (e: any) => handleChange(e),
+                        required: true,
+                        value: formData.baton
+                      }}
+                    />
                     <Form.Item
                       validateStatus={!formData.dirty && Number(formData.quantity) <= 0 ? 'error' : ''}
                       help={!formData.dirty && Number(formData.quantity) <= 0 ? 'Should be greater than 0' : ''}>

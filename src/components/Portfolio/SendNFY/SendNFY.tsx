@@ -10,7 +10,7 @@ import Paragraph from 'antd/lib/typography/Paragraph';
 import { PlaneIcon } from '../../Common/CustomIcons';
 import { QRCode } from '../../Common/QRCode';
 import { sendNFY, calcFee } from '../../../utils/sendNFY';
-import { FormItemWithMaxAddon } from '../EnhancedInputs';
+import { FormItemWithMaxAddon, FormItemWithQRCodeAddon } from '../EnhancedInputs';
 import getTransactionHistory from '../../../utils/getTransactionHistory';
 
 export const StyledButtonWrapper = styled.div`
@@ -50,6 +50,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
     try {
       const link = await sendNFY(
         wallet,
+        slpBalancesAndUtxos.nonSlpUtxos,
         {
           addresses: [filledAddress || address],
           values: [value]
@@ -71,7 +72,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
     } catch (e) {
       let message;
 
-      if (!e.error) {
+      if (!e) {
         message = `Transaction failed: no response from server.`;
       } else if (/Could not communicate with full node or other external service/.test(e.error)) {
         message = 'Could not communicate with API. Please try again.';
@@ -207,6 +208,20 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                 <Row>
                   <Col span={24}>
                     <Form style={{ width: 'auto' }}>
+                      <FormItemWithQRCodeAddon
+                        disabled={Boolean(filledAddress)}
+                        validateStatus={!formData.dirty && !formData.address ? 'error' : ''}
+                        help={!formData.dirty && !formData.address ? 'Should be a valid nfy address' : ''}
+                        onScan={(result: any) => setFormData({ ...formData, address: result })}
+                        inputProps={{
+                          disabled: Boolean(filledAddress),
+                          placeholder: 'NiftyCoin Address',
+                          name: 'address',
+                          onChange: (e: any) => handleChange(e),
+                          required: true,
+                          value: filledAddress || formData.address
+                        }}
+                      />
                       <FormItemWithMaxAddon
                         validateStatus={!formData.dirty && Number(formData.value) <= 0 ? 'error' : ''}
                         help={!formData.dirty && Number(formData.value) <= 0 ? 'Should be greater than 0' : ''}
@@ -234,10 +249,12 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                     <div
                       style={{
                         background:
-                          el.transactionBalance.type !== 'Unknown'
+                          el.transactionBalance.type !== 'Unknown' && el.transactionBalance.type !== 'SLP'
                             ? el.transactionBalance.balance > 0
                               ? '#D4EFFC'
                               : ' #ffd59a'
+                            : el.transactionBalance.type === 'SLP'
+                            ? '#EFEFEF'
                             : '#D3D3D3',
                         color: 'black',
                         borderRadius: '12px',
@@ -302,6 +319,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
                             )}
                             {el.transactionBalance.type.includes('SLP') && (
                               <>
+                                <p>Type: {el.transactionBalance.metaData.tokenType}</p>
                                 <Paragraph
                                   onClick={(e: any) => e.preventDefault()}
                                   ellipsis

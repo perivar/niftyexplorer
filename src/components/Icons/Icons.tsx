@@ -14,6 +14,7 @@ import { EnhancedModal } from '../Portfolio/EnhancedModal';
 import getCroppedImg from '../../utils/cropImage';
 import getRoundImg from '../../utils/roundImage';
 import getResizedImage from '../../utils/resizeImage';
+import { RcFile } from 'antd/lib/upload/interface';
 
 const { Dragger } = Upload;
 
@@ -183,7 +184,7 @@ const Icons = () => {
     });
   };
 
-  const beforeTokenIconUpload = (file: any) => {
+  const beforeTokenIconUpload = (file: RcFile, fileList: RcFile[]): any => {
     try {
       if (file.type.split('/')[0] !== 'image') {
         throw new Error('You can only upload image files!');
@@ -435,7 +436,7 @@ const Icons = () => {
                       <Dragger
                         multiple={false}
                         // transformFile={transformTokenIconFile}
-                        // beforeUpload={beforeTokenIconUpload}
+                        beforeUpload={beforeTokenIconUpload}
                         onChange={handleChangeTokenIconUpload}
                         onRemove={() => false}
                         fileList={tokenIconFileList}

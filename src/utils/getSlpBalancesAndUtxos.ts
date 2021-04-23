@@ -27,7 +27,8 @@ export default async (addresses: any) => {
         documentHash: tokenUtxo.tokenDocumentHash
       },
       balance: new BigNumber(tokenUtxo.tokenQty).div(Math.pow(10, tokenUtxo.decimals)),
-      hasBaton: !!tokenUtxo.mintBatonVout
+      hasBaton: !!tokenUtxo.mintBatonVout,
+      version: tokenUtxo.tokenType
     };
   });
 

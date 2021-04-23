@@ -95,6 +95,6 @@ export async function sendNFY(
     return txidStr;
   } catch (err) {
     console.log('error: ', err);
-    return err;
+    throw err;
   }
 }
