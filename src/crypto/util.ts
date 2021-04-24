@@ -105,14 +105,15 @@ export interface NFTChildGenesisOpReturnConfig {
 // see slp types here from https://github.com/simpleledger/slpjs/blob/master/lib/slp.ts
 
 // displays link to either the nfy mainnet or tnfy testnet for transactions
-function transactionStatus(transactionInput: string, network: string) {
-  if (network === 'mainnet') {
-    // console.log(`https://explorer.niftycoin.org/api/getrawtransaction?txid=${transactionInput}&decrypt=1`);
-    console.log(`https://explorer.niftycoin.org/tx/${transactionInput}`);
+function transactionStatus(txidStr: string, NETWORK = 'mainnet'): string {
+  let link;
+  if (NETWORK === `mainnet`) {
+    link = `https://explorer.niftycoin.org/tx/${txidStr}`;
   } else {
-    // console.log(`https://testexplorer.niftycoin.org/api/getrawtransaction?txid=${transactionInput}&decrypt=1`);
-    console.log(`https://testexplorer.niftycoin.org/tx/${transactionInput}`);
+    link = `https://testexplorer.niftycoin.org/tx/${txidStr}`;
   }
+  console.log(link);
+  return link;
 }
 
 // bchaddrjs-slp
@@ -439,12 +440,26 @@ function getSLP(NETWORK = 'mainnet') {
   return slp;
 }
 
+function toNiftoshi(value: number): number {
+  // needs to multiply with 100000000 to get niftoshis
+  const niftoshis = Math.floor(value * 100000000);
+  return niftoshis;
+}
+
+function toNiftyCoin(value: number): number {
+  // needs to divide with 100000000 to get niftycoins
+  const niftyCoins = value / 100000000;
+  return niftyCoins;
+}
+
 const CryptoUtil = {
   transactionStatus,
   toSegWitAddress,
   toLegacyAddress,
   getByteCount,
   estimateFee,
+  toNiftoshi,
+  toNiftyCoin,
   changeAddrFromMnemonic,
   findBiggestUtxo,
   toPublicKey,

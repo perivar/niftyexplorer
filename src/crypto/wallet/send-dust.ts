@@ -81,8 +81,7 @@ export async function sendDust(walletInfo: WalletInfo, numOutputs: number, recei
     const changeKeyPair = await CryptoUtil.changeAddrFromMnemonic(mnemonic, network);
 
     // Sign the transaction with the changeKeyPair HD node.
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
 
     // build tx
     const tx = transactionBuilder.build();

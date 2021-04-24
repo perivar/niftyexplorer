@@ -7,9 +7,29 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { SLPGenesisOpReturnConfig, WalletInfo } from '../util';
 
-export async function createToken(walletInfo: WalletInfo, NETWORK = 'mainnet') {
+// the config object looks like this
+// const configObj: SLPGenesisOpReturnConfig = {
+//   name: 'SLP Test Token',
+//   ticker: 'SLPTEST',
+//   documentUrl: 'https://www.niftycoin.org',
+//   decimals: 8,
+//   initialQty: 100,
+//   documentHash: '',
+//   mintBatonVout: 2 // the minting baton is always on vout 2
+// };
+
+export async function createToken(
+  walletInfo: WalletInfo,
+  tokenReceiverAddress: string,
+  batonReceiverAddress: string,
+  configObj: SLPGenesisOpReturnConfig,
+  NETWORK = 'mainnet'
+) {
   try {
     const { mnemonic } = walletInfo;
+
+    if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
+    // if the batonReceiverAddress is null or undefined, dont create baton
 
     // network
     const electrumx = CryptoUtil.getElectrumX(NETWORK);
@@ -45,22 +65,16 @@ export async function createToken(walletInfo: WalletInfo, NETWORK = 'mainnet') {
     transactionBuilder.addInput(txid, vout);
 
     // estimate fee. paying X niftoshis/byte
-    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: 4 });
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: batonReceiverAddress ? 4 : 3 });
 
     // amount to send back to the sending address.
-    // Subtract two dust transactions for minting baton and tokens.
-    const remainder = originalAmount - 546 * 2 - txFee;
+    // Subtract a dust transactions for tokens.
+    let remainder = originalAmount - txFee - 546;
 
-    // Generate SLP config object
-    const configObj: SLPGenesisOpReturnConfig = {
-      name: 'SLP Test Token',
-      ticker: 'SLPTEST',
-      documentUrl: 'https://www.niftycoin.org',
-      decimals: 8,
-      initialQty: 100,
-      documentHash: '',
-      mintBatonVout: 2 // the minting baton is always on vout 2
-    };
+    // subtract another dust transaction if required (for minting baton)
+    if (batonReceiverAddress) {
+      remainder = remainder - 546;
+    }
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.
     const script = slp.TokenType1.generateGenesisOpReturn(configObj);
@@ -69,17 +83,18 @@ export async function createToken(walletInfo: WalletInfo, NETWORK = 'mainnet') {
     transactionBuilder.addOutput(script, 0);
 
     // Send dust transaction representing the tokens.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    transactionBuilder.addOutput(tokenReceiverAddress, 546);
 
     // Send dust transaction representing minting baton.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    if (batonReceiverAddress) {
+      transactionBuilder.addOutput(batonReceiverAddress, 546);
+    }
 
     // add output to send NFY remainder of UTXO.
     transactionBuilder.addOutput(legacyAddress, remainder);
 
     // Sign the transaction with the changeKeyPair HD node.
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
 
     // build tx
     const tx = transactionBuilder.build();
@@ -92,6 +107,7 @@ export async function createToken(walletInfo: WalletInfo, NETWORK = 'mainnet') {
     const txidStr = await electrumx.broadcast(hex);
     console.log('Check the status of your transaction on this block explorer:');
     CryptoUtil.transactionStatus(txidStr, NETWORK);
+    return txidStr;
   } catch (err) {
     console.error('Error in createToken: ', err);
   }

@@ -20,7 +20,7 @@ export const StyledButtonWrapper = styled.div`
   justify-content: center;
 `;
 
-const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callbackTxId }: any) => {
+const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader }: any) => {
   const { wallet, balances, slpBalancesAndUtxos, tokens } = React.useContext(WalletContext);
   const [formData, setFormData] = useState<any>({
     dirty: true,
@@ -30,7 +30,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState('send');
   const [history, setHistory] = useState<any>(null);
-  const [nfyToDollar, setNfyToDollar] = useState<any>(null);
+  // const [nfyToDollar, setNfyToDollar] = useState<any>(null);
 
   useEffect(() => setAction('send'), [outerAction]);
 
@@ -48,15 +48,10 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader, callback
     const { address, value } = formData;
 
     try {
-      const link = await sendNFY(
-        wallet,
-        slpBalancesAndUtxos.nonSlpUtxos,
-        {
-          addresses: [filledAddress || address],
-          values: [value]
-        },
-        callbackTxId
-      );
+      const link = await sendNFY(wallet, slpBalancesAndUtxos.nonSlpUtxos, {
+        addresses: [filledAddress || address],
+        values: [value]
+      });
 
       notification.success({
         message: 'Success',

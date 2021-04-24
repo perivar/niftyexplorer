@@ -119,7 +119,7 @@ export const OnBoarding = ({ history }: any) => {
             bordered={false}>
             <div style={{}}>
               <p>
-                niftycoin.org Mint is an{' '}
+                mint.niftycoin.org is an{' '}
                 <a href="https://github.com/niftycoin-project/mint/" target="_blank" rel="noopener noreferrer">
                   open source,
                 </a>{' '}

@@ -117,11 +117,10 @@ export async function createNFTChild(
 
     // Sign the Token UTXO for the NFT Group token that will be burned in this
     // transaction.
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, 546);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, 546);
 
     // Sign the input for the UTXO paying for the TX.
-    transactionBuilder.sign(1, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(1, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
 
     // build tx
     const tx = transactionBuilder.build();

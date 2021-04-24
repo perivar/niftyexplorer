@@ -422,7 +422,7 @@ const Create = () => {
 
     try {
       const docUri = documentUri || 'mint.niftycoin.org';
-      const link: any = await createToken(wallet, {
+      const link: any = await createToken(wallet, 'CREATE_SLP_TOKEN', {
         name: tokenName,
         symbol: tokenSymbol,
         documentHash: hash,

@@ -43,7 +43,7 @@ const Mint = ({ token, onClose }: any) => {
     const { quantity, baton } = formData;
 
     try {
-      const link = await mintToken(wallet, {
+      const link = await mintToken(wallet, 'MINT_SLP_TOKEN', {
         tokenId: token.tokenId,
         version: token.version,
         additionalTokenQty: quantity,

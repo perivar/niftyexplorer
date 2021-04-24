@@ -8,6 +8,7 @@ import { getWallet, createWallet } from './createWallet';
 import useAsyncTimeout from './useAsyncTimeout';
 import usePrevious from './usePrevious';
 import getSlpBalancesAndUtxos from './getSlpBalancesAndUtxos';
+import CryptoUtil from '../crypto/util';
 
 const normalizeBalance = (slpBalancesAndUtxos: any) => {
   // only use the non SLP utxos - the SLP utxos should not be spent in a normal transaction
@@ -17,7 +18,7 @@ const normalizeBalance = (slpBalancesAndUtxos: any) => {
   );
   return {
     totalBalanceInNiftoshis,
-    totalBalance: totalBalanceInNiftoshis / 100000000
+    totalBalance: CryptoUtil.toNiftyCoin(totalBalanceInNiftoshis)
   };
 };
 

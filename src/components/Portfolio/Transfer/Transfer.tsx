@@ -41,7 +41,7 @@ const Transfer = ({ token, onClose }: any) => {
     const { quantity, address } = formData;
 
     try {
-      const link = await sendToken(wallet, {
+      const link = await sendToken(wallet, 'SEND_SLP_TOKEN', {
         tokenId: token.tokenId,
         version: token.version,
         amount: quantity,

@@ -106,11 +106,10 @@ export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, toke
     transactionBuilder.addOutput(legacyAddress, remainder);
 
     // Sign the transaction for the UTXO input that pays for the transaction..
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
 
     // Sign the Token UTXO minting baton input
-    transactionBuilder.sign(1, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, 546);
+    transactionBuilder.sign(1, changeKeyPair, undefined, Transaction.SIGHASH_ALL, 546);
 
     // build tx
     const tx = transactionBuilder.build();

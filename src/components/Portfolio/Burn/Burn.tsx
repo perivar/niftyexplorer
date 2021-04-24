@@ -85,7 +85,7 @@ const Burn = ({ token, avatar, onClose }: any) => {
     try {
       let link;
       if (hasBalance && formData.burnBaton === false) {
-        link = await broadcastTransaction(wallet, {
+        link = await broadcastTransaction(wallet, 'BURN_SLP_TOKEN_BALANCE', {
           tokenId: token.tokenId,
           version: token.version,
           amount: Number.parseFloat(formData.amount)
@@ -101,7 +101,7 @@ const Burn = ({ token, avatar, onClose }: any) => {
           duration: 3
         });
       } else if (!hasBalance && hasBaton && formData.burnBaton === true) {
-        link = await broadcastTransaction(wallet, {
+        link = await broadcastTransaction(wallet, 'BURN_SLP_BATON', {
           tokenId: token.tokenId,
           version: token.version,
           additionalTokenQty: 0,
@@ -119,7 +119,7 @@ const Burn = ({ token, avatar, onClose }: any) => {
           duration: 3
         });
       } else if (hasBalance && hasBaton && formData.burnBaton === true) {
-        link = await broadcastTransaction(wallet, {
+        link = await broadcastTransaction(wallet, 'BURN_SLP_BATON_BALANCE', {
           tokenId: token.tokenId,
           version: token.version,
           additionalTokenQty: 0,
@@ -137,7 +137,7 @@ const Burn = ({ token, avatar, onClose }: any) => {
           duration: 3
         });
 
-        link = await broadcastTransaction(wallet, {
+        link = await broadcastTransaction(wallet, 'BURN_SLP_TOKEN', {
           tokenId: token.tokenId,
           version: token.version,
           amount: Number.parseFloat(formData.amount)

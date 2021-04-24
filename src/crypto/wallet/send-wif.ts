@@ -74,8 +74,7 @@ export async function sendWIF(
     const changeKeyPair = bitcoin.ECPair.fromWIF(SEND_WIF, network);
 
     // Sign the transaction with the changeKeyPair HD node.
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
     // transactionBuilder.sign(0, keyPair);
 
     // build tx

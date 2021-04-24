@@ -103,13 +103,12 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     transactionBuilder.addOutput(walletInfo.legacyAddress, remainder);
 
     // Sign the transaction with the private key for the NFY UTXO paying the fees.
-    const redeemScript = undefined;
-    transactionBuilder.sign(0, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, originalAmount);
+    transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
 
     // Sign each token UTXO being consumed.
     for (let i = 0; i < tokenUtxos.length; i++) {
       const thisUtxo = tokenUtxos[i];
-      transactionBuilder.sign(1 + i, changeKeyPair, redeemScript, Transaction.SIGHASH_ALL, thisUtxo.value);
+      transactionBuilder.sign(1 + i, changeKeyPair, undefined, Transaction.SIGHASH_ALL, thisUtxo.value);
     }
 
     // build tx
@@ -127,6 +126,7 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
 
     console.log('Check the status of your transaction on this block explorer:');
     CryptoUtil.transactionStatus(txidStr, NETWORK);
+    return txidStr;
   } catch (err) {
     console.error('Error in burnTokens: ', err);
     console.log(`Error message: ${err.message}`);

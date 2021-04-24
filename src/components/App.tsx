@@ -187,7 +187,7 @@ const App = () => {
                 : { height: '100%' }
             }>
             <div className="logo">
-              <img src={logo} alt="niftycoin.org Mint" />
+              <img src={logo} alt="mint.niftycoin.org" />
             </div>
             {/* <div
               style={{
