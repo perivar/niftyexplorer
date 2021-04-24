@@ -49,7 +49,7 @@ export const sendNFY = async (wallet: any, nonSlpUtxos: any, { addresses, values
     const txFee = 0;
     for (let i = 0; i < nonSlpUtxos.length; i++) {
       const utxo = nonSlpUtxos[i];
-      originalAmount = originalAmount.plus(utxo.niftoshis);
+      originalAmount = originalAmount.plus(utxo.value);
       const { vout } = utxo;
       const { txid } = utxo;
 
@@ -90,7 +90,7 @@ export const sendNFY = async (wallet: any, nonSlpUtxos: any, { addresses, values
     // Sign the transactions with the HD node.
     for (let i = 0; i < inputUtxos.length; i++) {
       const utxo = inputUtxos[i];
-      transactionBuilder.sign(i, changeKeyPair, undefined, Transaction.SIGHASH_ALL, utxo.niftoshis);
+      transactionBuilder.sign(i, changeKeyPair, undefined, Transaction.SIGHASH_ALL, utxo.value);
     }
 
     // build tx

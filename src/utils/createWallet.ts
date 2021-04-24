@@ -4,7 +4,7 @@ import * as bip39 from 'bip39';
 let wallet: any;
 
 // const wallet: WalletInfo = {
-// 	hdNodePath: "'m/44'/145'/0'/0/0'",
+// 	hdNodePath: "'m/44'/2'/0'/0/0'",
 // 	legacyAddress: 'NP1VCzvkzSTeFph1AW4Bs4ELz25mLPHNaZ',
 // 	mnemonic: 'kiwi rescue antique kit love north right wet famous void teach shadow',
 // 	privateKey: '719facd2e47a90c28d2d884e0d63d5bc419736fe84fbda843c346497435df372',

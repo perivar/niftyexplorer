@@ -243,7 +243,11 @@ async function changeAddrFromMnemonic(mnemonic: string, network: Network) {
   const masterHDNode = bip32.fromSeed(rootSeed, network);
 
   // HDNode of BIP44 account
-  const account = masterHDNode.derivePath("m/44'/145'/0'");
+  // Master List BIP 44 Coin Type: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+  // 2	0x80000002	LTC	Litecoin
+  // 145	0x80000091	BCH	Bitcoin Cash
+  // 245	0x800000f5	SLP	Simple Ledger Protocol
+  const account = masterHDNode.derivePath("m/44'/2'/0'");
 
   // derive the first external change address HDNode which is going to spend utxo
   const change = account.derivePath('0/0');

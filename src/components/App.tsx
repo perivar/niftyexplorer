@@ -315,7 +315,7 @@ const App = () => {
                   activeKey={selectedKey}
                   tabBarStyle={{ height: '55px' }}
                   onChange={(key) => handleChange({ key })}
-                  tabBarGutter={16}
+                  // tabBarGutter={16}
                   tabPosition="bottom">
                   <TabPane
                     tab={

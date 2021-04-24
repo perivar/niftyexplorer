@@ -3,7 +3,7 @@ import CryptoUtil, { SLPGenesisOpReturnConfig } from '../crypto/util';
 
 // network
 const NETWORK = process.env.REACT_APP_NETWORK;
-const electrumx = CryptoUtil.getElectrumX(NETWORK);
+// const electrumx = CryptoUtil.getElectrumX(NETWORK);
 // const { network } = electrumx;
 // const slp = CryptoUtil.getSLP(NETWORK);
 
@@ -36,7 +36,7 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
     config.fundingWif = wallet.privateKeyWIF;
     config.fundingAddress = wallet.legacyAddress;
 
-    let hex: string | undefined = '';
+    let txidStr: string | undefined = '';
 
     switch (TRANSACTION_TYPE) {
       case 'IS_CREATING':
@@ -44,29 +44,28 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         config.batonReceiverAddress = config.fixedSupply === true ? null : wallet.legacyAddress;
         config.decimals = config.decimals || 0;
         config.documentUri = config.docUri;
-        hex = await TokenType1create(wallet, config);
+        txidStr = await TokenType1create(wallet, config);
         break;
       case 'IS_MINTING':
         config.tokenReceiverAddress = wallet.legacyAddress;
         config.batonReceiverAddress = config.batonReceiverAddress || wallet.legacyAddress;
-        hex = await TokenType1mint(wallet, config);
+        txidStr = await TokenType1mint(wallet, config);
         break;
       case 'IS_SENDING':
-        hex = await TokenType1send(wallet, config);
+        txidStr = await TokenType1send(wallet, config);
         break;
       case 'IS_BURNING':
-        hex = await TokenType1burn(wallet, config);
+        txidStr = await TokenType1burn(wallet, config);
         break;
       default:
         break;
     }
 
     // Broadcast transation to the network
-    if (!hex || hex === '') {
+    if (!txidStr || txidStr === '') {
       throw new Error('No transactions generated!');
     }
 
-    const txidStr = await electrumx.broadcast(hex);
     const link = CryptoUtil.transactionStatus(txidStr, NETWORK);
     return link;
   } catch (err) {
@@ -89,7 +88,7 @@ const TokenType1create = async (wallet: any, config: any): Promise<string | unde
     mintBatonVout: 2 // the minting baton is always on vout 2
   };
 
-  const hex = await CryptoSLP.createToken(
+  const txidStr = await CryptoSLP.createToken(
     wallet,
     config.tokenReceiverAddress,
     config.batonReceiverAddress,
@@ -97,11 +96,11 @@ const TokenType1create = async (wallet: any, config: any): Promise<string | unde
     NETWORK
   );
 
-  return hex;
+  return txidStr;
 };
 
 const TokenType1mint = async (wallet: any, config: any): Promise<string | undefined> => {
-  const hex = await CryptoSLP.mintToken(
+  const txidStr = await CryptoSLP.mintToken(
     wallet,
     config.tokenId,
     config.amount,
@@ -110,17 +109,23 @@ const TokenType1mint = async (wallet: any, config: any): Promise<string | undefi
     NETWORK
   );
 
-  return hex;
+  return txidStr;
 };
 
 const TokenType1send = async (wallet: any, config: any): Promise<string | undefined> => {
-  const hex = await CryptoSLP.sendToken(wallet, config.tokenId, config.amount, config.tokenReceiverAddress, NETWORK);
-  return hex;
+  const txidStr = await CryptoSLP.sendToken(
+    wallet,
+    config.tokenId,
+    config.amount,
+    config.tokenReceiverAddress,
+    NETWORK
+  );
+  return txidStr;
 };
 
 const TokenType1burn = async (wallet: any, config: any): Promise<string | undefined> => {
-  const hex = await CryptoSLP.burnTokens(wallet, config.tokenId, config.amount, NETWORK);
-  return hex;
+  const txidStr = await CryptoSLP.burnTokens(wallet, config.tokenId, config.amount, NETWORK);
+  return txidStr;
 };
 
 export default broadcastTransaction;
