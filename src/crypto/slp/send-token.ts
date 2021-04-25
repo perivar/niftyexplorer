@@ -45,7 +45,7 @@ export async function sendToken(
       }
       return false;
     });
-    console.log(`nfyUTXOs: ${JSON.stringify(nfyUtxos, null, 2)}`);
+    // console.log(`nfyUTXOs: ${JSON.stringify(nfyUtxos, null, 2)}`);
 
     if (nfyUtxos.length === 0) {
       throw new Error('Wallet does not have a NFY UTXO to pay miner fees.');

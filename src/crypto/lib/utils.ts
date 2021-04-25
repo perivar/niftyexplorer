@@ -63,8 +63,23 @@ export class Utils {
           symbol: tokenData.ticker ? tokenData.ticker : ''
         }
       };
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      // An error will be thrown if the txid is not SLP.
+      // If error is for some other reason, like a 429 error, mark utxo as 'null'
+      // to display the unknown state.
+      if (
+        !err.message ||
+        (err.message.indexOf('scriptpubkey not op_return') === -1 &&
+          err.message.indexOf('lokad id') === -1 &&
+          err.message.indexOf('trailing data') === -1)
+      ) {
+        console.log("unknown error from decodeOpReturn(). Marking as 'null'", err);
+        txDetails.isValid = null;
+        return txDetails;
+      }
+
+      // this is normal
+      txDetails.isValid = true;
       return txDetails;
     }
   }

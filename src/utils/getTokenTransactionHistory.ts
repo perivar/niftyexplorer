@@ -6,10 +6,10 @@ export const getAllTransactionsHydrated = async (legacyAddress: string) => {
   const electrumx = CryptoUtil.getElectrumX(NETWORK);
   const slp = CryptoUtil.getSLP(NETWORK);
 
-  const unconfirmedTransactions = await electrumx.getMempool(legacyAddress);
-  const confirmedTransactions = await electrumx.getTransactions(legacyAddress);
-
-  const allTransactions = [...unconfirmedTransactions, ...confirmedTransactions];
+  // electrumx getTransactions gets all transactions, both unconfirmed and confirmed
+  // unconfirmed (same as getMempool) has a tx_hash, height of 0 and a fee
+  // the confirmed has a tx_hash and height
+  const allTransactions = await electrumx.getTransactions(legacyAddress);
 
   const hydratedTransactions = await Promise.all(
     allTransactions.map(async (tx: any) => {
@@ -17,8 +17,8 @@ export const getAllTransactionsHydrated = async (legacyAddress: string) => {
         const txidDetail = await slp.Utils.hydrateTxNoValidation(tx.tx_hash);
         return {
           ...txidDetail,
-          date: new Date(txidDetail.time * 1000),
-          time: txidDetail.time
+          date: txidDetail.time ? new Date(txidDetail.time * 1000) : new Date(),
+          time: txidDetail.time ? txidDetail.time : ''
         };
       } catch (err) {
         return tx;

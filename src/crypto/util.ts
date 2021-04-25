@@ -247,7 +247,9 @@ async function changeAddrFromMnemonic(mnemonic: string, network: Network) {
   // 2	0x80000002	LTC	Litecoin
   // 145	0x80000091	BCH	Bitcoin Cash
   // 245	0x800000f5	SLP	Simple Ledger Protocol
-  const account = masterHDNode.derivePath("m/44'/2'/0'");
+  // derive a Bitcoin Cash address
+  // this first wallet used for testing used a node path for BCH Bitcoin Cash
+  const account = masterHDNode.derivePath("m/44'/145'/0'");
 
   // derive the first external change address HDNode which is going to spend utxo
   const change = account.derivePath('0/0');

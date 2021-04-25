@@ -40,14 +40,14 @@ export const createWallet = async (NETWORK: string, importMnemonic?: string): Pr
 
     // Generate the first seed addresses.
     for (let i = 0; i < NUM_SEED_ADDRESSES; i++) {
-      // derive a SLP (Simple Ledger Protocol) address
+      // derive a Bitcoin Cash address
       // Master List BIP 44 Coin Type: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
       // 2	0x80000002	LTC	Litecoin
       // 145	0x80000091	BCH	Bitcoin Cash
       // 245	0x800000f5	SLP	Simple Ledger Protocol
       const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/${i}`);
-      console.log(`m/44'/2'/0'/0/${i}: ${CryptoUtil.toSegWitAddress(childNode, network)}`);
-      // outStr += `m/44'/2'/0'/0/${i}: ${CryptoUtil.toCashAddress(childNode, network)}\n`;
+      console.log(`m/44'/145'/0'/0/${i}: ${CryptoUtil.toSegWitAddress(childNode, network)}`);
+      // outStr += `m/44'/145'/0'/0/${i}: ${CryptoUtil.toCashAddress(childNode, network)}\n`;
 
       // Save the first seed address for use in the .json output file.
       if (i === 0) {
