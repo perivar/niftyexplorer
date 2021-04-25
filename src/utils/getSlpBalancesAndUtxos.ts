@@ -28,7 +28,8 @@ export default async (addresses: any) => {
       },
       balance: new BigNumber(tokenUtxo.tokenQty).div(Math.pow(10, tokenUtxo.decimals)),
       hasBaton: !!tokenUtxo.mintBatonVout,
-      version: tokenUtxo.tokenType
+      version: tokenUtxo.tokenType,
+      utxoType: tokenUtxo.utxoType
     };
   });
 

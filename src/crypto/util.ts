@@ -234,8 +234,10 @@ function estimateFee(inputs: any, outputs: any): number {
   return txFee;
 }
 
-// Generate a change address from a Mnemonic of a private key.
-async function changeAddrFromMnemonic(mnemonic: string, network: Network) {
+// Generate an external address from a Mnemonic of a private key.
+async function externalAddressFromMnemonic(mnemonic: string, network: Network) {
+  const USE_BTC_ADDRESS_PATH = process.env.REACT_APP_USE_BTC_ADDRESS_PATH === 'true';
+
   // root seed buffer
   const rootSeed = await bip39.mnemonicToSeed(mnemonic); // creates seed buffer
 
@@ -247,14 +249,19 @@ async function changeAddrFromMnemonic(mnemonic: string, network: Network) {
   // 2	0x80000002	LTC	Litecoin
   // 145	0x80000091	BCH	Bitcoin Cash
   // 245	0x800000f5	SLP	Simple Ledger Protocol
-  // derive a Bitcoin Cash address
-  // this first wallet used for testing used a node path for BCH Bitcoin Cash
-  const account = masterHDNode.derivePath("m/44'/145'/0'");
 
-  // derive the first external change address HDNode which is going to spend utxo
-  const change = account.derivePath('0/0');
+  let account: any;
+  if (USE_BTC_ADDRESS_PATH) {
+    // the first wallet used for testing used a HD node path for BCH Bitcoin Cash
+    account = masterHDNode.derivePath("m/44'/145'/0'");
+  } else {
+    account = masterHDNode.derivePath("m/44'/2'/0'");
+  }
 
-  return change;
+  // derive the first external HDNode address which is going to spend utxo
+  const firstExternalAddress = account.derivePath('0/0');
+
+  return firstExternalAddress;
 }
 
 // Returns the utxo with the biggest balance from an array of utxos.
@@ -466,7 +473,7 @@ const CryptoUtil = {
   estimateFee,
   toNiftoshi,
   toNiftyCoin,
-  changeAddrFromMnemonic,
+  externalAddressFromMnemonic,
   findBiggestUtxo,
   toPublicKey,
   toPrivateKeyFromWIF,

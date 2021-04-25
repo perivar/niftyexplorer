@@ -92,7 +92,7 @@ export class Utils {
         detail: {
           ...slpData,
           transactionType: slpData.txType,
-          symbol: slpData.ticker ? slpData.ticker : ''
+          symbol: slpData.ticker ? slpData.ticker : 'Tokens'
         }
       };
     } catch (err) {

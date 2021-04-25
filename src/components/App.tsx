@@ -207,20 +207,19 @@ const App = () => {
                 <Menu.Item key="portfolio">
                   <Link to="/portfolio">Portfolio</Link>
                 </Menu.Item>
-                <Menu.Item key="explorer">
-                  <Link to="/explorer">Explorer</Link>
-                </Menu.Item>
                 {wallet && (
                   <Menu.Item key="create">
                     <Link to="/create">Create</Link>
                   </Menu.Item>
                 )}
-                <Menu.Item key="icons">
+                {/* <Menu.Item key="icons">
                   <Link to="/icons">Icons</Link>
-                </Menu.Item>
-
+                </Menu.Item> */}
                 <Menu.Item key="configure">
                   <Link to="/configure">Configure</Link>
+                </Menu.Item>
+                <Menu.Item key="explorer">
+                  <Link to="/explorer">Debug Explorer</Link>
                 </Menu.Item>
               </Menu.ItemGroup>
 

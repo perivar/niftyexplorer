@@ -825,8 +825,8 @@ const Create = () => {
                                 <InfoCircleOutlined /> The document hash is a sha256 hash of the whitepaper for your
                                 token. You can create a hash of any document, and learn more about its use, at
                                 <strong>
-                                  <a target="_blank" rel="noopener noreferrer" href="https://notary.niftycoin.org">
-                                    {` notary.niftycoin.org`}
+                                  <a target="_blank" rel="noopener noreferrer" href="https://notary.bitcoin.com">
+                                    {` notary.bitcoin.com`}
                                   </a>
                                 </strong>
                                 . Click on the input below to hash the file.
