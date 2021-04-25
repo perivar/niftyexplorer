@@ -505,6 +505,11 @@ export class NiftyCoinElectrumX {
         const electrumResponse = await _this.electrumxRequest('blockchain.transaction.broadcast', txHex);
         // console.log(`electrumResponse: ${JSON.stringify(electrumResponse, null, 2)}`);
 
+        // Pass the error message if ElectrumX reports an error.
+        if (electrumResponse && electrumResponse.error && electrumResponse.error.code) {
+          throw new Error(electrumResponse.error.message);
+        }
+
         // return 'testing - not sent!';
         return electrumResponse.result;
       }
