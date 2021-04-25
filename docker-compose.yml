@@ -5,8 +5,8 @@
 version: '3.7'
 
 services:
-  niftyexplorer:
-    container_name: niftyexplorer
+  niftymint:
+    container_name: niftymint
     build:
       context: .
       dockerfile: Dockerfile
