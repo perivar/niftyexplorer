@@ -312,10 +312,11 @@ const App = () => {
               <Footer>
                 <Tabs
                   activeKey={selectedKey}
-                  tabBarStyle={{ height: '55px' }}
+                  // tabBarStyle={{ height: '55px' }}
                   onChange={(key) => handleChange({ key })}
-                  // tabBarGutter={16}
-                  tabPosition="bottom">
+                  tabBarGutter={16}
+                  tabPosition="bottom"
+                  centered>
                   <TabPane
                     tab={
                       <span onClick={() => history.push('/portfolio')}>
