@@ -16,7 +16,7 @@ export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, toke
     const slp = CryptoUtil.getSLP(NETWORK);
 
     // Generate an EC key pair for signing the transaction.
-    const changeKeyPair = await CryptoUtil.externalAddressFromMnemonic(mnemonic, network);
+    const changeKeyPair = await CryptoUtil.changeAddressFromMnemonic(mnemonic, network);
 
     // get the legacy address
     const legacyAddress = CryptoUtil.toLegacyAddress(changeKeyPair, network);

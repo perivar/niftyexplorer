@@ -85,7 +85,7 @@ export const sendNFY = async (wallet: any, nonSlpUtxos: any, { addresses, values
     }
 
     // Generate a change address from a Mnemonic of a private key.
-    const changeKeyPair = await CryptoUtil.externalAddressFromMnemonic(wallet.mnemonic, network);
+    const changeKeyPair = await CryptoUtil.changeAddressFromMnemonic(wallet.mnemonic, network);
 
     // Sign the transactions with the HD node.
     for (let i = 0; i < inputUtxos.length; i++) {

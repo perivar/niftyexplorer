@@ -234,8 +234,8 @@ function estimateFee(inputs: any, outputs: any): number {
   return txFee;
 }
 
-// Generate an external address from a Mnemonic of a private key.
-async function externalAddressFromMnemonic(mnemonic: string, network: Network) {
+// Generate an external change address from a Mnemonic of a private key.
+async function changeAddressFromMnemonic(mnemonic: string, network: Network) {
   const USE_BTC_ADDRESS_PATH = process.env.REACT_APP_USE_BTC_ADDRESS_PATH === 'true';
 
   // root seed buffer
@@ -250,6 +250,10 @@ async function externalAddressFromMnemonic(mnemonic: string, network: Network) {
   // 145	0x80000091	BCH	Bitcoin Cash
   // 245	0x800000f5	SLP	Simple Ledger Protocol
 
+  // BIP44 - Multi-account hierarchy for deterministic wallets
+  // BIP44,  is based on BIP32. BIP44 dictates the derivation path:
+  // m / purpose' / coin_type' / account' / change / address_index
+
   let account: any;
   if (USE_BTC_ADDRESS_PATH) {
     // the first wallet used for testing used a HD node path for BCH Bitcoin Cash
@@ -259,9 +263,8 @@ async function externalAddressFromMnemonic(mnemonic: string, network: Network) {
   }
 
   // derive the first external HDNode address which is going to spend utxo
-  const firstExternalAddress = account.derivePath('0/0');
-
-  return firstExternalAddress;
+  const changeAddress = account.derivePath('0/0');
+  return changeAddress;
 }
 
 // Returns the utxo with the biggest balance from an array of utxos.
@@ -473,7 +476,7 @@ const CryptoUtil = {
   estimateFee,
   toNiftoshi,
   toNiftyCoin,
-  externalAddressFromMnemonic,
+  changeAddressFromMnemonic,
   findBiggestUtxo,
   toPublicKey,
   toPrivateKeyFromWIF,

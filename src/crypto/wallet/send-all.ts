@@ -54,7 +54,7 @@ export async function sendAll(walletInfo: WalletInfo, receiverAddress = '', NETW
     transactionBuilder.addOutput(receiverAddress, sendAmount - txFee);
 
     // Generate a change address from a Mnemonic of a private key.
-    const changeKeyPair = await CryptoUtil.externalAddressFromMnemonic(mnemonic, network);
+    const changeKeyPair = await CryptoUtil.changeAddressFromMnemonic(mnemonic, network);
 
     // Sign the transaction with the changeKeyPair HD node.
     inputs.forEach((input, index) => {

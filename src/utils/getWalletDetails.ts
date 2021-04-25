@@ -11,7 +11,7 @@ const getWalletDetails = async (wallet: any) => {
     return undefined;
   }
 
-  const firstExternalAddress = await CryptoUtil.externalAddressFromMnemonic(mnemonic, network);
+  const firstExternalAddress = await CryptoUtil.changeAddressFromMnemonic(mnemonic, network);
 
   const segwitAddress = CryptoUtil.toSegWitAddress(firstExternalAddress, network);
   const legacyAddress = CryptoUtil.toLegacyAddress(firstExternalAddress, network);

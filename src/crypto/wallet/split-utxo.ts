@@ -69,7 +69,7 @@ export async function splitUtxo(walletInfo: WalletInfo, splitCount = 5, NETWORK 
     }
 
     // Generate a change address from a Mnemonic of a private key.
-    const changeKeyPair = await CryptoUtil.externalAddressFromMnemonic(mnemonic, network);
+    const changeKeyPair = await CryptoUtil.changeAddressFromMnemonic(mnemonic, network);
 
     // Sign the transaction with the changeKeyPair HD node.
     transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
