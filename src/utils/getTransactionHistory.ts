@@ -165,9 +165,9 @@ const getTransactionHistory = async (legacyAddress: string, tokens: any) => {
       try {
         return {
           txid: tx.txid,
-          date: new Date(tx.time * 1000),
+          date: tx.time ? new Date(tx.time * 1000) : new Date(),
           time: tx.time,
-          confirmations: tx.confirmations,
+          confirmations: tx.confirmations ? tx.confirmations : 'Not yet confirmed',
           transactionBalance: calculateTransactionBalance(tx, legacyAddress)
         };
       } catch (err) {
