@@ -267,9 +267,9 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader }: any) =
                         {el.transactionBalance.type !== 'Unknown' && (
                           <>
                             {' '}
-                            <p>{`${el.transactionBalance.balance > 0 ? '+' : ''}${
-                              el.transactionBalance.balance
-                            } NFY`}</p>
+                            <p>{`${el.transactionBalance.balance > 0 ? '+' : ''}${el.transactionBalance.balance} ${
+                              !el.transactionBalance.type.includes('SLP') ? 'NFY' : 'Tokens'
+                            }`}</p>
                             {/* <p>{`${el.transactionBalance.balance > 0 ? '+$' : '-$'}${
                               (Math.abs(el.transactionBalance.balance) * nfyToDollar).toFixed(2).toString() === '0.00'
                                 ? 0.01

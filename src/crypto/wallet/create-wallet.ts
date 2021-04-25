@@ -35,7 +35,7 @@ export const createWallet = async (NETWORK: string, importMnemonic?: string): Pr
     const masterHDNode = bip32.fromSeed(rootSeed, network);
 
     // HDNode of BIP44 account
-    console.log("BIP44 Account: \"m/44'/145'/0'\"");
+    // console.log("BIP44 Account: \"m/44'/145'/0'\"");
     // outStr += "BIP44 Account: \"m/44'/145'/0'\"\n";
 
     // Generate the first seed addresses.
@@ -46,7 +46,7 @@ export const createWallet = async (NETWORK: string, importMnemonic?: string): Pr
       // 145	0x80000091	BCH	Bitcoin Cash
       // 245	0x800000f5	SLP	Simple Ledger Protocol
       const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/${i}`);
-      console.log(`m/44'/145'/0'/0/${i}: ${CryptoUtil.toSegWitAddress(childNode, network)}`);
+      // console.log(`m/44'/145'/0'/0/${i}: ${CryptoUtil.toSegWitAddress(childNode, network)}`);
       // outStr += `m/44'/145'/0'/0/${i}: ${CryptoUtil.toCashAddress(childNode, network)}\n`;
 
       // Save the first seed address for use in the .json output file.

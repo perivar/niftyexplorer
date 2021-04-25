@@ -14,6 +14,9 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
   if (isSLP) {
     // transactionBalance.metaData.tokenId
     // transactionBalance.metaData.message
+
+    slp.Utils.setQuantityIfSend(isSLP, tx, legacyAddress);
+
     return {
       type: 'SLP',
       balance: isSLP.qty,
@@ -24,21 +27,24 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
             ? 'NFT Group'
             : isSLP.tokenType === 65
             ? 'NFT Child'
+            : isSLP.tokenType === 1
+            ? 'SLP Token'
             : `Unknown type: ${isSLP.tokenType}`,
         message: [isSLP.txType ?? '', isSLP.ticker ?? '', isSLP.name ?? '', isSLP.documentUri ?? ''].join(',')
       }
     };
   } else if (!hasOpReturn(vout)) {
     if (
+      // PIN TODO - this will never hit with electrumx that doesn't have these attributes added to vin and vout
       vout.length === 1 &&
       legacyAddress === vout[0].scriptPubKey.addresses[0] &&
       ((vin[0].addr && vin.findIndex((input: any) => !legacyAddress === input.addr) === -1) ||
         (vin[0].legacyAddress && vin.findIndex((input: any) => !legacyAddress === input.legacyAddress) === -1))
     ) {
       const previousBalance = vin
-        .map((input: any) => +(vin[0].valueSat ? input.valueSat : input.value))
-        .filter((el: any) => el > 546)
-        .reduce((a: any, b: any) => +a + +b, 0);
+        .map((input: any) => +input.value)
+        .filter((el: number) => el > 546)
+        .reduce((a: number, b: number) => +a + +b, 0);
 
       return {
         balance: ((+vout[0].value * Math.pow(10, 8) - previousBalance) * Math.pow(10, -8)).toFixed(8),
@@ -59,7 +65,7 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
           vout
             .slice(0, vout.length - 1)
             .map((element: any) => +element.value * Math.pow(10, 8))
-            .reduce((a: any, b: any) => a + b, 0) *
+            .reduce((a: number, b: number) => a + b, 0) *
           Math.pow(10, -8) *
           -1
         ).toFixed(8),
@@ -79,7 +85,7 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
             .slice(0, vout.length - 1)
             .filter((element: any) => legacyAddress === element.scriptPubKey.addresses[0])
             .map((el: any) => +el.value * Math.pow(10, 8))
-            .reduce((a: any, b: any) => a + b, 0) * Math.pow(10, -8)
+            .reduce((a: number, b: number) => a + b, 0) * Math.pow(10, -8)
         ).toFixed(8),
         type: 'Received'
       };
@@ -91,7 +97,7 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
     ) {
       return {
         balance: (
-          vout.map((element: any) => +element.value * Math.pow(10, 8)).reduce((a: any, b: any) => a + b, 0) *
+          vout.map((element: any) => +element.value * Math.pow(10, 8)).reduce((a: number, b: number) => a + b, 0) *
           Math.pow(10, -8) *
           -1
         ).toFixed(8),
@@ -134,12 +140,18 @@ const hasOpReturn = (vout: any): boolean => {
 
 const decodeOpReturn = (vout: any): any => {
   const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
-  const metaData =
-    scriptASMArray.length > 1
-      ? scriptASMArray.map((asm: any) => {
-          return Buffer.from(asm, 'hex').toString('ascii');
-        })
-      : null;
+  const decoded: any = [];
+  if (scriptASMArray.length > 1) {
+    scriptASMArray.map((asm: any) => {
+      try {
+        const ascii = Buffer.from(asm, 'hex').toString('ascii').trim();
+        if (ascii !== '') decoded.push(ascii);
+      } catch (error) {
+        // ignore
+      }
+    });
+  }
+  const metaData = decoded.join(',');
 
   return scriptASMArray[0] === 'OP_RETURN' && metaData;
 };

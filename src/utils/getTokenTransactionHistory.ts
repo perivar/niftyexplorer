@@ -14,7 +14,7 @@ export const getAllTransactionsHydrated = async (legacyAddress: string) => {
   const hydratedTransactions = await Promise.all(
     allTransactions.map(async (tx: any) => {
       try {
-        const txidDetail = await slp.Utils.hydrateTxNoValidation(tx.tx_hash);
+        const txidDetail = await slp.Utils.hydrateTxNoValidation(tx.tx_hash, legacyAddress);
         return {
           ...txidDetail,
           date: txidDetail.time ? new Date(txidDetail.time * 1000) : new Date(),
