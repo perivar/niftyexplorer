@@ -46,7 +46,7 @@ export const sendNFY = async (wallet: any, nonSlpUtxos: any, { addresses, values
     const niftoshisToSend = CryptoUtil.toNiftoshi(value.toNumber());
 
     let originalAmount = new Big(0);
-    const txFee = 0;
+    let txFee = 0;
     for (let i = 0; i < nonSlpUtxos.length; i++) {
       const utxo = nonSlpUtxos[i];
       originalAmount = originalAmount.plus(utxo.value);
@@ -58,7 +58,7 @@ export const sendNFY = async (wallet: any, nonSlpUtxos: any, { addresses, values
       inputUtxos.push(utxo);
 
       // estimate fee. paying X niftoshis/byte
-      const txFee = CryptoUtil.estimateFee({ P2PKH: inputUtxos.length }, { P2PKH: addresses.length + 1 });
+      txFee = CryptoUtil.estimateFee({ P2PKH: inputUtxos.length }, { P2PKH: addresses.length + 1 });
 
       if (originalAmount.minus(niftoshisToSend).minus(txFee).gte(0)) {
         break;
