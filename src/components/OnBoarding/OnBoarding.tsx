@@ -126,7 +126,6 @@ export const OnBoarding = ({ history }: any) => {
                 non-custodial web wallet supporting SLP and NFY.
               </p>
               <p>
-                
                 Web wallets offer user convenience, but storing large amounts of money on a web wallet is not
                 recommended.
               </p>

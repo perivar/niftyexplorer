@@ -493,7 +493,6 @@ const Icons = () => {
                         onClick={() => null}
                         renderExpanded={() => (
                           <>
-                            
                             <Cropper
                               showGrid={false}
                               zoomWithScroll={false}
