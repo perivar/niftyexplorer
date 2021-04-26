@@ -50,7 +50,7 @@ export interface TokenUTXOInfo extends UTXOInfo {
 
 export interface SlpToken {
   tokenType: string;
-  txType: string;
+  transactionType: string;
   tokenId: string;
 }
 

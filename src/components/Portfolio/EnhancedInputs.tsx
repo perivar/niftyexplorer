@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Form, Input } from 'antd';
 import { WalletOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { ScanQRCode } from './ScanQRCode';
 
 export const InputAddonText = styled.span`
   width: 100%;
@@ -31,11 +32,7 @@ export const FormItemWithMaxAddon = ({ onMax, inputProps, ...otherProps }: any) 
 export const FormItemWithQRCodeAddon = ({ onScan, inputProps, ...otherProps }: any) => {
   return (
     <Form.Item {...otherProps}>
-      <Input
-        prefix={<WalletOutlined />}
-        // addonAfter={<ScanQRCode delay={300} onScan={onScan} />}
-        {...inputProps}
-      />
+      <Input prefix={<WalletOutlined />} addonAfter={<ScanQRCode delay={300} onScan={onScan} />} {...inputProps} />
     </Form.Item>
   );
 };

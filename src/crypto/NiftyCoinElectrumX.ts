@@ -115,7 +115,6 @@ export class NiftyCoinElectrumX {
 
       return electrumResponse.result;
     } catch (err) {
-      // Write out error to error log.
       console.log('Error in elecrumx.js/getUtxos().', err);
 
       throw new Error(_this.errorHandler(err));
@@ -185,7 +184,6 @@ export class NiftyCoinElectrumX {
     } catch (err) {
       // console.log('err1: ', err)
 
-      // Write out error to error log.
       console.log('Error in elecrumx.js/_utxosFromElectrumx(): ', err);
       throw err;
     }
@@ -220,7 +218,6 @@ export class NiftyCoinElectrumX {
       const sum = electrumResponse.result.confirmed + electrumResponse.result.unconfirmed;
       return sum;
     } catch (err) {
-      // Write out error to error log.
       console.log('Error in elecrumx.js/getBalance().', err);
 
       throw new Error(_this.errorHandler(err));
@@ -290,7 +287,6 @@ export class NiftyCoinElectrumX {
     } catch (err) {
       // console.log('err1: ', err)
 
-      // Write out error to error log.
       console.log('Error in elecrumx.js/_transactionsFromElectrumx(): ', err);
       throw err;
     }
@@ -323,7 +319,6 @@ export class NiftyCoinElectrumX {
 
       return electrumResponse.result;
     } catch (err) {
-      // Write out error to error log.
       console.log('Error in elecrumx.js/getTransactions().', err);
 
       throw new Error(_this.errorHandler(err));
@@ -395,7 +390,6 @@ export class NiftyCoinElectrumX {
     } catch (err) {
       // console.log('err: ', err)
 
-      // Write out error to error log.
       console.log('Error in elecrumx.js/_mempoolFromElectrumx(): ', err);
       throw err;
     }
@@ -428,7 +422,6 @@ export class NiftyCoinElectrumX {
 
       return electrumResponse.result;
     } catch (err) {
-      // Write out error to error log.
       console.log('Error in elecrumx.js/getMempool().', err);
 
       throw new Error(_this.errorHandler(err));
@@ -507,7 +500,7 @@ export class NiftyCoinElectrumX {
 
         // Pass the error message if ElectrumX reports an error.
         if (electrumResponse && electrumResponse.error && electrumResponse.error.code) {
-          throw new Error(electrumResponse.error.message);
+          throw new Error(_this.errorHandler(electrumResponse.error));
         }
 
         // return 'testing - not sent!';

@@ -30,7 +30,7 @@ const calculateTransactionBalance = (tx: any, legacyAddress: string) => {
             : isSLP.tokenType === 1
             ? 'SLP Token'
             : `Unknown type: ${isSLP.tokenType}`,
-        message: [isSLP.txType ?? '', isSLP.ticker ?? '', isSLP.name ?? '', isSLP.documentUri ?? ''].join(',')
+        message: [isSLP.transactionType ?? '', isSLP.ticker ?? '', isSLP.name ?? '', isSLP.documentUri ?? ''].join(',')
       }
     };
   } else if (!hasOpReturn(vout)) {

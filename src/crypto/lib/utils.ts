@@ -42,10 +42,10 @@ export class Utils {
   setQuantityIfSend(slpData: any, tx: any, legacyAddress: string) {
     const { vout } = tx;
 
-    const txType = slpData.txType.toLowerCase();
+    const transactionType = slpData.transactionType.toLowerCase();
 
     // Handle Send SLP transactions.
-    if (txType === 'send') {
+    if (transactionType === 'send') {
       // figure out the vout that matches our address
 
       // get the slp vouts
@@ -79,6 +79,10 @@ export class Utils {
       tx = await _this.electrumx.getTransaction(txid);
       // console.log(`txDetails: ${JSON.stringify(tx, null, 2)}`)
 
+      if (!tx) {
+        throw new Error(`no transactions with the id ${txid} found.`);
+      }
+
       const slpData = _this.decodeTxData(tx);
 
       _this.setQuantityIfSend(slpData, tx, legacyAddress);
@@ -91,7 +95,7 @@ export class Utils {
         hasBaton: !!slpData.mintBatonVout,
         detail: {
           ...slpData,
-          transactionType: slpData.txType,
+          transactionType: slpData.transactionType,
           symbol: slpData.ticker ? slpData.ticker : 'Tokens'
         }
       };
@@ -106,8 +110,11 @@ export class Utils {
           err.message.indexOf('trailing data') === -1)
       ) {
         console.log("unknown error from decodeOpReturn(). Marking as 'null'", err);
-        tx.isValid = null;
-        return tx;
+        if (tx) {
+          tx.isValid = null;
+          return tx;
+        }
+        return null;
       }
 
       // this is normal
@@ -181,14 +188,14 @@ export class Utils {
     if (parsedData.transactionType === 'SEND') {
       tokenData = {
         tokenType: parsedData.tokenType,
-        txType: parsedData.transactionType,
+        transactionType: parsedData.transactionType,
         tokenId: parsedData.data.tokenId.toString('hex'),
         amounts: parsedData.data.amounts
       };
     } else if (parsedData.transactionType === 'GENESIS') {
       tokenData = {
         tokenType: parsedData.tokenType,
-        txType: parsedData.transactionType,
+        transactionType: parsedData.transactionType,
         ticker: parsedData.data.ticker.toString(),
         name: parsedData.data.name.toString(),
         tokenId: txid,
@@ -201,7 +208,7 @@ export class Utils {
     } else if (parsedData.transactionType === 'MINT') {
       tokenData = {
         tokenType: parsedData.tokenType,
-        txType: parsedData.transactionType,
+        transactionType: parsedData.transactionType,
         tokenId: parsedData.data.tokenId.toString('hex'),
         mintBatonVout: parsedData.data.mintBatonVout,
         qty: parsedData.data.qty
@@ -370,13 +377,13 @@ export class Utils {
         }
         // console.log(`slpData: ${JSON.stringify(slpData, null, 2)}`)
 
-        const txType = slpData.txType.toLowerCase();
+        const transactionType = slpData.transactionType.toLowerCase();
 
         // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
 
         // If there is an OP_RETURN, attempt to decode it.
         // Handle Genesis SLP transactions.
-        if (txType === 'genesis') {
+        if (transactionType === 'genesis') {
           if (
             utxo.vout !== slpData.mintBatonVout && // UTXO is not a mint baton output.
             utxo.vout !== 1 // UTXO is not the reciever of the genesis or mint tokens.
@@ -412,7 +419,7 @@ export class Utils {
         }
 
         // Handle Mint SLP transactions.
-        if (txType === 'mint') {
+        if (transactionType === 'mint') {
           if (
             utxo.vout !== slpData.mintBatonVout && // UTXO is not a mint baton output.
             utxo.vout !== 1 // UTXO is not the reciever of the genesis or mint tokens.
@@ -458,7 +465,7 @@ export class Utils {
         }
 
         // Handle Send SLP transactions.
-        if (txType === 'send') {
+        if (transactionType === 'send') {
           // Filter out any vouts that match.
           // const voutMatch = slpData.spendData.filter(x => utxo.vout === x.vout)
           // console.log(`voutMatch: ${JSON.stringify(voutMatch, null, 2)}`)

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Alert, Typography, Form, Input, Button, Collapse, Select } from 'antd';
-
-import { ToolFilled, WarningOutlined, EditFilled } from '@ant-design/icons';
+import { ToolFilled, WarningOutlined, EditFilled, WarningFilled } from '@ant-design/icons';
 import StyledConfigure from '../Common/StyledPage';
 import { WalletContext } from '../../utils/context';
 import { StyledCollapse } from '../Common/StyledCollapse';
@@ -70,7 +69,7 @@ export default () => {
     setData((p) => ({ ...p, [name]: value }));
   };
 
-  const handleRemoveWallet = () => {
+  const handleResetWallet = () => {
     window.localStorage.setItem('wallet', '');
     setTimeout(() => {
       window.location.reload();
@@ -94,12 +93,12 @@ export default () => {
                 message={
                   <span>
                     <Paragraph>
-                      <WarningOutlined /> Be careful.
+                      <WarningFilled style={{ fontSize: '20px', color: '#f04134' }} /> Be careful.
                     </Paragraph>
                     <Paragraph>Backup your wallet first.</Paragraph>
                     <Paragraph>
-                      Removing the wallet restart the app, and the money will be gone if you didn't make a backup of the
-                      mnemonic.
+                      Resetting the wallet restart the app, and the money will be gone if you didn't make a backup of
+                      the mnemonic.
                     </Paragraph>
                   </span>
                 }
@@ -158,12 +157,14 @@ export default () => {
             {wallet && wallet.mnemonic && (
               <StyledCollapse>
                 <Panel header="Seed Phrase (Mnemonic)" key="1" disabled={!(wallet || {}).mnemonic}>
-                  <p>{wallet && wallet.mnemonic ? wallet.mnemonic : ''}</p>
+                  <Paragraph copyable={true}>{wallet && wallet.mnemonic ? wallet.mnemonic : ''}</Paragraph>
                 </Panel>
               </StyledCollapse>
             )}
             <div style={{ paddingTop: '12px', marginBottom: '10px' }}>
-              <Button onClick={handleRemoveWallet}>Remove Wallet</Button>
+              <Button onClick={handleResetWallet}>
+                <WarningFilled style={{ color: '#f04134' }} /> Reset Wallet
+              </Button>
             </div>
           </Card>
         </Col>

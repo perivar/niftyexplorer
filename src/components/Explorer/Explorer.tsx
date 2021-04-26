@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as slpParser from 'slp-parser';
 import CryptoNFT from '../../crypto/slp/nft';
 import CryptoUtil, { NFTChildGenesisOpReturnConfig, WalletInfo } from '../../crypto/util';
 
@@ -12,7 +13,9 @@ export const Explorer = () => {
   const [result, setResult] = useState<string>('');
 
   // network
-  const electrumx = CryptoUtil.getElectrumX();
+  const NETWORK = process.env.REACT_APP_NETWORK;
+  const electrumx = CryptoUtil.getElectrumX(NETWORK);
+  const slp = CryptoUtil.getSLP(NETWORK);
 
   const handleSearch = () => {
     if (query === '') return;
@@ -20,17 +23,17 @@ export const Explorer = () => {
     setLoading(true);
 
     let result = '';
-    electrumx.getTransaction(query).then((res: any) => {
-      // console.log(res);
-      result = `${JSON.stringify(res, null, 2)}`;
+    electrumx.getTransaction(query).then((txDetails: any) => {
+      result = `${JSON.stringify(txDetails, null, 2)}`;
 
-      CryptoNFT.getNFT(query).then((res: any) => {
-        // console.log(res);
-        result += `\n${JSON.stringify(res, null, 2)}`;
-
-        setResult(result);
-        setLoading(false);
-      });
+      try {
+        const parsedSlpData = slp.Utils.decodeTxData(txDetails);
+        result += `\n${JSON.stringify(parsedSlpData, null, 2)}`;
+      } catch (error) {
+        // An error will be thrown if the txid is not SLP.
+      }
+      setResult(result);
+      setLoading(false);
     });
   };
 
