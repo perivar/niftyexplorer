@@ -372,7 +372,7 @@ const Icons = () => {
                       </Paragraph>
                     )}
                     {/* <Paragraph>
-                      Get free NFY from the{' '}
+                      Get free NFY from the
                       <strong>
                         <a target="_blank" rel="noopener noreferrer" href="https://free.niftycoin.org/">
                           niftycoin.org Faucet
@@ -483,7 +483,7 @@ const Icons = () => {
                               }}>
                               Click on the file name to crop the image
                             </Paragraph>
-                          </Tooltip>{' '}
+                          </Tooltip>
                         </>
                       )}
 
@@ -493,7 +493,7 @@ const Icons = () => {
                         onClick={() => null}
                         renderExpanded={() => (
                           <>
-                            {' '}
+                            
                             <Cropper
                               showGrid={false}
                               zoomWithScroll={false}
@@ -513,7 +513,7 @@ const Icons = () => {
                               <Switch
                                 style={{ color: '#F34745' }}
                                 onChange={(checked) => setRoundSelection(!checked)}
-                              />{' '}
+                              />
                               {roundSelection ? 'Change to Square Crop Shape' : 'Change to Round Crop Shap'}
                             </StyledSwitch>
                             {'Zoom:'}

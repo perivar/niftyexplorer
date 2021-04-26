@@ -266,7 +266,7 @@ const SendNFY = ({ onClose, outerAction, filledAddress, showCardHeader }: any) =
                         <p>{el.date.toLocaleString()}</p>
                         {el.transactionBalance.type !== 'Unknown' && (
                           <>
-                            {' '}
+                            
                             <p>{`${el.transactionBalance.balance > 0 ? '+' : ''}${el.transactionBalance.balance} ${
                               !el.transactionBalance.type.includes('SLP') ? 'NFY' : 'Tokens'
                             }`}</p>

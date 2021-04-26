@@ -147,7 +147,7 @@ export default () => {
                 </Button>
                 {isConfigUpdated && (
                   <Paragraph>
-                    Your configuration has been updated. Now connecting to{' '}
+                    Your configuration has been updated. Now connecting to
                     {option === 'custom' ? newRestApiUrl(protocol, data.restAPI) : defaultRestUrl}
                     ...
                   </Paragraph>

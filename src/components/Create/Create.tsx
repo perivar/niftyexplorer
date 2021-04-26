@@ -565,7 +565,7 @@ const Create = () => {
                         Deposit some NFY in order to pay for the transaction that will generate the token.
                       </Paragraph>
                       {/* <Paragraph>
-                        Get free NFY from the{' '}
+                        Get free NFY from the
                         <strong>
                           <a target="_blank" rel="noopener noreferrer" href="https://free.niftycoin.org/">
                             niftycoin.org Faucet
@@ -660,7 +660,7 @@ const Create = () => {
                     labelCol={{ span: 3, offset: 0 }}
                     colon={false}>
                     <Checkbox name="fixedSupply" checked={data.fixedSupply} onChange={(e) => handleCheckbox(e)}>
-                      Fixed Supply?{' '}
+                      Fixed Supply?
                     </Checkbox>
                     <Tooltip title="If you create a fixed supply token, you will not be able to mint additional supply for this token in the future.">
                       <InfoCircleOutlined />
@@ -686,7 +686,6 @@ const Create = () => {
                             <img src={imageUrl} alt="avatar" style={{ maxHeight: '128px', maxWidth: '100%' }} />
                           ) : (
                             <>
-                              {' '}
                               <UploadOutlined style={{ fontSize: '24px' }} />
                               <p>Click, or drag file to this area to upload</p>
                               <p style={{ fontSize: '12px' }}>Must be an image</p>
@@ -719,7 +718,7 @@ const Create = () => {
                                 onClick={() => setShowCropModal(true)}>
                                 Click here to crop or zoom your icon
                               </Paragraph>
-                            </Tooltip>{' '}
+                            </Tooltip>
                           </>
                         )}
 
@@ -729,7 +728,6 @@ const Create = () => {
                           onClick={() => null}
                           renderExpanded={() => (
                             <>
-                              {' '}
                               <Cropper
                                 showGrid={false}
                                 zoomWithScroll={false}
@@ -750,7 +748,7 @@ const Create = () => {
                                   style={{ color: '#F34745' }}
                                   // name="cropShape"
                                   onChange={(checked) => setRoundSelection(!checked)}
-                                />{' '}
+                                />
                                 {roundSelection ? 'Change to Square Crop Shape' : 'Change to Round Crop Shap'}
                               </StyledSwitch>
                               {'Zoom:'}

@@ -76,7 +76,7 @@ export const OnBoarding = ({ history }: any) => {
                 <Collapse.Panel
                   header={
                     <>
-                      <Img style={{ marginBottom: '3px' }} src={pixelSquareLogo} width="16" height="16" />{' '}
+                      <Img style={{ marginBottom: '3px' }} src={pixelSquareLogo} width="16" height="16" />
                       mint.niftycoin.org wallet
                     </>
                   }
@@ -119,14 +119,14 @@ export const OnBoarding = ({ history }: any) => {
             bordered={false}>
             <div style={{}}>
               <p>
-                mint.niftycoin.org is an{' '}
+                mint.niftycoin.org is an
                 <a href="https://github.com/niftycoin-project/mint/" target="_blank" rel="noopener noreferrer">
                   open source,
-                </a>{' '}
-                non-custodial web wallet supporting SLP and NFY.{' '}
+                </a>
+                non-custodial web wallet supporting SLP and NFY.
               </p>
               <p>
-                {' '}
+                
                 Web wallets offer user convenience, but storing large amounts of money on a web wallet is not
                 recommended.
               </p>
