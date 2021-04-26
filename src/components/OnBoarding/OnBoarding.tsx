@@ -76,7 +76,7 @@ export const OnBoarding = ({ history }: any) => {
                 <Collapse.Panel
                   header={
                     <>
-                      <Img style={{ marginBottom: '3px' }} src={pixelSquareLogo} width="16" height="16" />
+                      {/* <Img style={{ marginBottom: '3px' }} src={pixelSquareLogo} width="16" height="16" /> */}
                       mint.niftycoin.org wallet
                     </>
                   }
