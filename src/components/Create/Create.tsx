@@ -433,14 +433,17 @@ const Create = () => {
       });
 
       if (data.tokenIcon) {
+        const apiUrl = process.env.REACT_APP_ICON_API_URL;
+        if (!apiUrl) {
+          throw new Error('Missing API Server config: REACT_APP_ICON_API_URL');
+        }
+
         // Convert to FormData object for server parsing
         const formData = new FormData();
         for (const key in data) {
           formData.append(key, data[key]);
         }
         formData.append('tokenId', link.substr(link.length - 64));
-        const apiUrl = 'https://mint-icons.btctest.net/new';
-        // const apiUrl = "http://localhost:3002/new";
 
         try {
           const apiTest = await fetch(apiUrl, {
