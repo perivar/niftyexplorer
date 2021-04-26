@@ -119,9 +119,13 @@ export const OnBoarding = ({ history }: any) => {
             bordered={false}>
             <div style={{}}>
               <p>
-                mint.niftycoin.org is an
-                <a href="https://github.com/niftycoin-project/mint/" target="_blank" rel="noopener noreferrer">
-                  open source,
+                mint.niftycoin.org is an{' '}
+                <a
+                  style={{ color: '#096dd9' }}
+                  href="https://github.com/niftycoin-project/mint/"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  open source,{' '}
                 </a>
                 non-custodial web wallet supporting SLP and NFY.
               </p>
