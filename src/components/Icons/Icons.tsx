@@ -1,20 +1,20 @@
 /* eslint-disable no-useless-escape */
 import React from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
-import { QRCode } from '../Common/QRCode';
 import { WalletContext } from '../../utils/context';
 import { Input, Button, notification, Spin, Row, Col, Card, Form, Upload, Tooltip, Slider, Switch } from 'antd';
-
 import { PaperClipOutlined, PlusSquareFilled, UploadOutlined } from '@ant-design/icons';
+import { RcFile } from 'antd/lib/upload/interface';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import Paragraph from 'antd/lib/typography/Paragraph';
+
 import StyledCreate from '../Common/StyledPage';
 import { EnhancedModal } from '../Portfolio/EnhancedModal';
 import getCroppedImg from '../../utils/cropImage';
 import getRoundImg from '../../utils/roundImage';
 import getResizedImage from '../../utils/resizeImage';
-import { RcFile } from 'antd/lib/upload/interface';
+import { QRCode } from '../Common/QRCode';
 
 const { Dragger } = Upload;
 

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Row, Col, Avatar, Empty, Alert, notification, Radio, Spin, Collapse, Switch } from 'antd';
-
 import { DollarCircleFilled, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 import { EnhancedCard } from './EnhancedCard';
 import { WalletContext } from '../../utils/context';

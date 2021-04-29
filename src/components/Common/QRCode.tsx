@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import RawQRCode from 'qrcode.react';
-import nfyLogo from '../../assets/nfy-logo_filled.png';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Input, Button } from 'antd';
 import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import nfyLogo from '../../assets/nfy-logo_filled.png';
 
 export const StyledRawQRCode = styled(RawQRCode)`
   cursor: pointer;

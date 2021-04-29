@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { WalletContext } from '../../utils/context';
 import { Row, Col, Card, Alert, Typography, Form, Input, Button, Collapse, Select } from 'antd';
 import { ToolFilled, WarningOutlined, EditFilled, WarningFilled } from '@ant-design/icons';
 import StyledConfigure from '../Common/StyledPage';
-import { WalletContext } from '../../utils/context';
 import { StyledCollapse } from '../Common/StyledCollapse';
+
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;

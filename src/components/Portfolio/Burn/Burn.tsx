@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { WalletContext } from '../../../utils/context';
-import broadcastTransaction from '../../../utils/broadcastTransaction';
 import { Alert, Card, Form, Input, Button, Spin, notification, Switch } from 'antd';
-
 import { ExclamationCircleTwoTone, BlockOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { FireIcon } from '../../Common/CustomIcons';
 import { FormItemWithMaxAddon } from '../EnhancedInputs';
+import broadcastTransaction from '../../../utils/broadcastTransaction';
 
 const StyledInput = styled.div`
   .ant-form-item-control.has-error ant-input {

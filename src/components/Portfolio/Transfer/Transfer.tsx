@@ -3,7 +3,6 @@ import { WalletContext } from '../../../utils/context';
 import styled from 'styled-components';
 import { Card, Form, Button, Spin, notification } from 'antd';
 import { Row, Col } from 'antd';
-
 import { BlockOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import sendToken from '../../../utils/broadcastTransaction';

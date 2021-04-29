@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { WalletContext } from '../../../utils/context';
 import mintToken from '../../../utils/broadcastTransaction';
 import { Card, Form, Input, Button, Spin, notification } from 'antd';
-
 import { BlockOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';

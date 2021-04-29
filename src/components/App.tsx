@@ -1,21 +1,22 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
-import './App.less';
 import styled from 'styled-components';
 import { useSwipeable } from 'react-swipeable';
+import { Route, Redirect, Link, Switch, useLocation, useHistory } from 'react-router-dom';
 import { Layout, Menu, Radio, Tabs } from 'antd';
-
 import { FolderOpenFilled, PlusSquareFilled } from '@ant-design/icons';
+import { WalletContext } from '../utils/context';
 import Portfolio from './Portfolio/Portfolio';
 import Icons from './Icons/Icons';
-import Create from './Create/Create';
+import CreateToken from './Create/CreateToken';
+import CreateNFT from './Create/CreateNFT';
 import Configure from './Configure/Configure';
 import NotFound from './NotFound';
-import { WalletContext } from '../utils/context';
-import logo from '../assets/logo.png';
-import { Route, Redirect, Link, Switch, useLocation, useHistory } from 'react-router-dom';
 import { QRCode } from './Common/QRCode';
 import { Explorer } from './Explorer/Explorer';
+
+import logo from '../assets/logo.png';
+import './App.less';
 
 const { Header, Content, Sider, Footer } = Layout;
 const { TabPane } = Tabs;
@@ -212,6 +213,11 @@ const App = () => {
                     <Link to="/create">Create</Link>
                   </Menu.Item>
                 )}
+                {wallet && (
+                  <Menu.Item key="createnft">
+                    <Link to="/createnft">Create NFT</Link>
+                  </Menu.Item>
+                )}
                 {/* <Menu.Item key="icons">
                   <Link to="/icons">Icons</Link>
                 </Menu.Item> */}
@@ -291,7 +297,10 @@ const App = () => {
                   <Portfolio />
                 </Route>
                 <Route path="/create">
-                  <Create />
+                  <CreateToken />
+                </Route>
+                <Route path="/createnft">
+                  <CreateNFT />
                 </Route>
                 <Route path="/icons">
                   <Icons />

@@ -119,7 +119,7 @@ const StyledHashCollapse = styled.div`
   }
 `;
 
-const Create = () => {
+const CreateToken = () => {
   const ContextValue = React.useContext(WalletContext);
   const { wallet, balances, loading: loadingContext } = ContextValue;
   const [loading, setLoading] = React.useState(false);
@@ -936,4 +936,4 @@ const Create = () => {
   );
 };
 
-export default withRouter(Create);
+export default withRouter(CreateToken);
