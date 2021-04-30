@@ -45,9 +45,11 @@ const StyledPage = styled.div`
       border-bottom: 1px solid #eaedf3;
     }
 
+    /*
     * {
       color: rgb(62, 63, 66) !important;
     }
+		*/
   }
 `;
 

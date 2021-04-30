@@ -19,7 +19,8 @@ import {
   Checkbox,
   Popconfirm,
   Slider,
-  Switch
+  Switch,
+  Divider
 } from 'antd';
 import { PaperClipOutlined, InfoCircleOutlined, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -33,7 +34,6 @@ import getCroppedImg from '../../utils/cropImage';
 import getRoundImg from '../../utils/roundImage';
 import getResizedImage from '../../utils/resizeImage';
 
-import * as CryptoJS from 'crypto-js';
 import { RcFile } from 'antd/lib/upload/interface';
 
 const { Dragger } = Upload;
@@ -61,70 +61,26 @@ const StyledCard = styled.div`
   }
 `;
 
-const StyledAlert = styled.div`
-  margin-bottom: 8px;
-
-  .ant-alert.ant-alert-info.ant-alert-no-icon.ant-alert-closable {
-    background: #fff;
-  }
-  .ant-alert-message {
-    font-size: 12px;
-
-    .anticon {
-      font-size: 14px;
-    }
-  }
-  .ant-alert-close-icon {
-    margin-right: -14px;
-  }
-`;
-
-const StyledMoreOptionsCollapse = styled.div`
-  .ant-collapse-content-box {
-    padding: 4px !important;
-  }
-  .ant-collapse-content.ant-collapse-content-active {
-    border: none !important;
-  }
-`;
-
-const StyledHashCollapse = styled.div`
-  .ant-collapse .ant-collapse-header {
-    color: #c5c5c7 !important;
-  }
-  .ant-collapse-content.ant-collapse-content-active {
-    padding: 0;
-    background: #fff !important;
-
-    .ant-collapse-content-box {
-      background: #fff !important;
-    }
-  }
-
-  .ant-collapse.ant-collapse-borderless.ant-collapse-icon-position-left {
-    border: 1px solid #eaedf3;
-    border-radius: 8px;
-  }
-  .ant-collapse-header {
-    padding: 8px 12px 8px 12px !important;
-    background: #fff;
-    border-radius: 8px !important;
-    font-weight: bold;
-  }
-  .ant-collapse-item.ant-collapse-no-arrow {
-    border-bottom: none;
-  }
-  .ant-collapse-item.ant-collapse-item-active.ant-collapse-no-arrow {
-    border-bottom: 1px solid #eaedf3;
-  }
-`;
+interface DataInterface {
+  dirty: boolean;
+  tokenName: string;
+  tokenSymbol: string;
+  documentHash: string;
+  decimals: number; // a NFT has a decimal of zero
+  documentUri: string;
+  amount: string;
+  email: string;
+  fixedSupply: boolean;
+  tokenFile: undefined | any;
+  [key: string]: any; // indexer
+}
 
 const CreateNFT = () => {
   const ContextValue = React.useContext(WalletContext);
   const { wallet, balances, loading: loadingContext } = ContextValue;
   const [loading, setLoading] = React.useState(false);
 
-  const [data, setData] = React.useState<any>({
+  const [data, setData] = React.useState<DataInterface>({
     dirty: true,
     tokenName: '',
     tokenSymbol: '',
@@ -133,18 +89,19 @@ const CreateNFT = () => {
     documentUri: '',
     amount: '',
     email: '',
-    fixedSupply: false
+    fixedSupply: false,
+    tokenFile: undefined
   });
   const [hash, setHash] = React.useState('');
   const [fileList, setFileList] = React.useState();
   const [file, setFile] = React.useState<any>();
   const [fileName, setFileName] = React.useState('');
-  const [tokenIconFileList, setTokenIconFileList] = React.useState();
+  const [tokenImageFileList, setTokenImageFileList] = React.useState();
   const [rawImageUrl, setRawImageUrl] = React.useState('');
   const [imageUrl, setImageUrl] = React.useState('');
   const [showConfirm, setShowConfirm] = React.useState(false);
   const [showCropModal, setShowCropModal] = React.useState(false);
-  const [roundSelection, setRoundSelection] = React.useState(true);
+  const [roundSelection, setRoundSelection] = React.useState(false);
 
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [rotation, setRotation] = React.useState(0);
@@ -302,7 +259,7 @@ const CreateNFT = () => {
         description: e.message || e.error || JSON.stringify(e),
         duration: 0
       });
-      setTokenIconFileList(undefined);
+      setTokenImageFileList(undefined);
       setData((prev: any) => ({ ...prev, tokenFile: undefined }));
       setImageUrl('');
       return false;
@@ -313,10 +270,10 @@ const CreateNFT = () => {
     const list: any = [...info.fileList];
 
     if (info.file.type.split('/')[0] !== 'image') {
-      setTokenIconFileList(undefined);
+      setTokenImageFileList(undefined);
       setImageUrl('');
     } else {
-      setTokenIconFileList(list.slice(-1));
+      setTokenImageFileList(list.slice(-1));
     }
   };
 
@@ -359,6 +316,7 @@ const CreateNFT = () => {
       if (data.tokenFile) {
         const apiUrl = process.env.REACT_APP_FILE_API_URL;
         if (!apiUrl) {
+          setShowConfirm(false);
           throw new Error('Missing API Server config: REACT_APP_FILE_API_URL');
         }
 
@@ -380,6 +338,7 @@ const CreateNFT = () => {
           const apiTestJson = await apiTest.json();
 
           if (!apiTestJson.approvalRequested) {
+            setShowConfirm(false);
             throw new Error('Error in uploading token file');
           }
 
@@ -394,12 +353,14 @@ const CreateNFT = () => {
           });
         }
       }
-      if (docUri === '') throw new Error('No token file!');
+      if (docUri === '') {
+        throw new Error('No token file!');
+      }
 
       const link: any = await createNFTToken(wallet, 'CREATE_NFT_TOKEN', {
         name: tokenName,
         symbol: tokenSymbol,
-        documentHash: '',
+        documentHash: hash,
         decimals,
         docUri,
         initialTokenQty: amount,
@@ -418,6 +379,7 @@ const CreateNFT = () => {
 
       history.push('/portfolio');
     } catch (e) {
+      setShowConfirm(false);
       let message;
       if (e.message) {
         switch (e.message) {
@@ -545,29 +507,30 @@ const CreateNFT = () => {
                     </Tooltip>
                   </Form.Item>
 
-                  <Collapse style={{ marginBottom: '24px' }} accordion>
-                    <Collapse.Panel header={<>Add image</>} key="1" style={{ textAlign: 'left' }}>
+                  <Collapse style={{ marginBottom: '24px' }} accordion defaultActiveKey={['1']}>
+                    <Collapse.Panel header={<>Add file or image</>} key="1" style={{ textAlign: 'left' }}>
                       <Form.Item
-                        validateStatus={!data.dirty && Number(data.documentUri) <= 0 ? 'error' : ''}
+                        validateStatus={!data.dirty && data.documentUri === '' && !data.tokenFile ? 'error' : ''}
                         help={
-                          !data.dirty && Number(data.documentUri) <= 0
-                            ? 'Should be combination of numbers & alphabets'
+                          !data.dirty && data.documentUri === '' && !data.tokenFile
+                            ? 'Add an url here or upload a file/image below'
                             : ''
                         }>
                         <Input
-                          placeholder="Url to the NFT file / image"
+                          placeholder="https://url-to-the-nft-file-or-image"
                           name="documentUri"
                           onChange={(e) => handleChange(e)}
                           required
                         />
                       </Form.Item>
+                      <Divider>FOR {!data.tokenFile ? 'empty' : 'value'}</Divider>
                       <Form.Item>
                         <Dragger
                           multiple={false}
                           beforeUpload={beforeTokenImageUpload}
                           onChange={handleChangeTokenImageUpload}
                           onRemove={() => false}
-                          fileList={tokenIconFileList}
+                          fileList={tokenImageFileList}
                           name="tokenFile"
                           style={{
                             background: '#D3D3D3',
@@ -607,7 +570,7 @@ const CreateNFT = () => {
                                   cursor: 'pointer'
                                 }}
                                 onClick={() => setShowCropModal(true)}>
-                                Click here to crop or zoom your icon
+                                Click here to crop or zoom your image
                               </Paragraph>
                             </Tooltip>
                           </>
@@ -677,7 +640,7 @@ const CreateNFT = () => {
                   <div style={{ paddingTop: '12px' }}>
                     <Popconfirm
                       visible={!data.tokenFile && !isInvalidForm(data) && showConfirm}
-                      title="Are you sure you want to create a token without an icon？"
+                      title="Are you sure you want to create a token without an image"
                       onConfirm={() => handleCreateNFTToken()}
                       onCancel={() => setShowConfirm(false)}
                       okText="Yes"
