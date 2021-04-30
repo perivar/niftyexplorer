@@ -2,7 +2,6 @@ import Big from 'big.js';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil from '../crypto/util';
-// import CryptoWallet from '../crypto/wallet';
 
 export const SEND_NFY_ERRORS = {
   INSUFICIENT_FUNDS: 0,

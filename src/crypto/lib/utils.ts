@@ -218,38 +218,44 @@ export class Utils {
     return tokenData;
   };
 
-  async tokenUtxoDetails(utxos: UTXOInfo[], usrObj = null, disableValidation = true): Promise<TokenUTXOInfo[]> {
-    try {
-      // Throw error if input is not an array.
-      if (!Array.isArray(utxos)) throw new Error('Input must be an array.');
+  // ensure the electrumx utxos have required properties like txid and vout
+  fixFields = (utxos: UTXOInfo[]) => {
+    // Throw error if input is not an array.
+    if (!Array.isArray(utxos)) throw new Error('Input must be an array.');
 
-      // console.log(`tokenUtxoDetails usrObj: ${JSON.stringify(usrObj, null, 2)}`)
+    // Loop through each element in the array and validate the input before
+    // further processing.
+    for (let i = 0; i < utxos.length; i++) {
+      const utxo = utxos[i] as TokenUTXOInfo;
 
-      // Loop through each element in the array and validate the input before
-      // further processing.
-      for (let i = 0; i < utxos.length; i++) {
-        const utxo = utxos[i] as TokenUTXOInfo;
-
-        // Ensure the UTXO has a txid or tx_hash property.
-        if (!utxo.txid) {
-          // If Electrumx, convert the tx_hash property to txid.
-          if (utxo.tx_hash) {
-            utxo.txid = utxo.tx_hash;
-          } else {
-            // If there is neither a txid or tx_hash property, throw an error.
-            throw new Error(`utxo ${i} does not have a txid or tx_hash property.`);
-          }
-        }
-
-        // Ensure the UTXO has a vout or tx_pos property.
-        if (!Number.isInteger(utxo.vout)) {
-          if (Number.isInteger(utxo.tx_pos)) {
-            utxo.vout = utxo.tx_pos;
-          } else {
-            throw new Error(`utxo ${i} does not have a vout or tx_pos property.`);
-          }
+      // Ensure the UTXO has a txid or tx_hash property.
+      if (!utxo.txid) {
+        // If Electrumx, convert the tx_hash property to txid.
+        if (utxo.tx_hash) {
+          utxo.txid = utxo.tx_hash;
+        } else {
+          // If there is neither a txid or tx_hash property, throw an error.
+          throw new Error(`utxo ${i} does not have a txid or tx_hash property.`);
         }
       }
+
+      // Ensure the UTXO has a vout or tx_pos property.
+      if (!Number.isInteger(utxo.vout)) {
+        if (Number.isInteger(utxo.tx_pos)) {
+          utxo.vout = utxo.tx_pos;
+        } else {
+          throw new Error(`utxo ${i} does not have a vout or tx_pos property.`);
+        }
+      }
+    }
+
+    return utxos;
+  };
+
+  async tokenUtxoDetails(utxos: UTXOInfo[], usrObj = null, disableValidation = true): Promise<TokenUTXOInfo[]> {
+    try {
+      // ensure the electrumx utxos have required properties like txid and vout
+      utxos = this.fixFields(utxos);
 
       // Hydrate each UTXO with data from SLP OP_REUTRNs.
       const outAry = await this._hydrateUtxo(utxos, usrObj);

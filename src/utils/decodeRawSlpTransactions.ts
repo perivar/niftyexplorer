@@ -1,6 +1,11 @@
 // import chunk from 'lodash/chunk';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from 'bitcoinjs-lib';
+import CryptoUtil, { SlpTokenData } from '../crypto/util';
+
+const NETWORK = process.env.REACT_APP_NETWORK;
+// const electrumx = CryptoUtil.getElectrumX(NETWORK);
+const slp = CryptoUtil.getSLP(NETWORK);
 
 export const isSlpTx = (txDetail: any) => {
   const scriptASMArray = bitcoin.script.toASM(Buffer.from(txDetail.vout[0].scriptPubKey.hex, 'hex')).split(' ');
@@ -15,8 +20,40 @@ export const isSlpTx = (txDetail: any) => {
   return true;
 };
 
-// const revertChunk = (chunkedArray: any) =>
-//   chunkedArray.reduce((unchunkedArray: any, chunk: any) => [...unchunkedArray, ...chunk], []);
+// method that checks whether the second element contains the text SLP
+// if so it returns the actual metadata, otherwise false
+export const isSLPTransaction = (tx: any): boolean | SlpTokenData => {
+  const { vout } = tx;
+  const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
+  const metaData =
+    scriptASMArray.length > 1 ? Buffer.from(scriptASMArray[1], 'hex').toString('ascii').split(' ') : null;
+  return scriptASMArray[0] === 'OP_RETURN' && metaData && metaData[0] && metaData[0].includes('SLP')
+    ? decodeSLPMetaData(tx)
+    : false;
+};
+
+const decodeSLPMetaData = (tx: any): SlpTokenData => {
+  return slp.Utils.decodeTxData(tx);
+};
+
+// generic method that decodes op return to ascii
+export const decodeOpReturnToAscii = (vout: any): any => {
+  const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
+  const decoded: any = [];
+  if (scriptASMArray.length > 1) {
+    scriptASMArray.map((asm: any) => {
+      try {
+        const ascii = Buffer.from(asm, 'hex').toString('ascii').trim();
+        if (ascii !== '') decoded.push(ascii);
+      } catch (error) {
+        // ignore
+      }
+    });
+  }
+  const metaData = decoded.join(',');
+
+  return scriptASMArray[0] === 'OP_RETURN' && metaData;
+};
 
 const decodeTokenDetails = (txDetail: any) => {
   const script = bitcoin.script.toASM(Buffer.from(txDetail.vout[0].scriptPubKey.hex, 'hex')).split(' ');
@@ -85,36 +122,8 @@ const handleTxs = async (txidDetails: any, tokenInfo: any) => {
 
   if (slpTxidDetails.lenght === 0) return [];
   if (tokenInfo === null || (tokenInfo || {}).tokenId === undefined) {
-    /*
-    const tokenIdChunks = chunk(
-      Array.from(new Set(slpTxidDetails.map((detail: any) => detail.tokenDetails.info.tokenId))),
-      20
-    );
-    // const tokensInfo = revertChunk(
-    //   await Promise.all(tokenIdChunks.map((tokenIdChunk) => SLP.Utils.tokenStats(tokenIdChunk)))
-    // );
-    const tokensInfo: any = [];
-
-    return slpTxidDetails.map((detail: any) => {
-      const tokenInfo = tokensInfo.find((info: any) => info.id === detail.tokenDetails.info.tokenId);
-      if (detail.tokenDetails.transactionType !== 'GENESIS') {
-        const { decimals, symbol } = tokenInfo;
-        return {
-          ...detail,
-          tokenDetails: {
-            ...detail.tokenDetails,
-            symbol,
-            info: { ...detail.tokenDetails.info, ...tokenInfo },
-            outputs: detail.tokenDetails.outputs.map((output: any) => ({
-              ...output,
-              amount: output.rawAmount.div(Math.pow(10, decimals))
-            }))
-          }
-        };
-      }
-      return detail;
-    });
-		*/
+    // TODO: PIN - how to deal with a missing tokenInfo or tokenId  without the SLP DB?
+    // for now - ignore
   }
 
   const decodedTxs = slpTxidDetails
@@ -139,13 +148,6 @@ const handleTxs = async (txidDetails: any, tokenInfo: any) => {
     });
   return decodedTxs;
 };
-
-// export const decodeRawSlpTransactionsByTxids = async (txids: any, tokenInfo: any = null) => {
-//   const txidChunks = chunk(txids, 20);
-//   // const txidDetails = revertChunk(await Promise.all(txidChunks.map((txidChunk) => SLP.Transaction.details(txidChunk))));
-//   const txidDetails = {};
-//   return handleTxs(txidDetails, tokenInfo);
-// };
 
 export const decodeRawSlpTransactionsByTxs = async (txs: any, tokenInfo = null) => {
   return await handleTxs(txs, tokenInfo);

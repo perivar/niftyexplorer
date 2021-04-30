@@ -257,13 +257,7 @@ export default () => {
               (element: any) => (!showArchivedTokens && element.balance && element.balance.gt(0)) || showArchivedTokens
             )
             .map((token: any) => (
-              <Col
-                style={{ marginTop: '8px' }}
-                xl={8}
-                lg={12}
-                sm={12}
-                span={24}
-                key={`col-${token.tokenId}-${token.utxoType}`}>
+              <Col style={{ marginTop: '8px' }} xl={8} lg={12} sm={12} span={24} key={`col-${token.tokenId}`}>
                 <EnhancedCard
                   token={token}
                   loading={!token.info}
@@ -271,7 +265,7 @@ export default () => {
                   onClick={() =>
                     setSelectedToken(!selectedToken || token.tokenId !== selectedToken.tokenId ? token : null)
                   }
-                  key={`card-${token.tokenId}-${token.utxoType}`}
+                  key={`card-${token.tokenId}`}
                   style={{ marginTop: '8px', textAlign: 'left' }}
                   onClose={onClose}
                   actions={renderActions(action, setAction, token)}
@@ -325,7 +319,7 @@ export default () => {
                                 </Paragraph>
                                 {Object.entries(token.info || {}).map((entry: any) => (
                                   <Paragraph
-                                    key={`paragraph-${token.tokenId}-${token.utxoType}-${entry[0]}`}
+                                    key={`paragraph-${token.tokenId}-${entry[0]}`}
                                     copyable={{ text: entry[1] }}
                                     ellipsis
                                     style={{ whiteSpace: 'nowrap', maxWidth: '100%' }}>
@@ -479,7 +473,7 @@ export default () => {
                             // style={{
                             //   borderRadius: window.localStorage.getItem(token.tokenId) ? null : '50%'
                             // }}
-                            key={`identicon-${token.tokenId}-${token.utxoType}`}
+                            key={`identicon-${token.tokenId}`}
                             src={window.localStorage.getItem(token.tokenId) || makeBlockie(token.tokenId)}
                           />
                         }
