@@ -588,7 +588,7 @@ const CreateToken = () => {
                     help={!data.dirty && !data.tokenSymbol ? 'Should be combination of numbers & alphabets' : ''}
                     required>
                     <Input
-                      placeholder="token symbol e.g.: PTC"
+                      placeholder="token symbol e.g.: NIFTY"
                       name="tokenSymbol"
                       onChange={(e) => handleChange(e)}
                       required

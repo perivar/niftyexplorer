@@ -25,7 +25,7 @@ import { PaperClipOutlined, InfoCircleOutlined, UploadOutlined, PlusSquareFilled
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import createToken from '../../utils/broadcastTransaction';
+import createNFTToken from '../../utils/broadcastTransaction';
 import StyledCreate from '../Common/StyledPage';
 import { EnhancedModal } from '../Portfolio/EnhancedModal';
 import { QRCode } from '../Common/QRCode';
@@ -123,12 +123,13 @@ const CreateNFT = () => {
   const ContextValue = React.useContext(WalletContext);
   const { wallet, balances, loading: loadingContext } = ContextValue;
   const [loading, setLoading] = React.useState(false);
+
   const [data, setData] = React.useState<any>({
     dirty: true,
     tokenName: '',
     tokenSymbol: '',
     documentHash: '',
-    decimals: '',
+    decimals: 0, // a NFT has a decimal of zero
     documentUri: '',
     amount: '',
     email: '',
@@ -166,13 +167,13 @@ const CreateNFT = () => {
         await getResizedImage(
           roundResult.url,
           (resizedResult: any) => {
-            setData((prev: any) => ({ ...prev, tokenIcon: resizedResult.file }));
+            setData((prev: any) => ({ ...prev, tokenFile: resizedResult.file }));
             setImageUrl(resizedResult.url);
           },
           fileName
         );
       } else {
-        setData((prev: any) => ({ ...prev, tokenIcon: croppedResult.file }));
+        setData((prev: any) => ({ ...prev, tokenFile: croppedResult.file }));
         setImageUrl(croppedResult.url);
       }
     } catch (e) {
@@ -187,27 +188,6 @@ const CreateNFT = () => {
   }, []);
 
   const history = useHistory();
-
-  const transformFile = (file: any) => {
-    clear();
-    return new Promise((resolve, reject) => {
-      const SHA256 = CryptoJS.algo.SHA256.create();
-
-      loadingHash(
-        file,
-        (data: any) => {
-          const wordBuffer = CryptoJS.lib.WordArray.create(data);
-          SHA256.update(wordBuffer);
-        },
-        () => {
-          const encrypted = SHA256.finalize().toString();
-          setHash(encrypted);
-          setLoading(false);
-          reject();
-        }
-      );
-    });
-  };
 
   const getFileSize = (size: number) => size / (1024 * 1024);
 
@@ -289,7 +269,7 @@ const CreateNFT = () => {
                 const resultReader = new FileReader();
 
                 resultReader.readAsDataURL(file);
-                setData((prev: any) => ({ ...prev, tokenIcon: file }));
+                setData((prev: any) => ({ ...prev, tokenFile: file }));
                 resultReader.addEventListener('load', () => callback(resultReader.result));
                 setLoading(false);
                 setShowCropModal(true);
@@ -307,14 +287,7 @@ const CreateNFT = () => {
       }
     });
 
-  const transformTokenIconFile = (file: any) => {
-    return new Promise((resolve, reject) => {
-      reject();
-      // setLoading(false);
-    });
-  };
-
-  const beforeTokenIconUpload = (file: RcFile, fileList: RcFile[]): any => {
+  const beforeTokenImageUpload = (file: RcFile, fileList: RcFile[]): any => {
     try {
       if (file.type.split('/')[0] !== 'image') {
         throw new Error('You can only upload image files!');
@@ -330,13 +303,13 @@ const CreateNFT = () => {
         duration: 0
       });
       setTokenIconFileList(undefined);
-      setData((prev: any) => ({ ...prev, tokenIcon: undefined }));
+      setData((prev: any) => ({ ...prev, tokenFile: undefined }));
       setImageUrl('');
       return false;
     }
   };
 
-  const handleChangeTokenIconUpload = (info: any) => {
+  const handleChangeTokenImageUpload = (info: any) => {
     const list: any = [...info.fileList];
 
     if (info.file.type.split('/')[0] !== 'image') {
@@ -355,47 +328,6 @@ const CreateNFT = () => {
       setFileList(list.slice(-1));
     }
   };
-  const loadingHash = (file: any, callbackProgress: any, callbackFinal: any) => {
-    const chunkSize = 1024 * 1024;
-    let offset = 0;
-    const size = 1024 * 1024;
-    let partial;
-    let index = 0;
-
-    if (file.size === 0) {
-      callbackFinal();
-    }
-
-    while (offset < file.size) {
-      partial = file.slice(offset, offset + size);
-      const reader: any = new FileReader();
-      reader.size = chunkSize;
-      reader.offset = offset;
-      reader.index = index;
-      reader.onload = (evt: any) => callbackRead(reader, file, evt, callbackProgress, callbackFinal);
-
-      reader.readAsArrayBuffer(partial);
-      offset += chunkSize;
-      index += 1;
-    }
-  };
-
-  let lastOffset = 0;
-
-  const clear = () => (lastOffset = 0);
-
-  const callbackRead = (reader: any, file: any, evt: any, callbackProgress: any, callbackFinal: any) => {
-    if (lastOffset === reader.offset) {
-      lastOffset = reader.offset + reader.size;
-      callbackProgress(evt.target.result);
-      if (reader.offset + reader.size >= file.size) {
-        lastOffset = 0;
-        callbackFinal();
-      }
-    } else {
-      setTimeout(() => callbackRead(reader, file, evt, callbackProgress, callbackFinal), 10);
-    }
-  };
 
   const isInvalidForm = (data: any) =>
     !data.tokenName ||
@@ -405,9 +337,10 @@ const CreateNFT = () => {
     (data.decimals !== '' && data.decimals < 0) ||
     (data.decimals !== '' && data.decimals > 9) ||
     (data.decimals !== '' && data.decimals % 1 !== 0) ||
-    data.decimals === '';
+    data.decimals === '' ||
+    (!data.tokenFile && !data.documentUri);
 
-  async function handleCreateToken() {
+  async function handleCreateNFTToken() {
     setData({
       ...data,
       dirty: false
@@ -421,21 +354,12 @@ const CreateNFT = () => {
     const { tokenName, tokenSymbol, documentUri, amount, decimals, fixedSupply } = data;
 
     try {
-      const docUri = documentUri || 'mint.niftycoin.org';
-      const link: any = await createToken(wallet, 'CREATE_SLP_TOKEN', {
-        name: tokenName,
-        symbol: tokenSymbol,
-        documentHash: hash,
-        decimals,
-        docUri,
-        initialTokenQty: amount,
-        fixedSupply
-      });
+      let docUri = documentUri || '';
 
-      if (data.tokenIcon) {
-        const apiUrl = process.env.REACT_APP_ICON_API_URL;
+      if (data.tokenFile) {
+        const apiUrl = process.env.REACT_APP_FILE_API_URL;
         if (!apiUrl) {
-          throw new Error('Missing API Server config: REACT_APP_ICON_API_URL');
+          throw new Error('Missing API Server config: REACT_APP_FILE_API_URL');
         }
 
         // Convert to FormData object for server parsing
@@ -443,7 +367,6 @@ const CreateNFT = () => {
         for (const key in data) {
           formData.append(key, data[key]);
         }
-        formData.append('tokenId', link.substr(link.length - 64));
 
         try {
           const apiTest = await fetch(apiUrl, {
@@ -457,37 +380,32 @@ const CreateNFT = () => {
           const apiTestJson = await apiTest.json();
 
           if (!apiTestJson.approvalRequested) {
-            throw new Error('Error in uploading token icon');
-          } else {
-            window.localStorage.setItem(`${link.substr(link.length - 64)}`, imageUrl);
+            throw new Error('Error in uploading token file');
           }
 
-          // console.log(apiTestJson);
-          // Example response for successful request
-          /* {"status": "ok", "approvalRequested": true} */
-          // Example response for failed request
-          /* {"status": "error", "approvalRequested": false} */
+          docUri = apiTestJson.DataSourceFileName;
         } catch (err) {
           console.error(err.message);
 
           notification.error({
             message: 'Error',
-            description: (
-              <a
-                href={'https://github.com/kosinusbch/slp-token-icons#adding-your-icon'}
-                target="_blank"
-                rel="noopener noreferrer">
-                <Paragraph>{`Error in uploading token icon, you still can click here and follow the instructions.`}</Paragraph>
-              </a>
-            ),
+            description: <Paragraph>{`Error in uploading token file!`}</Paragraph>,
             duration: 0
           });
-          // TODO Show a popup, "Error in uploading icon. Create token anyway?"
-          // Buttons: Yes, No
-          // If user clicks Yes, create the token with no icon
-          // If user clicks No, exit the function and go back to the form
         }
       }
+      if (docUri === '') throw new Error('No token file!');
+
+      const link: any = await createNFTToken(wallet, 'CREATE_NFT_TOKEN', {
+        name: tokenName,
+        symbol: tokenSymbol,
+        documentHash: '',
+        decimals,
+        docUri,
+        initialTokenQty: amount,
+        fixedSupply
+      });
+
       notification.success({
         message: 'Success',
         description: (
@@ -567,15 +485,6 @@ const CreateNFT = () => {
                       <Paragraph>
                         Deposit some NFY in order to pay for the transaction that will generate the token.
                       </Paragraph>
-                      {/* <Paragraph>
-                        Get free NFY from the
-                        <strong>
-                          <a target="_blank" rel="noopener noreferrer" href="https://free.niftycoin.org/">
-                            niftycoin.org Faucet
-                          </a>
-                        </strong>
-                        !
-                      </Paragraph> */}
                     </>
                   ) : null}
                 </div>
@@ -588,7 +497,7 @@ const CreateNFT = () => {
                     help={!data.dirty && !data.tokenSymbol ? 'Should be combination of numbers & alphabets' : ''}
                     required>
                     <Input
-                      placeholder="token symbol e.g.: PTC"
+                      placeholder="token symbol e.g.: NIFTY"
                       name="tokenSymbol"
                       onChange={(e) => handleChange(e)}
                       required
@@ -604,40 +513,6 @@ const CreateNFT = () => {
                       !data.dirty && Number(data.tokenName) <= 0 ? 'Should be combination of numbers & alphabets' : ''
                     }>
                     <Input placeholder="token name" name="tokenName" onChange={(e) => handleChange(e)} required />
-                  </Form.Item>
-
-                  <Form.Item
-                    labelAlign="left"
-                    labelCol={{ span: 3, offset: 0 }}
-                    colon={false}
-                    required
-                    validateStatus={
-                      (!data.dirty && data.decimals < 0) ||
-                      (!data.dirty && data.decimals > 9) ||
-                      (!data.dirty && data.decimals % 1 !== 0) ||
-                      (!data.dirty && data.decimals === '')
-                        ? 'error'
-                        : ''
-                    }
-                    help={
-                      (!data.dirty && data.decimals < 0) ||
-                      (!data.dirty && data.decimals > 9) ||
-                      (!data.dirty && data.decimals % 1 !== 0) ||
-                      (!data.dirty && data.decimals === '')
-                        ? 'Must be an integer between 0 and 9'
-                        : ''
-                    }>
-                    <Input
-                      style={{ padding: '0px 20px' }}
-                      placeholder="decimals"
-                      name="decimals"
-                      onChange={(e) => handleChange(e)}
-                      required
-                      type="number"
-                      min="0"
-                      max="9"
-                      step="1"
-                    />
                   </Form.Item>
 
                   <Form.Item
@@ -671,16 +546,29 @@ const CreateNFT = () => {
                   </Form.Item>
 
                   <Collapse style={{ marginBottom: '24px' }} accordion>
-                    <Collapse.Panel header={<>Add token icon</>} key="1" style={{ textAlign: 'left' }}>
+                    <Collapse.Panel header={<>Add image</>} key="1" style={{ textAlign: 'left' }}>
+                      <Form.Item
+                        validateStatus={!data.dirty && Number(data.documentUri) <= 0 ? 'error' : ''}
+                        help={
+                          !data.dirty && Number(data.documentUri) <= 0
+                            ? 'Should be combination of numbers & alphabets'
+                            : ''
+                        }>
+                        <Input
+                          placeholder="Url to the NFT file / image"
+                          name="documentUri"
+                          onChange={(e) => handleChange(e)}
+                          required
+                        />
+                      </Form.Item>
                       <Form.Item>
                         <Dragger
                           multiple={false}
-                          // transformFile={transformTokenIconFile}
-                          beforeUpload={beforeTokenIconUpload}
-                          onChange={handleChangeTokenIconUpload}
+                          beforeUpload={beforeTokenImageUpload}
+                          onChange={handleChangeTokenImageUpload}
                           onRemove={() => false}
                           fileList={tokenIconFileList}
-                          name="tokenIcon"
+                          name="tokenFile"
                           style={{
                             background: '#D3D3D3',
                             borderRadius: '8px'
@@ -696,9 +584,9 @@ const CreateNFT = () => {
                           )}
                         </Dragger>
 
-                        {!loading && data.tokenIcon && (
+                        {!loading && data.tokenFile && (
                           <>
-                            <Tooltip title={data.tokenIcon.name}>
+                            <Tooltip title={data.tokenFile.name}>
                               <Paragraph
                                 ellipsis
                                 style={{
@@ -708,7 +596,7 @@ const CreateNFT = () => {
                                 }}
                                 onClick={() => setShowCropModal(true)}>
                                 <PaperClipOutlined />
-                                {data.tokenIcon.name}
+                                {data.tokenFile.name}
                               </Paragraph>
                               <Paragraph
                                 ellipsis
@@ -779,148 +667,27 @@ const CreateNFT = () => {
                         <Input
                           type="file"
                           placeholder="Token Icon"
-                          name="tokenIcon"
+                          name="tokenFile"
                           onChange={e => handleChangeFile(e)}
                         /> */}
                       </Form.Item>
-
-                      <Form.Item
-                        labelAlign="left"
-                        labelCol={{ span: 3, offset: 0 }}
-                        colon={false}
-                        validateStatus={
-                          !data.dirty &&
-                          data.email &&
-                          !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-                            String(data.email).toLowerCase()
-                          )
-                            ? 'error'
-                            : ''
-                        }
-                        help={
-                          !data.dirty &&
-                          data.email &&
-                          !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-                            String(data.email).toLowerCase()
-                          )
-                            ? 'Must be a valid email address (or no email at all)'
-                            : ''
-                        }>
-                        <Input
-                          placeholder="your email address (optional)"
-                          name="email"
-                          onChange={(e) => handleChange(e)}
-                        />
-                      </Form.Item>
-                      <Paragraph>You can add an icon after your token is created at the Icons page</Paragraph>
                     </Collapse.Panel>
                   </Collapse>
 
-                  <StyledMoreOptionsCollapse>
-                    <Collapse style={{ marginBottom: '12px' }} bordered={false}>
-                      <Collapse.Panel header={<> More options...</>} key="0" style={{ textAlign: 'left' }}>
-                        <StyledAlert>
-                          <Alert
-                            message={
-                              <>
-                                <InfoCircleOutlined /> The document hash is a sha256 hash of the whitepaper for your
-                                token. You can create a hash of any document, and learn more about its use, at
-                                <strong>
-                                  <a target="_blank" rel="noopener noreferrer" href="https://notary.bitcoin.com">
-                                    {` notary.bitcoin.com`}
-                                  </a>
-                                </strong>
-                                . Click on the input below to hash the file.
-                              </>
-                            }
-                            type="info"
-                            closable
-                          />
-                        </StyledAlert>
-                        <Form.Item style={{ lineHeight: '0px' }}>
-                          <StyledHashCollapse>
-                            <Collapse bordered={false}>
-                              <Collapse.Panel
-                                showArrow={false}
-                                header={<>add white paper / document hash...</>}
-                                key="1"
-                                style={{ textAlign: 'left' }}>
-                                <Dragger
-                                  multiple={false}
-                                  // transformFile={transformFile}
-                                  beforeUpload={beforeUpload}
-                                  onChange={handleChangeUpload}
-                                  onRemove={() => false}
-                                  fileList={fileList}
-                                  name="documentHashUpload"
-                                  style={{
-                                    background: '#D3D3D3',
-                                    borderRadius: '8px'
-                                  }}>
-                                  <UploadOutlined style={{ fontSize: '24px' }} />
-                                  <p>Click, or drag file to this area to hash.</p>
-                                  <p style={{ fontSize: '12px' }}>
-                                    The hash is performed client-side and the file is not uploaded.
-                                  </p>
-                                  <Input
-                                    style={{ borderRadius: 0 }}
-                                    placeholder={'white paper/document hash'}
-                                    name="documentHash"
-                                    disabled
-                                    value={hash}
-                                  />
-                                </Dragger>
-                                {!loading && hash && (
-                                  <>
-                                    <Tooltip title={file.name}>
-                                      <Paragraph
-                                        ellipsis
-                                        style={{
-                                          lineHeight: 'normal',
-                                          textAlign: 'center',
-                                          cursor: 'pointer'
-                                        }}>
-                                        <PaperClipOutlined />
-                                        {file.name}
-                                      </Paragraph>
-                                    </Tooltip>
-                                    <p style={{ textAlign: 'left', marginBottom: '-6px' }}>
-                                      White paper/document hash:
-                                    </p>
-                                    <Paragraph style={{ marginBottom: '2px' }} copyable={{ text: hash }} ellipsis>
-                                      {hash}
-                                    </Paragraph>
-                                  </>
-                                )}
-                              </Collapse.Panel>
-                            </Collapse>
-                          </StyledHashCollapse>
-                        </Form.Item>
-
-                        <Form.Item>
-                          <Input
-                            placeholder="token website e.g.: developer.niftycoin.org"
-                            name="documentUri"
-                            onChange={(e) => handleChange(e)}
-                            required
-                          />
-                        </Form.Item>
-                      </Collapse.Panel>
-                    </Collapse>
-                  </StyledMoreOptionsCollapse>
-
                   <div style={{ paddingTop: '12px' }}>
                     <Popconfirm
-                      visible={!data.tokenIcon && !isInvalidForm(data) && showConfirm}
+                      visible={!data.tokenFile && !isInvalidForm(data) && showConfirm}
                       title="Are you sure you want to create a token without an icon？"
-                      onConfirm={() => handleCreateToken()}
+                      onConfirm={() => handleCreateNFTToken()}
                       onCancel={() => setShowConfirm(false)}
                       okText="Yes"
                       cancelText="No"
                       placement="top">
                       <Button
                         onClick={
-                          data.tokenIcon || isInvalidForm(data) ? () => handleCreateToken() : () => setShowConfirm(true)
+                          data.tokenFile || isInvalidForm(data)
+                            ? () => handleCreateNFTToken()
+                            : () => setShowConfirm(true)
                         }>
                         Create Token
                       </Button>

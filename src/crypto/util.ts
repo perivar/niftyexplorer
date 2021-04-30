@@ -96,7 +96,6 @@ export interface SLPGenesisOpReturnConfig {
 
 export interface NFTChildGenesisOpReturnConfig {
   documentHash?: string;
-  mintBatonVout?: number | null;
   ticker: string;
   name: string;
   documentUrl: string;

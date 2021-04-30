@@ -1,5 +1,5 @@
 /*
-  Create a new SLP token. Requires a wallet created with the create-wallet
+  Create a new SLP NFT Group token. Requires a wallet created with the create-wallet
   example. Also requires that wallet to have a small NFY balance.
 */
 
@@ -7,6 +7,14 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { NFTGroupOpReturnConfig, WalletInfo } from '../../util';
 
+// Example SLP NFT config object for the Group
+// const configObjGroup: NFTGroupOpReturnConfig = {
+//   name: 'NFT Test Token',
+//   ticker: 'NFTY',
+//   documentUrl: 'https://www.niftycoin.org',
+//   mintBatonVout: 2, // the minting baton is always on vout 2
+//   initialQty: 1
+// };
 export async function createNFTGroup(walletInfo: WalletInfo, configObj: NFTGroupOpReturnConfig, NETWORK = 'mainnet') {
   try {
     const { mnemonic } = walletInfo;

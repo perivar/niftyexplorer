@@ -90,9 +90,6 @@ export class NFT1 {
       // Prevent error if user fails to add the document hash.
       if (!configObj.documentHash) configObj.documentHash = '';
 
-      // If mint baton is not specified, then replace it with null.
-      if (!configObj.mintBatonVout) configObj.mintBatonVout = null;
-
       const script = slpMdm.NFT1.Child.genesis(
         configObj.ticker,
         configObj.name,

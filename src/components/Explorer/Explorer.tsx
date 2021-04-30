@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import * as slpParser from 'slp-parser';
-import CryptoNFT from '../../crypto/slp/nft';
-import CryptoUtil, { NFTChildGenesisOpReturnConfig, WalletInfo } from '../../crypto/util';
+// import * as slpParser from 'slp-parser';
+// import CryptoNFT from '../../crypto/slp/nft';
+import CryptoUtil from '../../crypto/util';
 
 import { Input, Row, Space } from 'antd';
 

@@ -11,6 +11,12 @@ import CryptoUtil, { NFTChildGenesisOpReturnConfig, WalletInfo } from '../../uti
 
 import { Transaction } from 'bitcoinjs-lib';
 
+// Example SLP NFT config object for the child (the actual token)
+// const configObjChild: NFTChildGenesisOpReturnConfig = {
+//   name: 'NFT Test Token Child',
+//   ticker: 'NFTY0001',
+//   documentUrl: 'https://www.niftycoin.org'
+// };
 export async function createNFTChild(
   walletInfo: WalletInfo,
   tokenId: string,

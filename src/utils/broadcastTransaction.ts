@@ -85,7 +85,7 @@ const TokenType1create = async (wallet: any, config: any): Promise<string | unde
     decimals: config.decimals,
     initialQty: config.initialTokenQty,
     documentHash: config.documentHash,
-    mintBatonVout: 2 // the minting baton is always on vout 2
+    mintBatonVout: config.fixedSupply === true ? null : 2 // the minting baton is always on vout 2
   };
 
   const txidStr = await CryptoSLP.createToken(
