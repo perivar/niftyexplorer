@@ -24,6 +24,7 @@ import {
 import { PaperClipOutlined, InfoCircleOutlined, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
+import { Point, Area } from 'react-easy-crop/types';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import createToken from '../../utils/broadcastTransaction';
 import StyledCreate from '../Common/StyledPage';
@@ -145,12 +146,12 @@ const CreateToken = () => {
   const [showCropModal, setShowCropModal] = React.useState(false);
   const [roundSelection, setRoundSelection] = React.useState(true);
 
-  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
+  const [crop, setCrop] = React.useState<Point>({ x: 0, y: 0 });
   const [rotation, setRotation] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<Area | null>(null);
 
-  const onCropComplete = React.useCallback((croppedArea, croppedAreaPixels) => {
+  const onCropComplete = React.useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -749,7 +750,6 @@ const CreateToken = () => {
                               <StyledSwitch>
                                 <Switch
                                   style={{ color: '#F34745' }}
-                                  // name="cropShape"
                                   onChange={(checked) => setRoundSelection(!checked)}
                                 />
                                 {roundSelection ? 'Change to Square Crop Shape' : 'Change to Round Crop Shap'}

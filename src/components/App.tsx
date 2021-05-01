@@ -209,13 +209,13 @@ const App = () => {
                   <Link to="/portfolio">Portfolio</Link>
                 </Menu.Item>
                 {wallet && (
-                  <Menu.Item key="create">
-                    <Link to="/create">Create</Link>
+                  <Menu.Item key="createnft">
+                    <Link to="/createnft">Create NFT</Link>
                   </Menu.Item>
                 )}
                 {wallet && (
-                  <Menu.Item key="createnft">
-                    <Link to="/createnft">Create NFT</Link>
+                  <Menu.Item key="create">
+                    <Link to="/create">Create SLP Token</Link>
                   </Menu.Item>
                 )}
                 {/* <Menu.Item key="icons">

@@ -202,7 +202,7 @@ module.exports = {
     },
     'import/resolver': {
       node: {
-        extensions: ['.mjs', '.js', '.json', '.ts', '.tsx']
+        extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.d.ts']
       }
     }
   }

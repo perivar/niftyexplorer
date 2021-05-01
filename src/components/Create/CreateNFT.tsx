@@ -25,6 +25,7 @@ import {
 import { PaperClipOutlined, InfoCircleOutlined, UploadOutlined, PlusSquareFilled } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
+import { Point, Area } from 'react-easy-crop/types';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import createNFTToken from '../../utils/broadcastTransaction';
 import StyledCreate from '../Common/StyledPage';
@@ -101,14 +102,14 @@ const CreateNFT = () => {
   const [imageUrl, setImageUrl] = React.useState('');
   const [showConfirm, setShowConfirm] = React.useState(false);
   const [showCropModal, setShowCropModal] = React.useState(false);
-  const [roundSelection, setRoundSelection] = React.useState(false);
+  const [squareSelection, setSquareSelection] = React.useState(true);
 
-  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
+  const [crop, setCrop] = React.useState<Point>({ x: 0, y: 0 });
   const [rotation, setRotation] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<Area | null>(null);
 
-  const onCropComplete = React.useCallback((croppedArea, croppedAreaPixels) => {
+  const onCropComplete = React.useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -118,7 +119,7 @@ const CreateNFT = () => {
     try {
       const croppedResult: any = await getCroppedImg(rawImageUrl, croppedAreaPixels, rotation, fileName);
 
-      if (roundSelection) {
+      if (!squareSelection) {
         const roundResult: any = await getRoundImg(croppedResult.url, fileName);
 
         await getResizedImage(
@@ -138,7 +139,7 @@ const CreateNFT = () => {
     } finally {
       setLoading(false);
     }
-  }, [croppedAreaPixels, fileName, rawImageUrl, rotation, roundSelection]);
+  }, [croppedAreaPixels, fileName, rawImageUrl, rotation, squareSelection]);
 
   const onClose = React.useCallback(() => {
     setShowCropModal(false);
@@ -323,7 +324,12 @@ const CreateNFT = () => {
         // Convert to FormData object for server parsing
         const formData = new FormData();
         for (const key in data) {
-          formData.append(key, data[key]);
+          // change the tokenFile to just File as per the DotNet API we are using
+          if (key === 'tokenFile') {
+            formData.append('file', data[key]);
+          } else {
+            formData.append(key, data[key]);
+          }
         }
 
         try {
@@ -337,12 +343,11 @@ const CreateNFT = () => {
           });
           const apiTestJson = await apiTest.json();
 
-          if (!apiTestJson.approvalRequested) {
-            setShowConfirm(false);
-            throw new Error('Error in uploading token file');
-          }
+          // if (!apiTestJson.approvalRequested) {
+          //   throw new Error('Error in uploading token file');
+          // }
 
-          docUri = apiTestJson.DataSourceFileName;
+          docUri = apiTestJson.dataSourceFileName;
         } catch (err) {
           console.error(err.message);
 
@@ -357,7 +362,7 @@ const CreateNFT = () => {
         throw new Error('No token file!');
       }
 
-      const link: any = await createNFTToken(wallet, 'CREATE_NFT_TOKEN', {
+      const link: any = await createNFTToken(wallet, 'CREATE_NFT_GROUP_TOKEN', {
         name: tokenName,
         symbol: tokenSymbol,
         documentHash: hash,
@@ -523,7 +528,7 @@ const CreateNFT = () => {
                           required
                         />
                       </Form.Item>
-                      <Divider>FOR {!data.tokenFile ? 'empty' : 'value'}</Divider>
+                      <Divider>OR</Divider>
                       <Form.Item>
                         <Dragger
                           multiple={false}
@@ -589,26 +594,26 @@ const CreateNFT = () => {
                                 crop={crop}
                                 zoom={zoom}
                                 rotation={rotation}
-                                cropShape={roundSelection ? 'round' : 'rect'}
+                                cropShape={squareSelection ? 'rect' : 'round'}
                                 aspect={1 / 1}
                                 onCropChange={setCrop}
                                 onCropComplete={onCropComplete}
                                 onZoomChange={setZoom}
                                 onRotationChange={setRotation}
+                                restrictPosition={false}
                                 // style={{ top: '80px' }}
                               />
                               <StyledSwitch>
                                 <Switch
                                   style={{ color: '#F34745' }}
-                                  // name="cropShape"
-                                  onChange={(checked) => setRoundSelection(!checked)}
+                                  onChange={(checked) => setSquareSelection(!checked)}
                                 />
-                                {roundSelection ? 'Change to Square Crop Shape' : 'Change to Round Crop Shap'}
+                                {squareSelection ? 'Change to Round Crop Shape' : 'Change to Square Crop Shape'}
                               </StyledSwitch>
                               {'Zoom:'}
                               <Slider
                                 defaultValue={1}
-                                onChange={(zoom: any) => setZoom(zoom)}
+                                onChange={(zoom: number) => setZoom(zoom)}
                                 min={1}
                                 max={10}
                                 step={0.1}
@@ -616,7 +621,7 @@ const CreateNFT = () => {
                               {'Rotation:'}
                               <Slider
                                 defaultValue={0}
-                                onChange={(rotation: any) => setRotation(rotation)}
+                                onChange={(rotation: number) => setRotation(rotation)}
                                 min={0}
                                 max={360}
                                 step={1}
@@ -626,12 +631,11 @@ const CreateNFT = () => {
                           )}
                           onClose={onClose}
                         />
-                        {/* Upload token icon
-                        <Input
+                        {/* <Input
                           type="file"
-                          placeholder="Token Icon"
+                          placeholder="Token File"
                           name="tokenFile"
-                          onChange={e => handleChangeFile(e)}
+                          // onChange={(e) => handleChangeFile(e)}
                         /> */}
                       </Form.Item>
                     </Collapse.Panel>

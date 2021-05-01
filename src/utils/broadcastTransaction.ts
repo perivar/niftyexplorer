@@ -1,5 +1,6 @@
 import CryptoSLP from '../crypto/slp';
-import CryptoUtil, { SLPGenesisOpReturnConfig } from '../crypto/util';
+import CryptoNFT from '../crypto/slp/nft';
+import CryptoUtil, { NFTGroupOpReturnConfig, SLPGenesisOpReturnConfig } from '../crypto/util';
 
 // network
 const NETWORK = process.env.REACT_APP_NETWORK;
@@ -29,7 +30,8 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       (type === 'BURN_SLP_TOKEN_BALANCE' && 'IS_BURNING') ||
       (type === 'BURN_SLP_BATON' && 'IS_BURNING') ||
       (type === 'BURN_SLP_BATON_BALANCE' && 'IS_BURNING') ||
-      (type === 'BURN_SLP_TOKEN' && 'IS_BURNING');
+      (type === 'BURN_SLP_TOKEN' && 'IS_BURNING') ||
+      (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT');
 
     const config = args;
     config.nfyChangeReceiverAddress = wallet.legacyAddress;
@@ -56,6 +58,12 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         break;
       case 'IS_BURNING':
         txidStr = await TokenType1burn(wallet, config);
+        break;
+      case 'IS_CREATING_NFT':
+        config.tokenReceiverAddress = wallet.legacyAddress;
+        config.batonReceiverAddress = config.fixedSupply === true ? null : wallet.legacyAddress;
+        config.documentUri = config.docUri;
+        txidStr = await NFTcreate(wallet, config);
         break;
       default:
         break;
@@ -125,6 +133,28 @@ const TokenType1send = async (wallet: any, config: any): Promise<string | undefi
 
 const TokenType1burn = async (wallet: any, config: any): Promise<string | undefined> => {
   const txidStr = await CryptoSLP.burnTokens(wallet, config.tokenId, config.amount, NETWORK);
+  return txidStr;
+};
+
+const NFTcreate = async (wallet: any, config: any): Promise<string | undefined> => {
+  // Generate NFT config object
+  const configObj: NFTGroupOpReturnConfig = {
+    name: config.name,
+    ticker: config.symbol,
+    documentUrl: config.docUri,
+    initialQty: config.initialTokenQty,
+    documentHash: config.documentHash,
+    mintBatonVout: config.fixedSupply === true ? null : 2 // the minting baton is always on vout 2
+  };
+
+  const txidStr = await CryptoNFT.createNFTGroup(
+    wallet,
+    config.tokenReceiverAddress,
+    config.batonReceiverAddress,
+    configObj,
+    NETWORK
+  );
+
   return txidStr;
 };
 

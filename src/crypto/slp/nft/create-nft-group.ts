@@ -15,9 +15,18 @@ import CryptoUtil, { NFTGroupOpReturnConfig, WalletInfo } from '../../util';
 //   mintBatonVout: 2, // the minting baton is always on vout 2
 //   initialQty: 1
 // };
-export async function createNFTGroup(walletInfo: WalletInfo, configObj: NFTGroupOpReturnConfig, NETWORK = 'mainnet') {
+export async function createNFTGroup(
+  walletInfo: WalletInfo,
+  tokenReceiverAddress: string,
+  batonReceiverAddress: string,
+  configObj: NFTGroupOpReturnConfig,
+  NETWORK = 'mainnet'
+) {
   try {
     const { mnemonic } = walletInfo;
+
+    if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
+    // if the batonReceiverAddress is null or undefined, dont create baton
 
     // network
     const electrumx = CryptoUtil.getElectrumX(NETWORK);
@@ -53,11 +62,16 @@ export async function createNFTGroup(walletInfo: WalletInfo, configObj: NFTGroup
     transactionBuilder.addInput(txid, vout);
 
     // estimate fee. paying X niftoshis/byte
-    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: 4 });
+    const txFee = CryptoUtil.estimateFee({ P2PKH: 1 }, { P2PKH: batonReceiverAddress ? 4 : 3 });
 
     // amount to send back to the sending address.
-    // Subtract two dust transactions for minting baton and tokens.
-    const remainder = originalAmount - 546 * 2 - txFee;
+    // Subtract a dust transactions for tokens.
+    let remainder = originalAmount - txFee - 546;
+
+    // subtract another dust transaction if required (for minting baton)
+    if (batonReceiverAddress) {
+      remainder = remainder - 546;
+    }
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.
     const script = slp.NFT1.newNFTGroupOpReturn(configObj);
@@ -66,10 +80,12 @@ export async function createNFTGroup(walletInfo: WalletInfo, configObj: NFTGroup
     transactionBuilder.addOutput(script, 0);
 
     // Send dust transaction representing the tokens.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    transactionBuilder.addOutput(tokenReceiverAddress, 546);
 
     // Send dust transaction representing minting baton.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    if (batonReceiverAddress) {
+      transactionBuilder.addOutput(batonReceiverAddress, 546);
+    }
 
     // add output to send NFY remainder of UTXO.
     transactionBuilder.addOutput(legacyAddress, remainder);
