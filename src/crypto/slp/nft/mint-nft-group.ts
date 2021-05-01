@@ -125,6 +125,7 @@ export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, toke
     return txidStr;
   } catch (err) {
     console.error('Error in mintNFTGroup: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 }

@@ -16,6 +16,7 @@ export async function lookupToken(tokenId: string, NETWORK = 'mainnet') {
     return properties;
   } catch (err) {
     console.error('Error in getTokenInfo: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 }

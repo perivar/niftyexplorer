@@ -190,4 +190,54 @@ export class NFT1 {
       throw err;
     }
   }
+
+  generateNFTGroupSendManyOpReturn(tokenUtxos: TokenUTXOInfo[], sendQtyArray: number[]) {
+    try {
+      const { tokenId } = tokenUtxos[0];
+
+      // Calculate the total amount of tokens owned by the wallet.
+      let totalTokens = 0;
+      for (let i = 0; i < tokenUtxos.length; i++) {
+        totalTokens += tokenUtxos[i].tokenQty;
+      }
+
+      // Calculate sum of send array
+      const sendQtySum = sendQtyArray.reduce((a, b) => a + b, 0);
+
+      const change = totalTokens - sendQtySum;
+
+      let script;
+      let outputs = 1;
+
+      // The normal case, when there is token change to return to sender.
+      if (change > 0) {
+        outputs = sendQtyArray.length + 1;
+
+        // convert the number array to Big Number array
+        const sendQtyBigArray = sendQtyArray.map((qty) => new slpMdm.BN(Math.floor(qty).toString()));
+
+        // Convert to integer string.
+        const changeBig = new slpMdm.BN(Math.floor(change).toString());
+        sendQtyBigArray.push(changeBig);
+
+        // Generate the OP_RETURN as a Buffer.
+        script = slpMdm.NFT1.Group.send(tokenId, sendQtyBigArray);
+
+        // Corner case, when there is no token change to send back.
+      } else {
+        outputs = sendQtyArray.length;
+
+        // convert the number array to Big Number array
+        const sendQtyBigArray = sendQtyArray.map((qty) => new slpMdm.BN(Math.floor(qty).toString()));
+
+        // Generate the OP_RETURN as a Buffer.
+        script = slpMdm.NFT1.Group.send(tokenId, sendQtyBigArray);
+      }
+
+      return { script, outputs };
+    } catch (err) {
+      console.log('Error in generateNFTGroupSendManyOpReturn()');
+      throw err;
+    }
+  }
 }

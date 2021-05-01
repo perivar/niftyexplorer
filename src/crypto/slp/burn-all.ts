@@ -76,6 +76,8 @@ export async function burnAll(walletInfo: WalletInfo, receiverAddress = '', NETW
     console.log('Check the status of your transaction on this block explorer:');
     CryptoUtil.transactionStatus(txid, NETWORK);
   } catch (err) {
-    console.log('error: ', err);
+    console.error('Error in burnAll: ', err);
+    console.log(`Error message: ${err.message}`);
+    throw err;
   }
 }

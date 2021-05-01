@@ -53,7 +53,8 @@ export const createWallet = async (NETWORK: string, importMnemonic?: string): Pr
 
     return outObj;
   } catch (err) {
-    console.error('Error in createWallet(): ', err);
+    console.error('Error in createWallet: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 };

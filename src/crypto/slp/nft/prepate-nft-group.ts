@@ -1,12 +1,24 @@
 /*
-  Burn a specific quantity of tokens of type tokenId
+An initial preparation transaction is required before a new NFT can be created. 
+This ensures only 1 parent token is burned in the NFT Genesis transaction.
+After this is transaction is broadcast you can proceed to fill out the NFT details 
+and then click 'Create NFT'
+@see 
+https://github.com/simpleledger/Electron-Cash-SLP/blob/master/electroncash_gui/qt/slp_create_token_genesis_dialog.py#L399
+https://github.com/simpleledger/Electron-Cash-SLP/blob/master/electroncash/slp.py#L467
+https://slp.dev/packages/slp-mdm.js/#send
 */
-
 import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
-import CryptoUtil, { WalletInfo } from '../util';
+import CryptoUtil, { WalletInfo } from '../../util';
 
-export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQty: number, NETWORK = 'mainnet') {
+export async function prepareNFTGroup(
+  walletInfo: WalletInfo,
+  tokenId: string,
+  tokenQty: number,
+  tokenReceiverAddress = '',
+  NETWORK = 'mainnet'
+) {
   try {
     const { mnemonic } = walletInfo;
 
@@ -50,7 +62,8 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
       if (
         utxo && // UTXO is associated with a token.
         utxo.tokenId === tokenId && // UTXO matches the token ID.
-        utxo.utxoType === 'token' // UTXO is not a minting baton.
+        utxo.utxoType === 'token' && // UTXO is not a minting baton.
+        utxo.tokenType === 129 // UTXO is for an NFT Group
       ) {
         return true;
       }
@@ -66,8 +79,20 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     const nfyUtxo = CryptoUtil.findBiggestUtxo(nfyUtxos);
     // console.log(`nfyUtxo: ${JSON.stringify(nfyUtxo, null, 2)}`);
 
-    // Generate the SLP OP_RETURN.
-    const slpData = slp.TokenType1.generateBurnOpReturn(tokenUtxos, tokenQty);
+    // After this is transaction is broadcast you can proceed to fill out the
+    // NFT details and then click 'Create NFT'.")
+
+    let sendQtyArray: number[] = [];
+    if (tokenQty < 19) {
+      sendQtyArray = [tokenQty];
+    } else if (tokenQty >= 19) {
+      sendQtyArray = [18];
+      sendQtyArray.push(tokenQty - 18);
+    }
+
+    const slpSendObj = slp.NFT1.generateNFTGroupSendManyOpReturn(tokenUtxos, sendQtyArray);
+    const slpData = slpSendObj.script;
+    // console.log(`slpOutputs: ${slpSendObj.outputs}`);
 
     // BEGIN transaction construction.
 
@@ -84,10 +109,16 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     }
 
     // estimate fee. paying X niftoshis/byte
-    const txFee = CryptoUtil.estimateFee({ P2PKH: tokenUtxos.length + 1 }, { P2PKH: 3 });
+    const txFee = CryptoUtil.estimateFee({ P2PKH: tokenUtxos.length + 1 }, { P2PKH: slpSendObj.outputs + 2 });
 
     // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
-    const remainder = originalAmount - txFee - 546;
+    let remainder = originalAmount - txFee - 546;
+
+    // subtract dust transactions if required
+    for (let i = 1; i < slpSendObj.outputs; i++) {
+      remainder = remainder - 546;
+    }
+
     if (remainder < 1) {
       throw new Error('Selected UTXO does not have enough niftoshis');
     }
@@ -96,11 +127,20 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     // Add OP_RETURN as first output.
     transactionBuilder.addOutput(slpData, 0);
 
+    // Send the token back to the same wallet if the user hasn't specified a
+    // different address.
+    if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
+
     // Send dust transaction representing tokens being sent.
-    transactionBuilder.addOutput(walletInfo.legacyAddress, 546);
+    transactionBuilder.addOutput(tokenReceiverAddress, 546);
+
+    // Return any token change back to the sender.
+    for (let i = 1; i < slpSendObj.outputs; i++) {
+      transactionBuilder.addOutput(legacyAddress, 546);
+    }
 
     // Last output: send the NFY change back to the wallet.
-    transactionBuilder.addOutput(walletInfo.legacyAddress, remainder);
+    transactionBuilder.addOutput(legacyAddress, remainder);
 
     // Sign the transaction with the private key for the NFY UTXO paying the fees.
     transactionBuilder.sign(0, changeKeyPair, undefined, Transaction.SIGHASH_ALL, originalAmount);
@@ -128,7 +168,7 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     CryptoUtil.transactionStatus(txidStr, NETWORK);
     return txidStr;
   } catch (err) {
-    console.error('Error in burnTokens: ', err);
+    console.error('Error in prepareGroupToken: ', err);
     console.log(`Error message: ${err.message}`);
     throw err;
   }

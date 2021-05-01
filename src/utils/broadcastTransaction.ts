@@ -16,8 +16,10 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         case 0x01:
           break;
         case 0x41:
-        case 0x81:
           throw new Error('NFT token types are not yet supported.');
+        case 0x81:
+          type = type === 'SEND_SLP_TOKEN' ? 'SEND_NFT_GROUP_TOKEN' : '';
+          break;
         default:
           throw new Error(`Token type ${args.version} is not supported.`);
       }
@@ -31,7 +33,8 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       (type === 'BURN_SLP_BATON' && 'IS_BURNING') ||
       (type === 'BURN_SLP_BATON_BALANCE' && 'IS_BURNING') ||
       (type === 'BURN_SLP_TOKEN' && 'IS_BURNING') ||
-      (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT');
+      (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT_GROUP') ||
+      (type === 'SEND_NFT_GROUP_TOKEN' && 'IS_SENDING_NFT_GROUP');
 
     const config = args;
     config.nfyChangeReceiverAddress = wallet.legacyAddress;
@@ -59,11 +62,14 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       case 'IS_BURNING':
         txidStr = await TokenType1burn(wallet, config);
         break;
-      case 'IS_CREATING_NFT':
+      case 'IS_CREATING_NFT_GROUP':
         config.tokenReceiverAddress = wallet.legacyAddress;
         config.batonReceiverAddress = config.fixedSupply === true ? null : wallet.legacyAddress;
         config.documentUri = config.docUri;
-        txidStr = await NFTcreate(wallet, config);
+        txidStr = await NFTcreateGroup(wallet, config);
+        break;
+      case 'IS_SENDING_NFT_GROUP':
+        txidStr = await NFT1sendGroup(wallet, config);
         break;
       default:
         break;
@@ -136,13 +142,13 @@ const TokenType1burn = async (wallet: any, config: any): Promise<string | undefi
   return txidStr;
 };
 
-const NFTcreate = async (wallet: any, config: any): Promise<string | undefined> => {
+const NFTcreateGroup = async (wallet: any, config: any): Promise<string | undefined> => {
   // Generate NFT config object
   const configObj: NFTGroupOpReturnConfig = {
     name: config.name,
     ticker: config.symbol,
     documentUrl: config.docUri,
-    initialQty: config.initialTokenQty,
+    initialQty: Number(config.initialTokenQty),
     documentHash: config.documentHash,
     mintBatonVout: config.fixedSupply === true ? null : 2 // the minting baton is always on vout 2
   };
@@ -155,6 +161,20 @@ const NFTcreate = async (wallet: any, config: any): Promise<string | undefined> 
     NETWORK
   );
 
+  return txidStr;
+};
+
+const NFT1sendGroup = async (wallet: any, config: any): Promise<string | undefined> => {
+  // An initial preparation transaction is required before a new NFT can be created.
+  // This ensures only 1 parent token is burned in the NFT Genesis transaction.
+
+  const txidStr = await CryptoNFT.prepareNFTGroup(
+    wallet,
+    config.tokenId,
+    Number(config.amount),
+    config.tokenReceiverAddress,
+    NETWORK
+  );
   return txidStr;
 };
 

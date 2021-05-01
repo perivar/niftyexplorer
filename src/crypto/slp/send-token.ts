@@ -1,5 +1,5 @@
 /*
-  Send tokens of type tokenId to user with SLPADDR address.
+  Send tokens of type tokenId to user with tokenReceiverAddress.
 */
 
 import * as bitcoin from 'bitcoinjs-lib';
@@ -152,5 +152,6 @@ export async function sendToken(
   } catch (err) {
     console.error('Error in sendToken: ', err);
     console.log(`Error message: ${err.message}`);
+    throw err;
   }
 }

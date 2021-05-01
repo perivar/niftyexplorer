@@ -107,6 +107,7 @@ export async function createNFTGroup(
     return txidStr;
   } catch (err) {
     console.error('Error in createToken: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 }

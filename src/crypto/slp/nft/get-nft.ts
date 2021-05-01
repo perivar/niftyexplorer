@@ -14,6 +14,7 @@ export async function getNFT(tokenId: string, NETWORK = 'mainnet') {
     return slpData;
   } catch (err) {
     console.error('Error in getNFT: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 }

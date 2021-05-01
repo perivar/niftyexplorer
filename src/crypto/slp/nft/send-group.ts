@@ -1,5 +1,5 @@
 /*
-  Send Child NFT tokens of type tokenId to user with SLPADDR address.
+  Send Group NFT tokens of type tokenId to user with tokenReceiverAddress.
 */
 
 import * as bitcoin from 'bitcoinjs-lib';
@@ -10,7 +10,7 @@ export async function sendGroupToken(
   walletInfo: WalletInfo,
   tokenId: string,
   tokenQty: number,
-  toAddress = '',
+  tokenReceiverAddress = '',
   NETWORK = 'mainnet'
 ) {
   try {
@@ -112,10 +112,10 @@ export async function sendGroupToken(
 
     // Send the token back to the same wallet if the user hasn't specified a
     // different address.
-    if (toAddress === '') toAddress = walletInfo.legacyAddress;
+    if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
 
     // Send dust transaction representing tokens being sent.
-    transactionBuilder.addOutput(toAddress, 546);
+    transactionBuilder.addOutput(tokenReceiverAddress, 546);
 
     // Return any token change back to the sender.
     if (slpSendObj.outputs > 1) {

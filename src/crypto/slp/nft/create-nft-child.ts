@@ -142,6 +142,7 @@ export async function createNFTChild(
     return txidStr;
   } catch (err) {
     console.error('Error in createNFTChild: ', err);
+    console.log(`Error message: ${err.message}`);
     throw err;
   }
 }
