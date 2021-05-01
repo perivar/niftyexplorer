@@ -34,7 +34,7 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       (type === 'BURN_SLP_BATON_BALANCE' && 'IS_BURNING') ||
       (type === 'BURN_SLP_TOKEN' && 'IS_BURNING') ||
       (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT_GROUP') ||
-      (type === 'SEND_NFT_GROUP_TOKEN' && 'IS_SENDING_NFT_GROUP');
+      (type === 'SEND_NFT_GROUP_TOKEN' && 'IS_PREPARE_NFT_GROUP');
 
     const config = args;
     config.nfyChangeReceiverAddress = wallet.legacyAddress;
@@ -68,8 +68,8 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         config.documentUri = config.docUri;
         txidStr = await NFTcreateGroup(wallet, config);
         break;
-      case 'IS_SENDING_NFT_GROUP':
-        txidStr = await NFT1sendGroup(wallet, config);
+      case 'IS_PREPARE_NFT_GROUP':
+        txidStr = await NFT1prepareGroup(wallet, config);
         break;
       default:
         break;
@@ -164,7 +164,7 @@ const NFTcreateGroup = async (wallet: any, config: any): Promise<string | undefi
   return txidStr;
 };
 
-const NFT1sendGroup = async (wallet: any, config: any): Promise<string | undefined> => {
+const NFT1prepareGroup = async (wallet: any, config: any): Promise<string | undefined> => {
   // An initial preparation transaction is required before a new NFT can be created.
   // This ensures only 1 parent token is burned in the NFT Genesis transaction.
 

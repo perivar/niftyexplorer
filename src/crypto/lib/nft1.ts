@@ -194,17 +194,20 @@ export class NFT1 {
   generateNFTGroupSendManyOpReturn(tokenUtxos: TokenUTXOInfo[], sendQtyArray: number[]) {
     try {
       const { tokenId } = tokenUtxos[0];
-
-      // Calculate the total amount of tokens owned by the wallet.
-      let totalTokens = 0;
-      for (let i = 0; i < tokenUtxos.length; i++) {
-        totalTokens += tokenUtxos[i].tokenQty;
-      }
+      const { decimals } = tokenUtxos[0];
 
       // Calculate sum of send array
       const sendQtySum = sendQtyArray.reduce((a, b) => a + b, 0);
+      const sendQtyBig = new slpMdm.BN(sendQtySum).times(10 ** decimals);
 
-      const change = totalTokens - sendQtySum;
+      // Calculate the total amount of tokens owned by the wallet.
+      const totalTokens = tokenUtxos.reduce(
+        (tot: any, txo: any) => tot.plus(new slpMdm.BN(txo.tokenQty).times(10 ** decimals)),
+        new slpMdm.BN(0)
+      );
+
+      const change = totalTokens.minus(sendQtyBig);
+      // console.log(`change: ${change}`)
 
       let script;
       let outputs = 1;
