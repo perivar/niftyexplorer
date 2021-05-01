@@ -1,6 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { getAllTxs } from './getTokenTransactionHistory';
-import { isSlpTx } from './decodeRawSlpTransactions';
+import { hasOpReturn, isSlpTx } from './decodeRawSlpTransactions';
 
 export const isNfyDividens = (vout: any) => {
   const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
@@ -9,11 +9,6 @@ export const isNfyDividens = (vout: any) => {
   return scriptASMArray[0] === 'OP_RETURN' && metaData && metaData[1] && metaData[1].includes('MintDividend')
     ? decodeNfyDividensMetaData(metaData)
     : false;
-};
-
-const hasOpReturn = (vout: any): boolean => {
-  const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
-  return scriptASMArray[0] === 'OP_RETURN';
 };
 
 const decodeNfyDividensMetaData = (metaData: any) => {

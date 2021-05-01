@@ -308,9 +308,7 @@ const App = () => {
                 <Route path="/configure">
                   <Configure />
                 </Route>
-                <Route path="/explorer">
-                  <Explorer />
-                </Route>
+                <Route path="/explorer/:query?" component={Explorer}></Route>
                 <Redirect exact from="/" to="/portfolio" />
                 <Route component={NotFound} />
               </Switch>

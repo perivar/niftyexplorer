@@ -20,20 +20,25 @@ export const isSlpTx = (txDetail: any) => {
   return true;
 };
 
+export const hasOpReturn = (vout: any): boolean => {
+  const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
+  return scriptASMArray[0] === 'OP_RETURN';
+};
+
 // method that checks whether the second element contains the text SLP
 // if so it returns the actual metadata, otherwise false
-export const isSLPTransaction = (tx: any): boolean | SlpTokenData => {
-  const { vout } = tx;
+export const checkSLPTransaction = (txDetails: any): boolean | SlpTokenData => {
+  const { vout } = txDetails;
   const scriptASMArray = bitcoin.script.toASM(Buffer.from(vout[0].scriptPubKey.hex, 'hex')).split(' ');
   const metaData =
     scriptASMArray.length > 1 ? Buffer.from(scriptASMArray[1], 'hex').toString('ascii').split(' ') : null;
   return scriptASMArray[0] === 'OP_RETURN' && metaData && metaData[0] && metaData[0].includes('SLP')
-    ? decodeSLPMetaData(tx)
+    ? decodeSLPMetaData(txDetails)
     : false;
 };
 
-const decodeSLPMetaData = (tx: any): SlpTokenData => {
-  return slp.Utils.decodeTxData(tx);
+const decodeSLPMetaData = (txDetails: any): SlpTokenData => {
+  return slp.Utils.decodeTxData(txDetails);
 };
 
 // generic method that decodes op return to ascii
@@ -43,15 +48,15 @@ export const decodeOpReturnToAscii = (vout: any): any => {
   if (scriptASMArray.length > 1) {
     scriptASMArray.map((asm: any) => {
       try {
-        const ascii = Buffer.from(asm, 'hex').toString('ascii').trim();
+        let ascii = Buffer.from(asm, 'hex').toString('ascii').trim();
+        ascii = ascii.replace(/[^\x20-\x7E]+/g, '');
         if (ascii !== '') decoded.push(ascii);
       } catch (error) {
         // ignore
       }
     });
   }
-  const metaData = decoded.join(',');
-
+  const metaData = decoded.join(' ');
   return scriptASMArray[0] === 'OP_RETURN' && metaData;
 };
 

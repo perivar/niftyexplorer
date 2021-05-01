@@ -524,7 +524,7 @@ export class NiftyCoinElectrumX {
       const scripthash = bitcoin.crypto.sha256(script);
       // console.log(`scripthash: ${scripthash}`);
 
-      const reversedHash = new Buffer(scripthash.reverse()).toString('hex');
+      const reversedHash = scripthash.reverse().toString('hex');
       // console.log(addrStr, ' maps to ', reversedHash);
 
       return reversedHash;
@@ -532,5 +532,32 @@ export class NiftyCoinElectrumX {
       console.log('Error in electrumx.js/addressToScripthash()');
       throw err;
     }
+  }
+
+  scripthashToAddress(scripthash: string) {
+    // The scriptSig needed for spending a P2PKH output (that is, an output of a standard address starting with '1...')
+    // consists of two parts, namely the signature and the public key.
+    // From this you can derive the address by first applying the HASH-160
+    // (where HASH-160(x) = RIPEMD-160(SHA-256(x))),
+    // then adding network byte (prefix) and checksum (postfix),
+    // and finally converting the whole data into Base58 format.
+    // The detailed process of converting a public key to an address is described here:
+    // https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
+
+    const scriptASMArray = bitcoin.script.toASM(Buffer.from(scripthash, 'hex')).split(' ');
+    const publicKey = Buffer.from(scriptASMArray[1], 'hex');
+    const keyPair = bitcoin.ECPair.fromPublicKey(publicKey);
+    const { network } = _this;
+    const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network });
+
+    return address;
+    // let pubKeyIn = '';
+    // const chunksIn = bitcoin.script.decompile(scripthash);
+    // if (bitcoin.script.isCanonicalScriptSignature.isScriptHashInput(chunksIn)) {
+    //   const hash = bitcoin.crypto.hash160(chunksIn[chunksIn.length - 1]);
+    //   pubKeyIn = bitcoin.address.toBase58Check(hash, bitcoin.networks.bitcoin.scriptHash);
+    // } else {
+    //   pubKeyIn = bitcoin.ECPair.fromPublicKeyBuffer(chunksIn[1], bitcoinjs.networks.testnet).getAddress();
+    // }
   }
 }
