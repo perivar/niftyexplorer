@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import CryptoNFT from '../../crypto/slp/nft';
 import CryptoUtil from '../../crypto/util';
 
-import { Card, Col, Input, Row, Space, Typography } from 'antd';
+import { Badge, Card, Col, Input, Row, Space, Typography } from 'antd';
 import { decodeOpReturnToAscii, hasOpReturn } from '../../utils/decodeRawSlpTransactions';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -15,17 +15,18 @@ const { Search } = Input;
 interface Address {
   address: string;
   value: number;
+  isMintBaton?: boolean;
 }
 
 interface OpReturn {
   decoded: string;
 }
 
-interface ISenders {
+interface Inputs {
   addresses: Address[];
 }
 
-interface IRecipients {
+interface Outputs {
   addresses: Address[];
   opReturn?: OpReturn;
 }
@@ -42,10 +43,13 @@ export const Explorer = ({ match }: { match: any }) => {
 
   const [totalInputValue, setTotalInputValue] = useState<number>(0);
   const [totalOutputValue, setTotalOutputValue] = useState<number>(0);
-  const [senders, setSenders] = useState<ISenders>({
+  const [txDetails, setTxDetails] = useState<any>();
+  const [slpDetails, setSLPDetails] = useState<any>();
+
+  const [inputs, setInputs] = useState<Inputs>({
     addresses: []
   });
-  const [recipients, setRecipients] = useState<IRecipients>({
+  const [outputs, setOutputs] = useState<Outputs>({
     addresses: [],
     opReturn: undefined
   });
@@ -68,6 +72,16 @@ export const Explorer = ({ match }: { match: any }) => {
       const txCurrentDetails = await electrumx.getTransaction(txid);
 
       if (txCurrentDetails) {
+        setTxDetails(txCurrentDetails);
+        let parsedSlpData: any;
+        try {
+          parsedSlpData = slp.Utils.decodeTxData(txCurrentDetails);
+          setSLPDetails(parsedSlpData);
+          // result += `\n\n${JSON.stringify(parsedSlpData, null, 2)}`;
+        } catch (error) {
+          // An error will be thrown if the txid is not SLP.
+        }
+
         // parse vins
         const vinAddresses: Address[] = [];
         for (let i = 0; i < txCurrentDetails.vin.length; i++) {
@@ -87,7 +101,7 @@ export const Explorer = ({ match }: { match: any }) => {
           intputTotal += inputValue;
           if (address) vinAddresses.push({ address, value: inputValue });
         }
-        setSenders((prevState) => ({ ...prevState, addresses: vinAddresses }));
+        setInputs((prevState) => ({ ...prevState, addresses: vinAddresses }));
         setTotalInputValue(intputTotal);
 
         // parse vouts
@@ -101,27 +115,27 @@ export const Explorer = ({ match }: { match: any }) => {
           } else {
             const address = vout.scriptPubKey.addresses[0];
             const outputValue = vout.value;
-            result += `\nvout[${i}]: ${address} => ${outputValue}`;
+
+            // check if mint baton
+            let isMintBaton = false;
+            if (parsedSlpData) {
+              isMintBaton = parsedSlpData.mintBatonVout === i;
+            }
+
+            result += `\nvout[${i}]: ${address} => ${outputValue} ${isMintBaton ? 'MINT BATON' : ''}`;
 
             outputTotal += outputValue;
-            if (address) voutAddresses.push({ address, value: outputValue });
+            if (address) voutAddresses.push({ address, value: outputValue, isMintBaton });
           }
         }
-        setRecipients((prevState) => ({
+        setOutputs((prevState) => ({
           ...prevState,
           addresses: voutAddresses,
           opReturn: { decoded: decodedOpReturn }
         }));
         setTotalOutputValue(outputTotal);
 
-        try {
-          const parsedSlpData = slp.Utils.decodeTxData(txCurrentDetails);
-          result += `\n\n${JSON.stringify(parsedSlpData, null, 2)}`;
-        } catch (error) {
-          // An error will be thrown if the txid is not SLP.
-        }
-
-        result += `\n\n${JSON.stringify(txCurrentDetails, null, 2)}`;
+        // result += `\n\n${JSON.stringify(txCurrentDetails, null, 2)}`;
       }
       return result;
     } catch (error) {
@@ -189,59 +203,93 @@ export const Explorer = ({ match }: { match: any }) => {
       </Space>
       {!isLoading && (
         <>
-          <Card title="Information">
+          <Card size="small" title="Transaction Information" style={{ marginTop: '12px' }}>
+            <div>
+              <Text>Transaction Id: </Text>
+              <Text code strong>
+                {queryparam}
+              </Text>
+            </div>
             <Text>Input Total: </Text>
-            <Text strong type="success">
+            <Text code strong type="success">
               {totalInputValue}
             </Text>{' '}
             <Text>Output Total: </Text>
-            <Text strong type="success">
+            <Text code strong type="success">
               {totalOutputValue}
             </Text>{' '}
             <Text>Transaction fee: </Text>
-            <Text strong type="success">
+            <Text code strong type="success">
               {(totalInputValue - totalOutputValue).toFixed(8)}
             </Text>
           </Card>
-          <Row gutter={16} style={{ marginTop: '8px' }}>
-            <Col span={12}>
-              <Card title="Senders" bordered={true}>
-                {senders.addresses &&
-                  senders.addresses.map((address: Address) => (
-                    <div key={address.address}>
-                      <Text strong type="success">
-                        {address.value}
-                      </Text>{' '}
-                      <Text>{address.address}</Text>
-                    </div>
-                  ))}
-              </Card>
-            </Col>
-            <Col span={12}>
-              <Card title="Recipients" bordered={true}>
-                {recipients.opReturn && (
-                  <>
-                    <Text>OP_RETURN:</Text>{' '}
-                    <Text strong type="success">
-                      {recipients.opReturn.decoded}
-                    </Text>
-                  </>
-                )}
-                {recipients.addresses &&
-                  recipients.addresses.map((address: Address) => (
-                    <div key={address.address}>
-                      <Text>{address.address}</Text>{' '}
-                      <Text strong type="success">
-                        {address.value}
+
+          <Card
+            size="small"
+            title={`Inputs ${txDetails && txDetails.vin ? txDetails.vin.length : ''}`}
+            bordered={true}
+            style={{ marginTop: '8px' }}>
+            <div style={{ width: '100%', textAlign: 'left' }}>
+              {inputs.addresses &&
+                inputs.addresses.map((address: Address, index: number) => (
+                  <div key={index}>
+                    <Text code strong type="success">
+                      {address.value}
+                    </Text>{' '}
+                    <Text code>{address.address}</Text>
+                  </div>
+                ))}
+            </div>
+          </Card>
+
+          <Card
+            size="small"
+            title={`Outputs ${txDetails && txDetails.vout ? txDetails.vout.length : ''}`}
+            bordered={true}
+            style={{ marginTop: '8px' }}>
+            <div style={{ width: '100%', textAlign: 'left' }}>
+              {outputs.opReturn && (
+                <>
+                  <Text code>OP_RETURN:</Text>{' '}
+                  <Text code strong type="success">
+                    {outputs.opReturn.decoded}
+                  </Text>
+                </>
+              )}
+              {outputs.addresses &&
+                outputs.addresses.map((address: Address, index: number) => (
+                  <div key={index}>
+                    <Text code>{address.address}</Text>{' '}
+                    <Text code strong type="success">
+                      {address.value}
+                    </Text>{' '}
+                    {address.isMintBaton ? (
+                      <Text code>
+                        <Badge color="#2db7f5" text="Mint Baton" />
                       </Text>
-                    </div>
-                  ))}
-              </Card>
-            </Col>
-          </Row>
-          <div style={{ width: '100%', textAlign: 'left' }}>
-            <pre>{result}</pre>
-          </div>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                ))}
+            </div>
+          </Card>
+
+          {slpDetails && (
+            <Card size="small" title="SLP Information" style={{ marginTop: '8px' }}>
+              <div style={{ width: '100%', textAlign: 'left' }}>
+                <pre>{JSON.stringify(slpDetails, null, 2)}</pre>
+              </div>
+            </Card>
+          )}
+
+          {txDetails && (
+            <Card size="small" title="Transaction Information" style={{ marginTop: '8px' }}>
+              <div style={{ width: '100%', textAlign: 'left' }}>
+                <pre>{JSON.stringify(txDetails, null, 2)}</pre>
+              </div>
+            </Card>
+          )}
         </>
       )}
     </>
