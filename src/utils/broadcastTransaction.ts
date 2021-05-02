@@ -1,6 +1,10 @@
 import CryptoSLP from '../crypto/slp';
 import CryptoNFT from '../crypto/slp/nft';
-import CryptoUtil, { NFTGroupOpReturnConfig, SLPGenesisOpReturnConfig } from '../crypto/util';
+import CryptoUtil, {
+  NFTChildGenesisOpReturnConfig,
+  NFTGroupOpReturnConfig,
+  SLPGenesisOpReturnConfig
+} from '../crypto/util';
 
 // network
 const NETWORK = process.env.REACT_APP_NETWORK;
@@ -16,12 +20,25 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         case 0x01:
           break;
         case 0x41:
-          throw new Error('NFT token types are not yet supported.');
+          switch (type) {
+            case 'SEND_SLP_TOKEN':
+              type = 'SEND_NFT_CHILD_TOKEN';
+              break;
+            default:
+              throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
+          }
+          break;
         case 0x81:
-          type = type === 'SEND_SLP_TOKEN' ? 'SEND_NFT_GROUP_TOKEN' : '';
+          switch (type) {
+            case 'SEND_SLP_TOKEN':
+              type = 'SEND_NFT_GROUP_TOKEN';
+              break;
+            default:
+              throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
+          }
           break;
         default:
-          throw new Error(`Token type ${args.version} is not supported.`);
+          throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
       }
     }
 
@@ -34,7 +51,11 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       (type === 'BURN_SLP_BATON_BALANCE' && 'IS_BURNING') ||
       (type === 'BURN_SLP_TOKEN' && 'IS_BURNING') ||
       (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT_GROUP') ||
-      (type === 'SEND_NFT_GROUP_TOKEN' && 'IS_PREPARE_NFT_GROUP');
+      (type === 'PREPARE_NFT_GROUP_TOKEN' && 'IS_PREPARING_NFT_GROUP') ||
+      (type === 'CREATE_NFT_CHILD_TOKEN' && 'IS_CREATING_NFT_CHILD') ||
+      (type === 'SEND_NFT_GROUP_TOKEN' && 'IS_SENDING_NFT_GROUP') ||
+      (type === 'SEND_NFT_CHILD_TOKEN' && 'IS_SENDING_NFT_CHILD') ||
+      (type === 'MINT_NFT_GROUP_TOKEN' && 'IS_MINTING_NFT_GROUP');
 
     const config = args;
     config.nfyChangeReceiverAddress = wallet.legacyAddress;
@@ -68,8 +89,25 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         config.documentUri = config.docUri;
         txidStr = await NFTcreateGroup(wallet, config);
         break;
-      case 'IS_PREPARE_NFT_GROUP':
+      case 'IS_PREPARING_NFT_GROUP':
         txidStr = await NFT1prepareGroup(wallet, config);
+        break;
+      case 'IS_CREATING_NFT_CHILD':
+        config.tokenReceiverAddress = wallet.legacyAddress;
+        config.batonReceiverAddress = config.fixedSupply === true ? null : wallet.legacyAddress;
+        config.documentUri = config.docUri;
+        txidStr = await NFTcreateChild(wallet, config);
+        break;
+      case 'IS_SENDING_NFT_GROUP':
+        txidStr = await NFTsendGroup(wallet, config);
+        break;
+      case 'IS_SENDING_NFT_CHILD':
+        txidStr = await NFTsendChild(wallet, config);
+        break;
+      case 'IS_MINTING_NFT_GROUP':
+        config.tokenReceiverAddress = wallet.legacyAddress;
+        config.batonReceiverAddress = config.batonReceiverAddress || wallet.legacyAddress;
+        txidStr = await NFTmintGroup(wallet, config);
         break;
       default:
         break;
@@ -172,6 +210,54 @@ const NFT1prepareGroup = async (wallet: any, config: any): Promise<string | unde
     wallet,
     config.tokenId,
     Number(config.amount),
+    config.tokenReceiverAddress,
+    NETWORK
+  );
+  return txidStr;
+};
+
+const NFTcreateChild = async (wallet: any, config: any): Promise<string | undefined> => {
+  // Generate NFT config object
+  const configObjChild: NFTChildGenesisOpReturnConfig = {
+    name: config.name,
+    ticker: config.symbol,
+    documentUrl: config.docUri
+  };
+
+  const txidStr = await CryptoNFT.createNFTChild(wallet, config.tokenReceiverAddress, configObjChild, NETWORK);
+
+  return txidStr;
+};
+
+const NFTmintGroup = async (wallet: any, config: any): Promise<string | undefined> => {
+  const txidStr = await CryptoNFT.mintNFTGroup(
+    wallet,
+    config.tokenId,
+    config.amount,
+    config.tokenReceiverAddress,
+    config.batonReceiverAddress,
+    NETWORK
+  );
+
+  return txidStr;
+};
+
+const NFTsendGroup = async (wallet: any, config: any): Promise<string | undefined> => {
+  const txidStr = await CryptoNFT.sendChildToken(
+    wallet,
+    config.tokenId,
+    config.amount,
+    config.tokenReceiverAddress,
+    NETWORK
+  );
+  return txidStr;
+};
+
+const NFTsendChild = async (wallet: any, config: any): Promise<string | undefined> => {
+  const txidStr = await CryptoNFT.sendChildToken(
+    wallet,
+    config.tokenId,
+    config.amount,
     config.tokenReceiverAddress,
     NETWORK
   );

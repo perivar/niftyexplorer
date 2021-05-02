@@ -111,6 +111,10 @@ export async function mintToken(
     // different address.
     if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
 
+    // Send the minting baton  to the same wallet if the user hasn't specified a
+    // different address.
+    if (batonReceiverAddress === '') batonReceiverAddress = walletInfo.legacyAddress;
+
     // Send dust transaction representing tokens being sent.
     transactionBuilder.addOutput(tokenReceiverAddress, 546);
 

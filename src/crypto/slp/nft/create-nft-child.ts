@@ -12,6 +12,11 @@ import CryptoUtil, { NFTChildGenesisOpReturnConfig, WalletInfo } from '../../uti
 import { Transaction } from 'bitcoinjs-lib';
 
 // Example SLP NFT config object for the child (the actual token)
+// NFT1 Child Genesis
+// NFT1-child tokens have quantity set to 1,
+// no baton vout (i.e. future minting impossible),
+// and have 0 decimal places.
+// Because of these differences, the signature for this method excludes these parameters.
 // const configObjChild: NFTChildGenesisOpReturnConfig = {
 //   name: 'NFT Test Token Child',
 //   ticker: 'NFTY0001',

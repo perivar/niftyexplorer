@@ -213,7 +213,7 @@ export const Explorer = ({ match }: { match: any }) => {
           </div>
         </div>
       </Space>
-      {!isLoading && (
+      {!isLoading && queryparam && (
         <>
           <Card size="small" title="Transaction Information" style={{ marginTop: '12px' }}>
             <div>

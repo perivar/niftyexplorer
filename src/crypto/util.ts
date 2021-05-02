@@ -76,11 +76,11 @@ export interface SlpTokenSend extends SlpToken {
 export type SlpTokenData = SlpTokenGenesis | SlpTokenMint | SlpTokenSend;
 
 export interface NFTGroupOpReturnConfig {
-  documentHash?: string;
-  mintBatonVout?: number | null;
   ticker: string;
   name: string;
+  documentHash?: string;
   documentUrl: string;
+  mintBatonVout?: number | null;
   initialQty: number;
 }
 
@@ -94,6 +94,10 @@ export interface SLPGenesisOpReturnConfig {
   decimals: number;
 }
 
+// NFT1 Child Genesis
+// NFT1-child tokens have quantity set to 1,
+// no baton vout (i.e. future minting impossible),
+// and have 0 decimal places.
 export interface NFTChildGenesisOpReturnConfig {
   documentHash?: string;
   ticker: string;

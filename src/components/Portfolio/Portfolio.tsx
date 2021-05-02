@@ -254,10 +254,19 @@ export default () => {
       {tokens.length
         ? tokens
             .filter(
-              (element: any) => (!showArchivedTokens && element.balance && element.balance.gt(0)) || showArchivedTokens
+              (element: any) =>
+                (!showArchivedTokens && element.balance && element.balance.gt(0)) ||
+                showArchivedTokens ||
+                element.hasBaton
             )
             .map((token: any) => (
-              <Col style={{ marginTop: '8px' }} xl={8} lg={12} sm={12} span={24} key={`col-${token.tokenId}`}>
+              <Col
+                style={{ marginTop: '8px' }}
+                xl={8}
+                lg={12}
+                sm={12}
+                span={24}
+                key={`col-${token.tokenId}-${token.utxoType}`}>
                 <EnhancedCard
                   token={token}
                   loading={!token.info}
@@ -265,7 +274,7 @@ export default () => {
                   onClick={() =>
                     setSelectedToken(!selectedToken || token.tokenId !== selectedToken.tokenId ? token : null)
                   }
-                  key={`card-${token.tokenId}`}
+                  key={`card-${token.tokenId}-${token.utxoType}`}
                   style={{ marginTop: '8px', textAlign: 'left' }}
                   onClose={onClose}
                   actions={renderActions(action, setAction, token)}
@@ -473,7 +482,7 @@ export default () => {
                             // style={{
                             //   borderRadius: window.localStorage.getItem(token.tokenId) ? null : '50%'
                             // }}
-                            key={`identicon-${token.tokenId}`}
+                            key={`identicon-${token.tokenId}-${token.utxoType}`}
                             src={window.localStorage.getItem(token.tokenId) || makeBlockie(token.tokenId)}
                           />
                         }

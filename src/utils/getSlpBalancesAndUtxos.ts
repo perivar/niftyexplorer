@@ -125,7 +125,7 @@ export default async (address: string) => {
 
   const nonSlpUtxos = tokenUtxos.filter((tokenUtxo: TokenUTXOInfo) => !tokenUtxo.isValid && tokenUtxo.value !== 546);
   const slpUtxos = tokenUtxos.filter((tokenUtxo: TokenUTXOInfo) => !!tokenUtxo.isValid);
-  let tokens = slpUtxos.map((tokenUtxo) => {
+  const tokens = slpUtxos.map((tokenUtxo) => {
     return {
       tokenId: tokenUtxo.tokenId,
       info: {
@@ -136,15 +136,15 @@ export default async (address: string) => {
         documentUri: tokenUtxo.tokenDocumentUrl,
         documentHash: tokenUtxo.tokenDocumentHash
       },
-      balance: tokenUtxo.tokenQty ? new BigNumber(tokenUtxo.tokenQty).div(Math.pow(10, tokenUtxo.decimals)) : undefined,
-      hasBaton: !!tokenUtxo.mintBatonVout,
+      balance: tokenUtxo.tokenQty ? new BigNumber(tokenUtxo.tokenQty).div(Math.pow(10, tokenUtxo.decimals)) : 0,
+      hasBaton: !!tokenUtxo.mintBatonVout || tokenUtxo.utxoType === 'minting-baton',
       version: tokenUtxo.tokenType,
       utxoType: tokenUtxo.utxoType
     };
   });
 
   // filter out tokens with balance === undefined
-  tokens = tokens.filter((token: any) => token.balance !== undefined);
+  // tokens = tokens.filter((token: any) => token.balance !== undefined);
 
   /*
   // Loop through each element in the array and validate the input before

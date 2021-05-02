@@ -6,8 +6,18 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { WalletInfo } from '../../util';
 
-export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, tokenQty: number, NETWORK = 'mainnet') {
+export async function mintNFTGroup(
+  walletInfo: WalletInfo,
+  tokenId: string,
+  tokenQty: number, // The quantity of new tokens to mint.
+  tokenReceiverAddress: string,
+  batonReceiverAddress: string,
+  NETWORK = 'mainnet'
+) {
   try {
+    // Defaults to sending the token back to the same wallet if the user hasn't specified a
+    // different address.
+
     const { mnemonic } = walletInfo;
 
     // network
@@ -96,11 +106,19 @@ export async function mintNFTGroup(walletInfo: WalletInfo, tokenId: string, toke
     // OP_RETURN needs to be the first output in the transaction.
     transactionBuilder.addOutput(script, 0);
 
+    // Send the token back to the same wallet if the user hasn't specified a
+    // different address.
+    if (tokenReceiverAddress === '') tokenReceiverAddress = walletInfo.legacyAddress;
+
+    // Send the minting baton  to the same wallet if the user hasn't specified a
+    // different address.
+    if (batonReceiverAddress === '') batonReceiverAddress = walletInfo.legacyAddress;
+
     // Send dust transaction representing the new tokens.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    transactionBuilder.addOutput(tokenReceiverAddress, 546);
 
     // Send dust transaction representing minting baton.
-    transactionBuilder.addOutput(legacyAddress, 546);
+    transactionBuilder.addOutput(batonReceiverAddress, 546);
 
     // add output to send NFY remainder of UTXO.
     transactionBuilder.addOutput(legacyAddress, remainder);
