@@ -61,7 +61,29 @@ export const Explorer = ({ match }: { match: any }) => {
 
   useEffect(() => {
     if (queryparam) setQuery(queryparam);
-    doSearch(query);
+
+    const doSearch = async (query: string) => {
+      if (query === '') return;
+      setLoading(true);
+      setTxDetails(undefined);
+      setSLPDetails(undefined);
+      setTotalInputValue(0);
+      setTotalOutputValue(0);
+      setInputs({
+        addresses: []
+      });
+      setOutputs({
+        addresses: [],
+        opReturn: undefined
+      });
+
+      const result = await getTransactionInformation(query);
+
+      if (result) setResult(result);
+      setLoading(false);
+    };
+
+    doSearch(queryparam);
   }, [queryparam]);
 
   const getTransactionInformation = async (txid: string) => {
@@ -141,16 +163,6 @@ export const Explorer = ({ match }: { match: any }) => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const doSearch = async (query: string) => {
-    if (query === '') return;
-    setLoading(true);
-
-    const result = await getTransactionInformation(query);
-
-    if (result) setResult(result);
-    setLoading(false);
   };
 
   const handleOnSearch = () => {
