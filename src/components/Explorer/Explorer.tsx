@@ -188,27 +188,27 @@ export const Explorer = ({ match }: { match: any }) => {
           </div>
           <div>
             <Link to="/explorer/3d815beb4639e446aff5e0dd60a9a800e7349dc3c390c6375c063faddd7c2618">
-              <code>3d815beb4639e446aff5e0dd60a9a800e7349dc3c390c6375c063faddd7c2618</code>
+              <code>Example 1. Create NFT Group</code>
             </Link>
           </div>
           <div>
             <Link to="/explorer/c0c754f9b9ffcb4b678dcaef550f811d90c4534724be9ca760c8cf209e27e6bb">
-              <code>c0c754f9b9ffcb4b678dcaef550f811d90c4534724be9ca760c8cf209e27e6bb</code>
+              <code>Example 1. Create NFT Child</code>
             </Link>
           </div>
           <div>
             <Link to="/explorer/dc64afee6d8f794c6cf83b10510ef637de504e3c51951ed045528b351e0e7e59">
-              <code>dc64afee6d8f794c6cf83b10510ef637de504e3c51951ed045528b351e0e7e59</code>
-            </Link>
-          </div>
-          <div>
-            <Link to="/explorer/16845293e802f2f59bc69eb361c1fff08dba1e4a4c85702c7f574846f428031e">
-              <code>16845293e802f2f59bc69eb361c1fff08dba1e4a4c85702c7f574846f428031e</code>
+              <code>Example 1. Mint NFT Group</code>
             </Link>
           </div>
           <div>
             <Link to="/explorer/c98625d150329534e8f936c202b7dd3b5e1b240fc25ed545f35b690c7f0dd124">
-              <code>c98625d150329534e8f936c202b7dd3b5e1b240fc25ed545f35b690c7f0dd124</code>
+              <code>Example 2. Create NFT Group</code>
+            </Link>
+          </div>
+          <div>
+            <Link to="/explorer/16845293e802f2f59bc69eb361c1fff08dba1e4a4c85702c7f574846f428031e">
+              <code>Example 2. Prepare NFT Group (Send)</code>
             </Link>
           </div>
         </div>
@@ -245,6 +245,7 @@ export const Explorer = ({ match }: { match: any }) => {
               {inputs.addresses &&
                 inputs.addresses.map((address: Address, index: number) => (
                   <div key={index}>
+                    <Text strong>{index + 1}.</Text>{' '}
                     <Text code strong type="success">
                       {address.value}
                     </Text>{' '}
@@ -262,6 +263,7 @@ export const Explorer = ({ match }: { match: any }) => {
             <div style={{ width: '100%', textAlign: 'left' }}>
               {outputs.opReturn && (
                 <>
+                  <Text strong>1.</Text>
                   <Text code>OP_RETURN:</Text>{' '}
                   <Text code strong type="success">
                     {outputs.opReturn.decoded}
@@ -271,6 +273,7 @@ export const Explorer = ({ match }: { match: any }) => {
               {outputs.addresses &&
                 outputs.addresses.map((address: Address, index: number) => (
                   <div key={index}>
+                    <Text strong>{outputs.opReturn ? index + 2 : index + 1}.</Text>
                     <Text code>{address.address}</Text>{' '}
                     <Text code strong type="success">
                       {address.value}
