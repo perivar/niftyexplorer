@@ -1,5 +1,6 @@
 import { burnAll } from './burn-all';
 import { burnTokens } from './burn-tokens';
+import { burnMintBaton } from './burn-mint-baton';
 import { getBalance } from './get-balance';
 import { conversion } from './conversion';
 import { createToken } from './create-token';
@@ -11,6 +12,7 @@ import { sendToken } from './send-token';
 const CryptoSLP = {
   burnAll,
   burnTokens,
+  burnMintBaton,
   getBalance,
   conversion,
   createToken,

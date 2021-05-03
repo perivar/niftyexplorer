@@ -1,17 +1,12 @@
 /*
   Burn a specific quantity of tokens of type tokenId
-	Burning tokens is exactly the same as sending tokens without change. The only
-  difference is that the output of the OP_RETURN indicates the difference.
-  e.g. If you have 100 tokens and want to burn 10, you use the 100 token UTXO
-  as input, and write the output OP_RETURN with a quantity of 90. That will
-  effectively burn 10 tokens.
 */
 
 import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { WalletInfo } from '../util';
 
-export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQty: number, NETWORK = 'mainnet') {
+export async function burnMintBaton(walletInfo: WalletInfo, tokenId: string, NETWORK = 'mainnet') {
   try {
     const { mnemonic } = walletInfo;
 
@@ -55,7 +50,7 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
       if (
         utxo && // UTXO is associated with a token.
         utxo.tokenId === tokenId && // UTXO matches the token ID.
-        utxo.utxoType === 'token' // UTXO is not a minting baton.
+        utxo.utxoType === 'minting-baton' // UTXO is a minting baton.
       ) {
         return true;
       }
@@ -72,7 +67,7 @@ export async function burnTokens(walletInfo: WalletInfo, tokenId: string, tokenQ
     // console.log(`nfyUtxo: ${JSON.stringify(nfyUtxo, null, 2)}`);
 
     // Generate the SLP OP_RETURN.
-    const slpData = slp.TokenType1.generateBurnOpReturn(tokenUtxos, tokenQty);
+    const slpData = slp.TokenType1.generateBurnOpReturn(tokenUtxos, 0);
 
     // BEGIN transaction construction.
 

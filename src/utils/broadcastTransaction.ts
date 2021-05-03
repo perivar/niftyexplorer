@@ -90,7 +90,7 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         txidStr = await NFTcreateGroup(wallet, config);
         break;
       case 'IS_PREPARING_NFT_GROUP':
-        txidStr = await NFT1prepareGroup(wallet, config);
+        txidStr = await NFTsplitGroup(wallet, config);
         break;
       case 'IS_CREATING_NFT_CHILD':
         config.tokenReceiverAddress = wallet.legacyAddress;
@@ -155,7 +155,7 @@ const TokenType1mint = async (wallet: any, config: any): Promise<string | undefi
   const txidStr = await CryptoSLP.mintToken(
     wallet,
     config.tokenId,
-    config.amount,
+    config.additionalTokenQty,
     config.tokenReceiverAddress,
     config.batonReceiverAddress,
     NETWORK
@@ -176,6 +176,10 @@ const TokenType1send = async (wallet: any, config: any): Promise<string | undefi
 };
 
 const TokenType1burn = async (wallet: any, config: any): Promise<string | undefined> => {
+  if (config.burnBaton) {
+    const txidStr = await CryptoSLP.burnMintBaton(wallet, config.tokenId, NETWORK);
+    return txidStr;
+  }
   const txidStr = await CryptoSLP.burnTokens(wallet, config.tokenId, config.amount, NETWORK);
   return txidStr;
 };
@@ -202,11 +206,11 @@ const NFTcreateGroup = async (wallet: any, config: any): Promise<string | undefi
   return txidStr;
 };
 
-const NFT1prepareGroup = async (wallet: any, config: any): Promise<string | undefined> => {
+const NFTsplitGroup = async (wallet: any, config: any): Promise<string | undefined> => {
   // An initial preparation transaction is required before a new NFT can be created.
   // This ensures only 1 parent token is burned in the NFT Genesis transaction.
 
-  const txidStr = await CryptoNFT.prepareNFTGroup(
+  const txidStr = await CryptoNFT.splitNFTGroup(
     wallet,
     config.tokenId,
     Number(config.amount),
@@ -233,7 +237,7 @@ const NFTmintGroup = async (wallet: any, config: any): Promise<string | undefine
   const txidStr = await CryptoNFT.mintNFTGroup(
     wallet,
     config.tokenId,
-    config.amount,
+    config.additionalTokenQty,
     config.tokenReceiverAddress,
     config.batonReceiverAddress,
     NETWORK

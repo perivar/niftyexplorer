@@ -7,12 +7,13 @@ and then click 'Create NFT'
 https://github.com/simpleledger/Electron-Cash-SLP/blob/master/electroncash_gui/qt/slp_create_token_genesis_dialog.py#L399
 https://github.com/simpleledger/Electron-Cash-SLP/blob/master/electroncash/slp.py#L467
 https://slp.dev/packages/slp-mdm.js/#send
+https://github.com/Juungle/fungal-spore-exploder/blob/9792a8eb95cce5e301ed822bfe737124e2e55f9b/src/Bitcoin.ts#L215
 */
 import * as bitcoin from 'bitcoinjs-lib';
 import { Transaction } from 'bitcoinjs-lib';
 import CryptoUtil, { WalletInfo } from '../../util';
 
-export async function prepareNFTGroup(
+export async function splitNFTGroup(
   walletInfo: WalletInfo,
   tokenId: string,
   tokenQty: number,
@@ -79,14 +80,11 @@ export async function prepareNFTGroup(
     const nfyUtxo = CryptoUtil.findBiggestUtxo(nfyUtxos);
     // console.log(`nfyUtxo: ${JSON.stringify(nfyUtxo, null, 2)}`);
 
-    // After this is transaction is broadcast you can proceed to fill out the
-    // NFT details and then click 'Create NFT'.")
-
-    let sendQtyArray: number[] = [];
-    if (tokenQty < 19) {
-      sendQtyArray = [tokenQty];
-    } else if (tokenQty >= 19) {
-      sendQtyArray = [18];
+    const sendQtyArray: number[] = [];
+    for (let i = 0; i < tokenQty && i < 18; ++i) {
+      sendQtyArray.push(1);
+    }
+    if (tokenQty > 18) {
       sendQtyArray.push(tokenQty - 18);
     }
 

@@ -4,7 +4,7 @@ import { mintNFTGroup } from './mint-nft-group';
 import { sendGroupToken } from './send-group';
 import { sendChildToken } from './send-child';
 import { getNFT } from './get-nft';
-import { prepareNFTGroup } from './prepate-nft-group';
+import { splitNFTGroup } from './split-nft-group';
 
 const CryptoNFT = {
   createNFTGroup,
@@ -13,7 +13,7 @@ const CryptoNFT = {
   sendGroupToken,
   sendChildToken,
   getNFT,
-  prepareNFTGroup
+  splitNFTGroup
 };
 
 export default CryptoNFT;

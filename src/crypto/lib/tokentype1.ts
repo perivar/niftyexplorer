@@ -120,7 +120,8 @@ export class TokenType1 {
       // Calculate the total amount of tokens owned by the wallet.
       let totalTokens = 0;
       for (let i = 0; i < tokenUtxos.length; i++) {
-        totalTokens += parseFloat(tokenUtxos[i].tokenQty);
+        const tokenQty = tokenUtxos[i].tokenQty ? tokenUtxos[i].tokenQty : 0;
+        totalTokens += parseFloat(tokenQty);
       }
 
       // Make sure burn quantity isn't bigger than the total amount in tokens
@@ -210,7 +211,7 @@ export class TokenType1 {
       if (!tokenId) {
         throw new Error('tokenId property not found in mint-baton UTXO.');
       }
-      if (!decimals) {
+      if (typeof decimals === 'undefined') {
         throw new Error('decimals property not found in mint-baton UTXO.');
       }
 
