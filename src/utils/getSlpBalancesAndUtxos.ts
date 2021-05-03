@@ -139,7 +139,9 @@ export default async (address: string) => {
       balance: tokenUtxo.tokenQty ? new BigNumber(tokenUtxo.tokenQty).div(Math.pow(10, tokenUtxo.decimals)) : 0,
       hasBaton: !!tokenUtxo.mintBatonVout || tokenUtxo.utxoType === 'minting-baton',
       version: tokenUtxo.tokenType,
-      utxoType: tokenUtxo.utxoType
+      utxoType: tokenUtxo.utxoType,
+      txid: tokenUtxo.txid,
+      vout: tokenUtxo.vout
     };
   });
 

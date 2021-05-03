@@ -213,11 +213,11 @@ const App = () => {
                     <Link to="/createnft">Create NFT</Link>
                   </Menu.Item>
                 )}
-                {wallet && (
+                {/* {wallet && (
                   <Menu.Item key="create">
                     <Link to="/create">Create SLP Token</Link>
                   </Menu.Item>
-                )}
+                )} */}
                 {/* <Menu.Item key="icons">
                   <Link to="/icons">Icons</Link>
                 </Menu.Item> */}

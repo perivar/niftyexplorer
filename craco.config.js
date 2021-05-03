@@ -75,7 +75,7 @@ module.exports = {
               '@anchor-border-width': '1px',
 
               // margin
-              '@form-item-margin-bottom': '24px',
+              '@form-item-margin-bottom': '20px',
               '@menu-item-vertical-margin': '0px',
               '@menu-item-boundary-margin': '0px',
 

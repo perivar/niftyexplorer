@@ -27,7 +27,7 @@ import styled from 'styled-components';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import createNFTToken from '../../utils/broadcastTransaction';
+import createNFTGroupToken from '../../utils/broadcastTransaction';
 import StyledCreate from '../Common/StyledPage';
 import { EnhancedModal } from '../Portfolio/EnhancedModal';
 import { QRCode } from '../Common/QRCode';
@@ -362,7 +362,7 @@ const CreateNFT = () => {
         throw new Error('No token file!');
       }
 
-      const link: any = await createNFTToken(wallet, 'CREATE_NFT_GROUP_TOKEN', {
+      const link: any = await createNFTGroupToken(wallet, 'CREATE_NFT_GROUP_TOKEN', {
         name: tokenName,
         symbol: tokenSymbol,
         documentHash: hash,

@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Row, Col, Avatar, Empty, Alert, notification, Radio, Spin, Collapse, Switch } from 'antd';
-import { DollarCircleFilled, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, HistoryOutlined, GoldFilled, DiffFilled } from '@ant-design/icons';
+import { PlaneIcon, HammerIcon, FireIcon } from '../Common/CustomIcons';
 import { EnhancedCard } from './EnhancedCard';
 import { WalletContext } from '../../utils/context';
 import { Meta } from 'antd/lib/list/Item';
@@ -13,7 +14,9 @@ import Mint from './Mint/Mint';
 import Transfer from './Transfer/Transfer';
 import Burn from './Burn/Burn';
 import SendNFY from './SendNFY/SendNFY';
-import { PlaneIcon, HammerIcon, FireIcon } from '../Common/CustomIcons';
+import TransferNFT from './NFT/TransferNFT';
+import SplitNFTGroup from './NFT/SplitNFTGroup';
+import CreateNFTChild from './NFT/CreateNFTChild';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { OnBoarding } from '../OnBoarding/OnBoarding';
 import getTokenTransactionHistory from '../../utils/getTokenTransactionHistory';
@@ -64,14 +67,14 @@ export default () => {
   const [outerAction, setOuterAction] = useState(false);
   const [showArchivedTokens, setShowArchivedTokens] = useState(false);
 
-  const isModalOpen = (action: any, selectedToken: any) => action === 'sendNFY' || selectedToken !== null;
+  // const isModalOpen = (action: any, selectedToken: any) => action === 'sendNFY' || selectedToken !== null;
 
-  React.useEffect(() => {
-    document.body.style.overflow = isModalOpen(action, selectedToken) ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [action, selectedToken]);
+  // React.useEffect(() => {
+  //   document.body.style.overflow = isModalOpen(action, selectedToken) ? 'hidden' : '';
+  //   return () => {
+  //     document.body.style.overflow = '';
+  //   };
+  // }, [action, selectedToken]);
 
   const getTokenHistory = async (tokenInfo: any) => {
     setLoadingTokenHistory(true);
@@ -146,11 +149,53 @@ export default () => {
       );
     }
 
-    if (hasBalance) {
+    // SLP tokens
+    if (hasBalance && token.version != 0x81 && token.version != 0x41) {
       actions.unshift(
         <span
           onClick={() => {
             setAction('transfer');
+            setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
+          }}>
+          <PlaneIcon />
+          Send
+        </span>
+      );
+    }
+
+    // split nft group token
+    if (balance && balance.gt(1) && token.version === 0x81) {
+      actions.unshift(
+        <span
+          onClick={() => {
+            setAction('split-nft-group');
+            setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
+          }}>
+          <DiffFilled />
+          Split
+        </span>
+      );
+    }
+
+    // create nft child token
+    if (balance && balance.eq(1) && token.version === 0x81) {
+      actions.unshift(
+        <span
+          onClick={() => {
+            setAction('create-nft-child');
+            setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
+          }}>
+          <GoldFilled />
+          Create NFT
+        </span>
+      );
+    }
+
+    if (hasBalance && (token.version === 0x81 || token.version === 0x41)) {
+      actions.unshift(
+        <span
+          onClick={() => {
+            setAction('transfer-nft');
             setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
           }}>
           <PlaneIcon />
@@ -266,7 +311,7 @@ export default () => {
                 lg={12}
                 sm={12}
                 span={24}
-                key={`col-${token.tokenId}-${token.utxoType}`}>
+                key={`col-${token.tokenId}-${token.txid}-${token.vout}`}>
                 <EnhancedCard
                   token={token}
                   loading={!token.info}
@@ -274,7 +319,7 @@ export default () => {
                   onClick={() =>
                     setSelectedToken(!selectedToken || token.tokenId !== selectedToken.tokenId ? token : null)
                   }
-                  key={`card-${token.tokenId}-${token.utxoType}`}
+                  key={`card-${token.tokenId}-${token.txid}`}
                   style={{ marginTop: '8px', textAlign: 'left' }}
                   onClose={onClose}
                   actions={renderActions(action, setAction, token)}
@@ -438,6 +483,15 @@ export default () => {
                       {selectedToken && action === 'transfer' && tokenCardAction === null ? (
                         <Transfer token={selectedToken} onClose={onClose} />
                       ) : null}
+                      {selectedToken && action === 'transfer-nft' && tokenCardAction === null ? (
+                        <TransferNFT token={selectedToken} onClose={onClose} />
+                      ) : null}
+                      {selectedToken && action === 'split-nft-group' && tokenCardAction === null ? (
+                        <SplitNFTGroup token={selectedToken} onClose={onClose} />
+                      ) : null}
+                      {selectedToken && action === 'create-nft-child' && tokenCardAction === null ? (
+                        <CreateNFTChild token={selectedToken} onClose={onClose} />
+                      ) : null}
                       {selectedToken && action === 'burn' && tokenCardAction === null ? (
                         <Burn
                           token={selectedToken}
@@ -482,7 +536,7 @@ export default () => {
                             // style={{
                             //   borderRadius: window.localStorage.getItem(token.tokenId) ? null : '50%'
                             // }}
-                            key={`identicon-${token.tokenId}-${token.utxoType}`}
+                            key={`identicon-${token.tokenId}-${token.txid}`}
                             src={window.localStorage.getItem(token.tokenId) || makeBlockie(token.tokenId)}
                           />
                         }
