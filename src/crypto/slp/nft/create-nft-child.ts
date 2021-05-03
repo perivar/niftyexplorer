@@ -87,7 +87,7 @@ export async function createNFTChild(
     }
 
     // Get the biggest UTXO to pay for the transaction.
-    const utxo = CryptoUtil.findBiggestUtxo(utxos);
+    const utxo = CryptoUtil.findBiggestUtxo(nfyUtxos);
     // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
 
     // instance of transaction builder
