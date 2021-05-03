@@ -228,12 +228,19 @@ function getByteCount(inputs: any, outputs: any): number {
 function estimateFee(inputs: any, outputs: any): number {
   // read from environment, default to 1.2 nifthishis per byte
   const niftoshisPerByte = Number(process.env.REACT_APP_NIFTOSHIS_PER_BYTE_FEE) || 1.2;
+  const minTxFee = Number(process.env.REACT_APP_NIFTOSHIS_MIN_FEE) || 400;
 
   // estimate byte count to calculate fee. paying X sat/byte
   const byteCount = getByteCount(inputs, outputs);
   console.log(`Transaction byte count: ${byteCount}`);
-  const txFee = Math.floor(niftoshisPerByte * byteCount);
+  let txFee = Math.floor(niftoshisPerByte * byteCount);
   console.log(`Transaction fee: ${txFee}`);
+
+  if (txFee < minTxFee) {
+    console.log(`Transaction fee was to low - increased to minTxFee: ${minTxFee}`);
+    txFee = minTxFee;
+  }
+
   return txFee;
 }
 
@@ -348,36 +355,41 @@ function decodeError(err: any) {
     // console.log(`err.message: ${err.message}`)
     // console.log(`err: `, err)
 
-    // Attempt to detect a network connection error.
-    if (err.message && err.message.indexOf('ENOTFOUND') > -1) {
-      return {
-        msg: 'Network error: Could not communicate with full node or other external service.',
-        status: 503
-      };
-    }
+    // // Attempt to detect a network connection error.
+    // if (err.message && err.message.indexOf('ENOTFOUND') > -1) {
+    //   return {
+    //     msg: 'Network error: Could not communicate with full node or other external service.',
+    //     status: 503
+    //   };
+    // }
 
-    // Different kind of network error
-    if (err.message && err.message.indexOf('ENETUNREACH') > -1) {
-      return {
-        msg: 'Network error: Could not communicate with full node or other external service.',
-        status: 503
-      };
-    }
+    // // Different kind of network error
+    // if (err.message && err.message.indexOf('ENETUNREACH') > -1) {
+    //   return {
+    //     msg: 'Network error: Could not communicate with full node or other external service.',
+    //     status: 503
+    //   };
+    // }
 
-    // Different kind of network error
-    if (err.message && err.message.indexOf('EAI_AGAIN') > -1) {
-      return {
-        msg: 'Network error: Could not communicate with full node or other external service.',
-        status: 503
-      };
-    }
+    // // Different kind of network error
+    // if (err.message && err.message.indexOf('EAI_AGAIN') > -1) {
+    //   return {
+    //     msg: 'Network error: Could not communicate with full node or other external service.',
+    //     status: 503
+    //   };
+    // }
 
-    // Axios timeout (aborted) error, or service is down (connection refused).
-    if (err.code && (err.code === 'ECONNABORTED' || err.code === 'ECONNREFUSED')) {
-      return {
-        msg: 'Network error: Could not communicate with full node or other external service.',
-        status: 503
-      };
+    // // Axios timeout (aborted) error, or service is down (connection refused).
+    // if (err.code && (err.code === 'ECONNABORTED' || err.code === 'ECONNREFUSED')) {
+    //   return {
+    //     msg: 'Network error: Could not communicate with full node or other external service.',
+    //     status: 503
+    //   };
+    // }
+
+    // Attempt to extract the Insight error message
+    if (err.message && err.code) {
+      return { msg: err.message, status: err.code };
     }
 
     return { msg: false, status: 500 };

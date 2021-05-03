@@ -26,7 +26,8 @@ const SplitNFTGroup = ({ token, onClose }: any) => {
     try {
       const link = await broadcastTransaction(wallet, 'PREPARE_NFT_GROUP_TOKEN', {
         tokenId: token.tokenId,
-        version: token.version
+        version: token.version,
+        amount: token.balance
       });
 
       notification.success({
