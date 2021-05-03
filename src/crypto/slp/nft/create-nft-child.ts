@@ -69,7 +69,7 @@ export async function createNFTChild(
     }
 
     // Filter out the token UTXOs that match the user-provided token ID
-    // and contain the minting baton.
+    // and does not contain the minting baton.
     tokenUtxos = tokenUtxos.filter((utxo: any) => {
       if (
         utxo && // UTXO is associated with a token.

@@ -26,8 +26,11 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
               type = 'SEND_NFT_GROUP_TOKEN';
               break;
             case 'CREATE_NFT_CHILD_TOKEN':
-              break;
             case 'PREPARE_NFT_GROUP_TOKEN':
+            case 'BURN_SLP_TOKEN_BALANCE':
+            case 'BURN_SLP_BATON':
+            case 'BURN_SLP_BATON_BALANCE':
+            case 'BURN_SLP_TOKEN':
               break;
             default:
               throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
@@ -38,6 +41,11 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
             case 'SEND_SLP_TOKEN':
             case 'SEND_NFT_TOKEN':
               type = 'SEND_NFT_CHILD_TOKEN';
+              break;
+            case 'BURN_SLP_TOKEN_BALANCE':
+            case 'BURN_SLP_BATON':
+            case 'BURN_SLP_BATON_BALANCE':
+            case 'BURN_SLP_TOKEN':
               break;
             default:
               throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
