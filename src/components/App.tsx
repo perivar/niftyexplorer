@@ -335,9 +335,9 @@ const App = () => {
                   />
                   <TabPane
                     tab={
-                      <span onClick={() => history.push('/create')}>
+                      <span onClick={() => history.push('/createnft')}>
                         <PlusSquareFilled />
-                        Create
+                        Create NFT
                       </span>
                     }
                     key="create"
