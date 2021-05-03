@@ -27,6 +27,8 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
               break;
             case 'CREATE_NFT_CHILD_TOKEN':
               break;
+            case 'PREPARE_NFT_GROUP_TOKEN':
+              break;
             default:
               throw new Error(`Token version '${args.version}' with type '${type}' is not supported.`);
           }
