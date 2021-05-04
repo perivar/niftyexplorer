@@ -101,7 +101,7 @@ const SplitNFTGroup = ({ token, onClose }: any) => {
                   <Col span={24}>
                     <Form style={{ width: 'auto' }}>
                       <div style={{ paddingTop: '12px' }}>
-                        <Button onClick={() => submit()}>Split</Button>
+                        <Button onClick={() => submit()}>Split NFT Group</Button>
                       </div>
                     </Form>
                   </Col>

@@ -44,6 +44,7 @@ const StyledTabsMenu = styled.div`
       font-size: 24px;
       margin-left: 8px;
       margin-bottom: 3px;
+      justify-content: center;
     }
   }
 
@@ -210,7 +211,7 @@ const App = () => {
                 </Menu.Item>
                 {wallet && (
                   <Menu.Item key="createnft">
-                    <Link to="/createnft">Create NFT</Link>
+                    <Link to="/createnft">Create NFT Group</Link>
                   </Menu.Item>
                 )}
                 {/* {wallet && (
@@ -337,7 +338,7 @@ const App = () => {
                     tab={
                       <span onClick={() => history.push('/createnft')}>
                         <PlusSquareFilled />
-                        Create NFT
+                        Create NFT Group
                       </span>
                     }
                     key="create"

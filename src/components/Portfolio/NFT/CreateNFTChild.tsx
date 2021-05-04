@@ -87,7 +87,7 @@ const CreateNFTChild = ({ token, onClose }: any) => {
           <Card
             title={
               <h2>
-                <GoldFilled /> Create NFT Token
+                <GoldFilled /> Create NFT
               </h2>
             }
             bordered={false}>
@@ -147,7 +147,7 @@ const CreateNFTChild = ({ token, onClose }: any) => {
                     </Form.Item>
 
                     <div style={{ paddingTop: '10px' }}>
-                      <Button onClick={() => submit()}>Create</Button>
+                      <Button onClick={() => submit()}>Create NFT</Button>
                     </div>
                   </Form>
                 </Col>

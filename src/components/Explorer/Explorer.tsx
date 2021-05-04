@@ -187,28 +187,18 @@ export const Explorer = ({ match }: { match: any }) => {
             <p>Example Transactions:</p>
           </div>
           <div>
-            <Link to="/explorer/3d815beb4639e446aff5e0dd60a9a800e7349dc3c390c6375c063faddd7c2618">
+            <Link to="/explorer/cfa602c3e186014c4c2b83be97b56596114869ae04d7c3287d168d5ddc26608b">
               <code>Example 1. Create NFT Group</code>
             </Link>
           </div>
           <div>
-            <Link to="/explorer/c0c754f9b9ffcb4b678dcaef550f811d90c4534724be9ca760c8cf209e27e6bb">
-              <code>Example 1. Create NFT Child</code>
+            <Link to="/explorer/c8519ee44f95984834c801e7e3d9009029fd5709dac5484f016c979b792fdd92">
+              <code>Example 1. Prepare NFT Group (Split)</code>
             </Link>
           </div>
           <div>
-            <Link to="/explorer/dc64afee6d8f794c6cf83b10510ef637de504e3c51951ed045528b351e0e7e59">
-              <code>Example 1. Mint NFT Group</code>
-            </Link>
-          </div>
-          <div>
-            <Link to="/explorer/c98625d150329534e8f936c202b7dd3b5e1b240fc25ed545f35b690c7f0dd124">
-              <code>Example 2. Create NFT Group</code>
-            </Link>
-          </div>
-          <div>
-            <Link to="/explorer/16845293e802f2f59bc69eb361c1fff08dba1e4a4c85702c7f574846f428031e">
-              <code>Example 2. Prepare NFT Group (Send)</code>
+            <Link to="/explorer/f14f66d1d0730786ecbf714266d6c8b001524b5c39a0759e9aab814d27c4b1cf">
+              <code>Example 1. Create NFT</code>
             </Link>
           </div>
         </div>

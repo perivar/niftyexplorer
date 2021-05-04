@@ -438,7 +438,7 @@ const CreateNFT = () => {
               <Card
                 title={
                   <h2>
-                    <PlusSquareFilled /> Create NFT
+                    <PlusSquareFilled /> Create NFT Group
                   </h2>
                 }
                 bordered={true}>
@@ -656,7 +656,7 @@ const CreateNFT = () => {
                             ? () => handleCreateNFTToken()
                             : () => setShowConfirm(true)
                         }>
-                        Create Token
+                        Create NFT Group
                       </Button>
                     </Popconfirm>
                   </div>

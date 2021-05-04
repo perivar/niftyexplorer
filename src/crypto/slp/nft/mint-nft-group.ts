@@ -63,7 +63,7 @@ export async function mintNFTGroup(
       if (
         utxo && // UTXO is associated with a token.
         utxo.tokenId === tokenId && // UTXO matches the token ID.
-        utxo.utxoType === 'minting-baton' && // UTXO is not a minting baton.
+        utxo.utxoType === 'minting-baton' && // UTXO is a minting baton.
         utxo.tokenType === 129 // UTXO is for NFT Group
       ) {
         return true;
