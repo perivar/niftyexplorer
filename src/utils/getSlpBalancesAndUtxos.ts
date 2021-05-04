@@ -112,6 +112,32 @@ const decodeTokenMetadata = (txDetails: any) => {
   throw new Error('Invalid tx type');
 };
 
+/**
+ * Group array of objects by given keys
+ * groupBy(tokens, (i) => i.tokenId);
+ * @see <https://gist.github.com/mikaello/06a76bca33e5d79cdd80c162d7774e9c>
+ */
+// const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
+//   list.reduce((previous, currentItem) => {
+//     const group = getKey(currentItem);
+//     if (!previous[group]) previous[group] = [];
+//     previous[group].push(currentItem);
+//     return previous;
+//   }, {} as Record<K, T[]>);
+const groupBy = <T, K>(list: T[], getKey: (item: T) => K) => {
+  const map = new Map<K, T[]>();
+  list.forEach((item) => {
+    const key = getKey(item);
+    const collection = map.get(key);
+    if (!collection) {
+      map.set(key, [item]);
+    } else {
+      collection.push(item);
+    }
+  });
+  return Array.from(map.values());
+};
+
 export default async (address: string) => {
   const NETWORK = process.env.REACT_APP_NETWORK;
   const electrumx = CryptoUtil.getElectrumX(NETWORK);
@@ -143,6 +169,29 @@ export default async (address: string) => {
       txid: tokenUtxo.txid,
       vout: tokenUtxo.vout
     };
+  });
+
+  // group NFT Group tokens into one new token that includes the sum of the total number of tokens
+  const groupedTokens = groupBy(tokens, (token) => token.tokenId + token.utxoType + token.txid);
+  const tokenList = groupedTokens.map((array: any) => {
+    // get first element
+    const firstElement = array[0];
+
+    // get total token sum
+    let { version } = firstElement;
+    let sum: BigNumber = firstElement.balance;
+    if (array.length > 1) {
+      sum = array.reduce((previous: any, current: any) => current.balance.plus(previous), new BigNumber(0));
+      // set new version to 145 - NFT Collection
+      if (version === 0x81) {
+        version = 0x91;
+      } else if (version === 0x41) {
+        version = 0x51;
+      }
+    }
+
+    // return the first element with the total balance
+    return { ...firstElement, balance: sum, version };
   });
 
   // filter out tokens with balance === undefined
@@ -205,5 +254,5 @@ export default async (address: string) => {
   const slpUtxos = utxos.filter((utxo: any) => !!utxo.slpData);
 */
 
-  return { tokens, nonSlpUtxos, slpUtxos };
+  return { tokens: tokenList, nonSlpUtxos, slpUtxos };
 };

@@ -20,10 +20,14 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         case 0x01:
           break;
         case 0x81:
+        case 0x91:
           switch (type) {
             case 'SEND_SLP_TOKEN':
             case 'SEND_NFT_TOKEN':
               type = 'SEND_NFT_GROUP_TOKEN';
+              break;
+            case 'MINT_SLP_TOKEN':
+              type = 'MINT_NFT_GROUP_TOKEN';
               break;
             case 'CREATE_NFT_CHILD_TOKEN':
             case 'PREPARE_NFT_GROUP_TOKEN':
@@ -37,6 +41,7 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
           }
           break;
         case 0x41:
+        case 0x51:
           switch (type) {
             case 'SEND_SLP_TOKEN':
             case 'SEND_NFT_TOKEN':

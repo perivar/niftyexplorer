@@ -56,6 +56,7 @@ const StyledEnhancedCard = styled(Card)`
   height: 150px;
 
   .ant-card-body {
+    padding-top: 10px;
     height: calc(100% - 46px);
   }
 

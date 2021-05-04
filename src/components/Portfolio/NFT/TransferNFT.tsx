@@ -21,7 +21,7 @@ const TransferNFT = ({ token, onClose }: any) => {
   const { wallet, balances } = React.useContext(WalletContext);
   const [formData, setFormData] = useState({
     dirty: false,
-    quantity: token.balance,
+    quantity: token.version === 0x91 ? 1 : token.balance,
     address: wallet.legacyAddress
   });
   const [loading, setLoading] = useState(false);
@@ -135,7 +135,8 @@ const TransferNFT = ({ token, onClose }: any) => {
                         onChange: (e: any) => handleChange(e),
                         required: true,
                         type: 'number',
-                        value: formData.quantity
+                        value: formData.quantity,
+                        disabled: token.version === 0x91
                       }}
                     />
                     <div style={{ paddingTop: '12px' }}>

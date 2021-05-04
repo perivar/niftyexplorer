@@ -55,6 +55,14 @@ const StyledSwitch = styled(Col)`
   }
 `;
 
+const TokenVersion: any = {
+  1: 'SLP Token',
+  65: 'NFT Token',
+  81: 'NFT Token Collection',
+  129: 'NFT Group',
+  145: 'NFT Group Collection'
+};
+
 export default () => {
   const ContextValue = React.useContext(WalletContext);
   const { wallet, tokens, loading, balances, slpBalancesAndUtxos } = ContextValue;
@@ -150,7 +158,7 @@ export default () => {
     }
 
     // SLP tokens
-    if (hasBalance && token.version != 0x81 && token.version != 0x41) {
+    if (hasBalance && token.version != 0x81 && token.version != 0x41 && token.version != 0x91) {
       actions.unshift(
         <span
           onClick={() => {
@@ -191,7 +199,21 @@ export default () => {
       );
     }
 
-    if (hasBalance && (token.version === 0x81 || token.version === 0x41)) {
+    // create nft child token
+    if (balance && balance.gt(1) && token.version === 0x91) {
+      actions.unshift(
+        <span
+          onClick={() => {
+            setAction('create-nft-child');
+            setTokenCardAction(tokenCardAction !== null ? null : tokenCardAction);
+          }}>
+          <GoldFilled />
+          Create NFT
+        </span>
+      );
+    }
+
+    if (hasBalance && (token.version === 0x81 || token.version === 0x41 || token.version === 0x91)) {
       actions.unshift(
         <span
           onClick={() => {
@@ -549,7 +571,15 @@ export default () => {
                         }}>
                         <div
                           style={{
-                            fontSize: '16px',
+                            fontSize: '10px',
+                            color: 'rgb(158, 160, 165)',
+                            whiteSpace: 'nowrap'
+                          }}>
+                          {token.version >= 0 ? TokenVersion[token.version] : ''}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '14px',
                             fontWeight: 'bold',
                             color: 'rgb(62, 63, 66)'
                           }}>
@@ -559,7 +589,6 @@ export default () => {
                           style={{
                             color: 'rgb(158, 160, 165)',
                             fontSize: '12px',
-                            // fontWeight: '500',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
