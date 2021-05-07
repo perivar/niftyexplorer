@@ -1,3 +1,5 @@
+import { from, Observable, of, range, throwError } from 'rxjs';
+import { concatMap, retryWhen, delay, mergeMap, catchError, tap, repeat } from 'rxjs/operators';
 import CryptoSLP from '../crypto/slp';
 import CryptoNFT from '../crypto/slp/nft';
 import CryptoUtil, {
@@ -69,6 +71,7 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
       (type === 'BURN_SLP_BATON' && 'IS_BURNING') ||
       (type === 'BURN_SLP_BATON_BALANCE' && 'IS_BURNING') ||
       (type === 'BURN_SLP_TOKEN' && 'IS_BURNING') ||
+      (type === 'CREATE_NFT_BATCH' && 'IS_CREATING_NFT_BATCH') ||
       (type === 'CREATE_NFT_GROUP_TOKEN' && 'IS_CREATING_NFT_GROUP') ||
       (type === 'PREPARE_NFT_GROUP_TOKEN' && 'IS_PREPARING_NFT_GROUP') ||
       (type === 'CREATE_NFT_CHILD_TOKEN' && 'IS_CREATING_NFT_CHILD') ||
@@ -101,6 +104,12 @@ const broadcastTransaction = async (wallet: any, type: string, { ...args }) => {
         break;
       case 'IS_BURNING':
         txidStr = await TokenType1burn(wallet, config);
+        break;
+      case 'IS_CREATING_NFT_BATCH':
+        config.tokenReceiverAddress = wallet.legacyAddress;
+        config.batonReceiverAddress = config.fixedSupply === true ? null : wallet.legacyAddress;
+        config.documentUri = config.docUri;
+        txidStr = await NFTcreateBatch(wallet, config);
         break;
       case 'IS_CREATING_NFT_GROUP':
         config.tokenReceiverAddress = wallet.legacyAddress;
@@ -203,8 +212,138 @@ const TokenType1burn = async (wallet: any, config: any): Promise<string | undefi
   return txidStr;
 };
 
+const delayedRetry = (delayMs: number, maxRetry: number) => {
+  let retries = maxRetry;
+
+  return (src: Observable<any>) =>
+    src.pipe(
+      retryWhen((errors: Observable<any>) =>
+        errors.pipe(
+          delay(delayMs),
+          mergeMap((error) => (retries-- > 0 ? of(error) : throwError('Retrying...')))
+        )
+      )
+    );
+};
+
+const NFTcreateBatch = async (wallet: any, config: any): Promise<string | undefined> => {
+  // Generate NFT group config object
+  const configGroupObj: NFTGroupOpReturnConfig = {
+    name: config.name,
+    ticker: config.symbol,
+    documentUrl: config.docUri,
+    initialQty: Number(config.initialTokenQty),
+    documentHash: config.documentHash,
+    mintBatonVout: config.fixedSupply === true ? null : 2 // the minting baton is always on vout 2
+  };
+
+  config.tokenId = await CryptoNFT.createNFTGroup(
+    wallet,
+    config.tokenReceiverAddress,
+    config.batonReceiverAddress,
+    configGroupObj,
+    NETWORK
+  );
+  console.log(`Created nft group tx: ${config.tokenId}`);
+
+  // split 18 at a time
+  const splitTxId = await CryptoNFT.splitNFTGroup(
+    wallet,
+    config.tokenId,
+    Number(config.initialTokenQty),
+    config.tokenReceiverAddress,
+    NETWORK
+  );
+  console.log(`Split nft group tx: ${splitTxId}`);
+
+  // Generate NFT child config object
+  const configObjChild: NFTChildGenesisOpReturnConfig = {
+    name: config.name,
+    ticker: config.symbol,
+    documentUrl: config.docUri
+  };
+
+  // if more than 18 ignore, since we havent' split more than 18
+  let toMintCount = Number(config.initialTokenQty);
+  if (toMintCount > 18) {
+    toMintCount = 18;
+  }
+  const childTxIds: string[] = [];
+  for (let i = 0; i < toMintCount; i++) {
+    const childTxId = await CryptoNFT.createNFTChild(wallet, config.tokenId, configObjChild, NETWORK);
+    childTxIds.push(childTxId);
+    console.log(`Created nft child: ${childTxIds[i]}`);
+  }
+
+  return config.tokenId;
+};
+
+const NFTcreateBatchRXJS = async (wallet: any, config: any): Promise<string | undefined> => {
+  // Generate NFT group config object
+  const configGroupObj: NFTGroupOpReturnConfig = {
+    name: config.name,
+    ticker: config.symbol,
+    documentUrl: config.docUri,
+    initialQty: Number(config.initialTokenQty),
+    documentHash: config.documentHash,
+    mintBatonVout: config.fixedSupply === true ? null : 2 // the minting baton is always on vout 2
+  };
+
+  return new Promise((resolve, reject) => {
+    of(config)
+      .pipe(
+        concatMap(() => {
+          return CryptoNFT.createNFTGroup(
+            wallet,
+            config.tokenReceiverAddress,
+            config.batonReceiverAddress,
+            configGroupObj,
+            NETWORK
+          );
+        }),
+        tap((res: any) => console.log(`1: ${res}`)),
+        // delayedRetry(10000, 4),
+        concatMap((txidStr: string) => {
+          // set token id
+          config.tokenId = txidStr;
+          return CryptoNFT.splitNFTGroup(
+            wallet,
+            config.tokenId,
+            Number(config.initialTokenQty),
+            config.tokenReceiverAddress,
+            NETWORK
+          );
+        }),
+        tap((res: any) => console.log(`2: ${res}`)),
+        concatMap(() => {
+          // Generate NFT child config object
+          const configObjChild: NFTChildGenesisOpReturnConfig = {
+            name: config.name,
+            ticker: config.symbol,
+            documentUrl: config.docUri
+          };
+          return CryptoNFT.createNFTChild(wallet, config.tokenId, configObjChild, NETWORK);
+        }),
+        tap((res: any) => console.log(`3: ${res}`)),
+        catchError((err) => throwError(err))
+      )
+      .subscribe(
+        (success: any) => {
+          console.log(success);
+          resolve(config.tokenId);
+          /* display success msg */
+        },
+        (errorData: any) => {
+          /* display error msg */
+          console.log(errorData);
+          reject(Error(errorData));
+        }
+      );
+  });
+};
+
 const NFTcreateGroup = async (wallet: any, config: any): Promise<string | undefined> => {
-  // Generate NFT config object
+  // Generate NFT group config object
   const configObj: NFTGroupOpReturnConfig = {
     name: config.name,
     ticker: config.symbol,
@@ -240,7 +379,7 @@ const NFTsplitGroup = async (wallet: any, config: any): Promise<string | undefin
 };
 
 const NFTcreateChild = async (wallet: any, config: any): Promise<string | undefined> => {
-  // Generate NFT config object
+  // Generate NFT child config object
   const configObjChild: NFTChildGenesisOpReturnConfig = {
     name: config.name,
     ticker: config.symbol,

@@ -292,6 +292,7 @@ const CreateNFT = () => {
     !data.tokenSymbol ||
     !data.amount ||
     Number(data.amount) <= 0 ||
+    Number(data.amount) > 10 ||
     (data.decimals !== '' && data.decimals < 0) ||
     (data.decimals !== '' && data.decimals > 9) ||
     (data.decimals !== '' && data.decimals % 1 !== 0) ||
@@ -362,7 +363,8 @@ const CreateNFT = () => {
         throw new Error('No token file!');
       }
 
-      const link: any = await createNFTGroupToken(wallet, 'CREATE_NFT_GROUP_TOKEN', {
+      // CREATE_NFT_GROUP_TOKEN
+      const link: any = await createNFTGroupToken(wallet, 'CREATE_NFT_BATCH', {
         name: tokenName,
         symbol: tokenSymbol,
         documentHash: hash,
@@ -398,7 +400,7 @@ const CreateNFT = () => {
             message = 'Not enough NFY. Deposit some funds to use this feature.';
             break;
           default:
-            message = 'Transaction Failed. Try again later';
+            message = `Transaction Failed. Try again later: ${e.message}`;
             break;
         }
       } else if (/Could not communicate with full node or other external service/.test(e.error)) {
@@ -438,7 +440,7 @@ const CreateNFT = () => {
               <Card
                 title={
                   <h2>
-                    <PlusSquareFilled /> Create NFT Group
+                    <PlusSquareFilled /> Create NFT
                   </h2>
                 }
                 bordered={true}>
@@ -487,8 +489,14 @@ const CreateNFT = () => {
                     labelCol={{ span: 3, offset: 0 }}
                     colon={false}
                     required
-                    validateStatus={!data.dirty && Number(data.amount) <= 0 ? 'error' : ''}
-                    help={!data.dirty && Number(data.amount) <= 0 ? 'Should be greater than 0' : ''}>
+                    validateStatus={
+                      !data.dirty && (Number(data.amount) <= 0 || Number(data.amount) > 10) ? 'error' : ''
+                    }
+                    help={
+                      !data.dirty && (Number(data.amount) <= 0 || Number(data.amount) > 10)
+                        ? 'Should be between 1 and 10'
+                        : ''
+                    }>
                     <Input
                       style={{ padding: '0px 20px' }}
                       placeholder="quantity"
@@ -656,7 +664,7 @@ const CreateNFT = () => {
                             ? () => handleCreateNFTToken()
                             : () => setShowConfirm(true)
                         }>
-                        Create NFT Group
+                        Create NFT
                       </Button>
                     </Popconfirm>
                   </div>

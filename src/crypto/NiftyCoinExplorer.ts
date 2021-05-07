@@ -5,7 +5,6 @@
 // Public npm libraries
 import axios, { AxiosRequestConfig } from 'axios';
 import { Network } from 'bitcoinjs-lib';
-import { UTXOInfo } from './util';
 
 let _this: NiftyCoinExplorer;
 
@@ -41,80 +40,6 @@ export class NiftyCoinExplorer {
     }
 
     _this = this;
-  }
-
-  // warning this is a very heavy lookup that might take some time
-  async utxo(address: string, count = 50): Promise<UTXOInfo[]> {
-    try {
-      // Handle single address.
-      if (typeof address === 'string') {
-        const response = await axios.get(`${_this.restURL}ext/getaddresstxs/${address}/0/${count}`, _this.axiosOptions);
-
-        // lookup tx data
-        const utxos: UTXOInfo[] = [];
-
-        // TODO: have no idea how to remove the spent transactions!!
-        // therefore we only use the last entry
-        // const elements = response.data;
-        const elements = [response.data[0]];
-
-        await Promise.all(
-          elements.map(async (element: any) => {
-            const data = await _this.txDataExplorer(element.txid);
-
-            let isSpent = true;
-
-            // check if vin contains the address
-            let vin: any = {};
-            for (let i = 0; i < data.tx.vin.length; i++) {
-              vin = data.tx.vin[i];
-              // get addresses
-              const { addresses } = vin;
-              // const hasVinAddress = addresses.some((addr: string) => {
-              //   return addr === address;
-              // });
-              const hasVinAddress = addresses === address;
-
-              // if vin doesn't contain the address, it is likely spent?
-              if (hasVinAddress) {
-                isSpent = false;
-              }
-            }
-
-            // find a vout with money
-            if (!isSpent) {
-              let vout: any = {};
-              for (let i = 0; i < data.tx.vout.length; i++) {
-                vout = data.tx.vout[i];
-                vout.n = i;
-
-                // get addresses
-                const { addresses } = vout;
-                // const hasVoutAddress = addresses.some((addr: string) => {
-                //   return addr === address;
-                // });
-                const hasVoutAddress = addresses === address;
-
-                if (hasVoutAddress) {
-                  break;
-                }
-              }
-              const niftoshis = vout.amount;
-
-              // add some of the same fields with different names to support older functions
-              utxos.push({ value: niftoshis, tx_pos: vout.n, tx_hash: data.tx.txid });
-            }
-          })
-        );
-
-        return utxos;
-      }
-
-      throw new Error('Input address must be a string');
-    } catch (error) {
-      if (error.response && error.response.data) throw error.response.data;
-      else throw error;
-    }
   }
 
   // this returns the NFY balance

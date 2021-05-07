@@ -19,10 +19,10 @@ const CreateNFTChild = ({ token, onClose }: any) => {
   const { wallet, balances } = React.useContext(WalletContext);
   const [data, setData] = useState({
     dirty: true,
-    tokenName: '',
-    tokenSymbol: '',
-    documentHash: '',
-    documentUri: ''
+    tokenName: token.info.name,
+    tokenSymbol: token.info.symbol,
+    documentHash: token.info.documentHash,
+    documentUri: token.info.documentUri
   });
   const [loading, setLoading] = useState(false);
 
@@ -121,6 +121,7 @@ const CreateNFTChild = ({ token, onClose }: any) => {
                         placeholder="token symbol e.g.: NIFTY"
                         name="tokenSymbol"
                         onChange={(e) => handleChange(e)}
+                        value={data.tokenSymbol}
                         required
                       />
                     </Form.Item>
@@ -133,7 +134,13 @@ const CreateNFTChild = ({ token, onClose }: any) => {
                       help={
                         !data.dirty && Number(data.tokenName) <= 0 ? 'Should be combination of numbers & alphabets' : ''
                       }>
-                      <Input placeholder="token name" name="tokenName" onChange={(e) => handleChange(e)} required />
+                      <Input
+                        placeholder="token name"
+                        name="tokenName"
+                        onChange={(e) => handleChange(e)}
+                        value={data.tokenName}
+                        required
+                      />
                     </Form.Item>
                     <Form.Item
                       validateStatus={!data.dirty && !data.documentUri ? 'error' : ''}
@@ -142,6 +149,7 @@ const CreateNFTChild = ({ token, onClose }: any) => {
                         placeholder="https://url-to-the-nft-file-or-image"
                         name="documentUri"
                         onChange={(e) => handleChange(e)}
+                        value={data.documentUri}
                         required
                       />
                     </Form.Item>

@@ -211,7 +211,7 @@ const App = () => {
                 </Menu.Item>
                 {wallet && (
                   <Menu.Item key="createnft">
-                    <Link to="/createnft">Create NFT Group</Link>
+                    <Link to="/createnft">Create NFT</Link>
                   </Menu.Item>
                 )}
                 {/* {wallet && (
@@ -338,7 +338,7 @@ const App = () => {
                     tab={
                       <span onClick={() => history.push('/createnft')}>
                         <PlusSquareFilled />
-                        Create NFT Group
+                        Create NFT
                       </span>
                     }
                     key="create"
