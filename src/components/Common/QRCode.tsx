@@ -99,12 +99,12 @@ export const QRCode = ({ address, size = 210, onClick = (evt: any) => null, ...o
             size={size}
             renderAs={'svg'}
             includeMargin
-            imageSettings={{
-              src: nfyLogo,
-              height: 42,
-              width: 42,
-              excavate: false
-            }}
+            // imageSettings={{
+            //   src: nfyLogo,
+            //   height: 42,
+            //   width: 42,
+            //   excavate: false
+            // }}
           />
           <StyledInput>
             <Input
